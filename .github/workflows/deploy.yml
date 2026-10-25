@@ -24,11 +24,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 前置检查：Pages 未启用时 GitHub API 返回 404。
+      # 这一步只负责把「原因说清楚」，避免后面只抛一句 HttpError: Not Found。
+      - name: Check Pages is enabled
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          repo="${{ github.repository }}"
+          code=$(curl -s -o /tmp/pages.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${repo}/pages")
+          echo "GET /repos/${repo}/pages -> ${code}"
+          if [ "${code}" = "404" ]; then
+            echo "::error title=GitHub Pages 尚未启用::仓库 ${repo} 没有 Pages 站点，因此无法部署。请打开 https://github.com/${repo}/settings/pages ，在 Build and deployment → Source 选择 “GitHub Actions”，保存后重新运行本工作流（无需改动代码）。"
+            exit 1
+          fi
+          if [ "${code}" != "200" ]; then
+            echo "::warning::查询 Pages 状态返回 ${code}，继续尝试部署。"
+          fi
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          # 若仓库尚未启用 Pages，则用 GITHUB_TOKEN 自动启用并把 Source 设为 GitHub Actions
-          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
