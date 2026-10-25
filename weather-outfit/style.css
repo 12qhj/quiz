@@ -1,0 +1,342 @@
+:root {
+  --bg: #faf7f2;
+  --card: #ffffff;
+  --ink: #2b2724;
+  --ink-soft: #6f6760;
+  --line: #ece6dd;
+  --accent: #d98a6a;       /* 暖陶土 */
+  --accent-soft: #f6e3d8;
+  --accent-ink: #b96a47;
+  --cool: #8fb3c9;
+  --shadow: 0 10px 30px rgba(80, 60, 40, 0.08);
+  --radius: 18px;
+  --maxw: 560px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+
+/* ---------- 顶部 ---------- */
+.hero-header {
+  margin-bottom: 18px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-logo {
+  font-size: 34px;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(217, 138, 106, 0.25));
+}
+.brand-text h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+}
+.brand-text p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* ---------- 搜索卡 ---------- */
+.search-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.search-row {
+  display: flex;
+  gap: 10px;
+}
+.city-input {
+  flex: 1;
+  min-width: 0;
+  border: 1.5px solid var(--line);
+  background: #fbf9f6;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.city-input:focus {
+  border-color: var(--accent);
+  background: #fff;
+}
+.btn-search {
+  flex: 0 0 auto;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0 20px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.05s;
+}
+.btn-search:hover { background: var(--accent-ink); }
+.btn-search:active { transform: scale(0.97); }
+.btn-search:disabled { opacity: 0.6; cursor: default; }
+
+.btn-locate {
+  margin-top: 10px;
+  width: 100%;
+  border: 1.5px dashed var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 11px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-locate:hover { background: #f2d6c7; }
+
+.hint {
+  margin: 10px 2px 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+  min-height: 18px;
+}
+.hint.error { color: #c0392b; }
+
+/* ---------- 状态框 ---------- */
+.state-box {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--ink-soft);
+}
+.state-box p { margin: 10px 0 0; font-size: 14px; }
+.empty-emoji { font-size: 46px; }
+.spinner {
+  width: 34px;
+  height: 34px;
+  margin: 0 auto;
+  border: 3px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- 天气卡 ---------- */
+.weather-card {
+  background: linear-gradient(135deg, #fff 0%, #fdf3ec 100%);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.weather-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.weather-city { display: flex; flex-direction: column; }
+.city-name { font-size: 20px; font-weight: 700; }
+.city-region { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+.weather-cond {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.cond-emoji { font-size: 30px; line-height: 1; }
+.cond-text { font-size: 14px; color: var(--ink-soft); margin-top: 4px; }
+
+.weather-temp {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin: 14px 0 6px;
+}
+.temp-now { font-size: 56px; font-weight: 800; line-height: 0.9; letter-spacing: -1px; }
+.temp-unit { font-size: 22px; font-weight: 600; color: var(--ink-soft); margin-bottom: 8px; }
+.temp-meta { display: flex; flex-direction: column; margin-bottom: 8px; padding-left: 6px; }
+.temp-meta span { font-size: 13px; color: var(--ink-soft); }
+.temp-hl { font-weight: 600; color: var(--accent-ink); }
+
+.weather-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.stat {
+  text-align: center;
+}
+.stat .v { font-size: 15px; font-weight: 700; }
+.stat .k { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+
+/* ---------- 整套街拍 ---------- */
+.outfit-hero { margin-bottom: 16px; }
+.hero-img-wrap {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: var(--accent-soft);
+}
+.hero-img {
+  width: 100%;
+  display: block;
+  max-height: 460px;
+  object-fit: cover;
+}
+.hero-badge {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  background: rgba(43, 39, 36, 0.78);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+.hero-caption {
+  margin: 10px 4px 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* ---------- 附加天气图 ---------- */
+.extra-imgs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.extra-card {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: var(--card);
+}
+.extra-card img { width: 100%; display: block; height: 150px; object-fit: cover; }
+.extra-card .lbl {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+  padding: 7px 10px;
+  text-align: center;
+}
+
+/* ---------- 单品清单 ---------- */
+.section-title {
+  font-size: 16px;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.items-section { margin-bottom: 16px; }
+.item-groups { display: flex; flex-direction: column; gap: 12px; }
+.item-group {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+}
+.group-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 10px;
+  color: var(--accent-ink);
+}
+.item {
+  display: flex;
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px dashed var(--line);
+}
+.item:first-of-type { border-top: none; }
+.item-emoji { font-size: 18px; line-height: 1.4; flex: 0 0 auto; }
+.item-body { flex: 1; min-width: 0; }
+.item-name { font-size: 14.5px; font-weight: 600; }
+.item-brand {
+  font-size: 12px;
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  padding: 1px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+.item-reason { font-size: 13px; color: var(--ink-soft); margin-top: 3px; }
+
+/* ---------- 贴士 ---------- */
+.tips-section { margin-bottom: 16px; }
+.tips-list { list-style: none; margin: 0; padding: 0; }
+.tips-list li {
+  background: var(--card);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 12px 14px;
+  font-size: 13.5px;
+  color: var(--ink);
+  margin-bottom: 10px;
+  position: relative;
+  padding-left: 34px;
+}
+.tips-list li::before {
+  content: "💡";
+  position: absolute;
+  left: 12px;
+  top: 11px;
+  font-size: 14px;
+}
+
+/* ---------- 页脚 ---------- */
+.site-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.site-footer p { margin: 4px 0; }
+.site-footer b { color: var(--ink); }
+
+/* ---------- 工具类 ---------- */
+.hidden { display: none !important; }
+
+@media (min-width: 600px) {
+  .app { padding-top: 32px; }
+  .temp-now { font-size: 64px; }
+}

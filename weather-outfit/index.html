@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>今日穿搭 · 天气女装推荐</title>
+  <meta name="description" content="根据实时天气，推荐平价、有版型的女装搭配。天气数据来自 Open-Meteo，街拍图源 Pexels。" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- 顶部 -->
+    <header class="hero-header">
+      <div class="brand">
+        <span class="brand-logo">👗</span>
+        <div class="brand-text">
+          <h1>今日穿搭</h1>
+          <p>看天气，挑一套平价又有版型的女装</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- 搜索 -->
+    <section class="search-card">
+      <form id="searchForm" class="search-row" autocomplete="off">
+        <input
+          id="cityInput"
+          class="city-input"
+          type="text"
+          placeholder="输入城市，如：北京 / 上海 / 杭州"
+          aria-label="城市名"
+        />
+        <button type="submit" class="btn-search" id="searchBtn">查天气</button>
+      </form>
+      <button type="button" class="btn-locate" id="locateBtn">📍 用我的位置</button>
+      <p class="hint" id="statusLine"></p>
+    </section>
+
+    <!-- 加载态 -->
+    <div id="loading" class="state-box hidden">
+      <div class="spinner"></div>
+      <p>正在为你查天气…</p>
+    </div>
+
+    <!-- 结果区 -->
+    <main id="result" class="result hidden">
+      <!-- 天气卡 -->
+      <section class="weather-card">
+        <div class="weather-top">
+          <div class="weather-city">
+            <span class="city-name" id="wCity">—</span>
+            <span class="city-region" id="wRegion"></span>
+          </div>
+          <div class="weather-cond">
+            <span class="cond-emoji" id="wEmoji">☀️</span>
+            <span class="cond-text" id="wCond">—</span>
+          </div>
+        </div>
+        <div class="weather-temp">
+          <span class="temp-now" id="wTemp">—</span>
+          <span class="temp-unit">℃</span>
+          <div class="temp-meta">
+            <span id="wFeels">体感 —</span>
+            <span class="temp-hl" id="wHL">— ~ —</span>
+          </div>
+        </div>
+        <div class="weather-stats" id="wStats"></div>
+      </section>
+
+      <!-- 整套街拍 hero -->
+      <section class="outfit-hero">
+        <div class="hero-img-wrap">
+          <img id="heroImg" class="hero-img" src="" alt="" />
+          <span class="hero-badge" id="heroBadge">—</span>
+        </div>
+        <p class="hero-caption" id="heroCaption"></p>
+      </section>
+
+      <!-- 附加天气图 -->
+      <div id="extraImgs" class="extra-imgs"></div>
+
+      <!-- 单品清单 -->
+      <section class="items-section">
+        <h2 class="section-title">👚 今天穿这些（平价女装）</h2>
+        <div id="itemGroups" class="item-groups"></div>
+      </section>
+
+      <!-- 贴士 -->
+      <section id="tipsSection" class="tips-section hidden">
+        <h2 class="section-title">💡 今天的小提醒</h2>
+        <ul id="tipsList" class="tips-list"></ul>
+      </section>
+    </main>
+
+    <!-- 初始空态 -->
+    <div id="empty" class="state-box">
+      <div class="empty-emoji">🌦️</div>
+      <p>输入城市或定位一下，我帮你按今天的天气搭一套。</p>
+    </div>
+
+    <footer class="site-footer">
+      <p>天气数据 <b>Open-Meteo</b>（免费免 Key）· 街拍图源 <b>Pexels</b>（免费授权）</p>
+      <p>单品均为平价女装建议，不含购买链接与价格</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
