@@ -720,6 +720,54 @@ body[data-subj="ds"] .bar > i{background:linear-gradient(90deg,#2563eb,#0ea5e9)}
 @media (max-width:560px){
   .kp-grid{grid-template-columns:1fr}
 }
+/* ============ 考纲对照（数据库原理） ============ */
+.syl-list{display:grid;gap:8px}
+.syl-row{
+  display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:11px;
+  padding:9px 12px;background:#fcfdff;
+}
+.syl-dot{
+  width:26px;height:26px;border-radius:8px;flex:0 0 auto;display:grid;place-items:center;
+  font-size:12px;font-weight:800;letter-spacing:.2px;
+}
+.syl-dot.ok{background:var(--ok-soft);color:var(--ok)}
+.syl-dot.mid{background:var(--warn-soft);color:var(--warn)}
+.syl-dot.thin{background:#f1f5f9;color:#64748b}
+.syl-main{flex:1;min-width:0}
+.syl-name{display:block;font-size:13.5px;font-weight:700;line-height:1.5}
+.syl-sub{display:block;font-size:12px;color:var(--muted);line-height:1.6}
+.syl-acts{display:flex;gap:6px;flex:0 0 auto}
+.syl-acts .btn{padding:5px 10px;font-size:12px}
+.syl-idea{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px}
+.syl-idea .si{border:1px solid var(--line);border-radius:11px;padding:11px 13px;background:#fcfdff}
+.syl-idea .si b{display:block;font-size:13px;margin-bottom:3px}
+.syl-idea .si span{font-size:12.5px;color:var(--ink-2);line-height:1.75}
+.syl-essay{border:1px solid var(--line);border-radius:11px;padding:10px 13px;background:#fcfdff}
+.syl-essay + .syl-essay{margin-top:8px}
+.syl-essay summary{
+  cursor:pointer;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:9px;
+  list-style:none;
+}
+.syl-essay summary::-webkit-details-marker{display:none}
+.syl-essay summary .n{
+  width:22px;height:22px;border-radius:50%;background:var(--primary-soft);color:var(--primary);
+  display:grid;place-items:center;font-size:12px;flex:0 0 auto;
+}
+.syl-essay summary .syl-arrow{margin-left:auto;color:var(--muted);font-size:12px;font-weight:600}
+.syl-essay[open] summary .syl-arrow{color:var(--primary)}
+.syl-arrow::after{content:'展开标准答案 ›'}
+.syl-essay[open] .syl-arrow::after{content:'收起 ›'}
+.syl-ans{
+  white-space:pre-wrap;font-size:13px;line-height:1.9;color:var(--ink-2);
+  margin-top:11px;padding-top:11px;border-top:1px dashed var(--line);
+}
+.syl-ans b{color:var(--ink)}
+.syl-ans-foot{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:560px){
+  .syl-idea{grid-template-columns:1fr}
+  .syl-row{align-items:flex-start;flex-wrap:wrap}
+  .syl-acts{width:100%;justify-content:flex-end}
+}
 </style>
 </head>
 <body>
@@ -735,6 +783,7 @@ body[data-subj="ds"] .bar > i{background:linear-gradient(90deg,#2563eb,#0ea5e9)}
     <button class="tab active" data-act="goto" data-view="home">练习</button>
     <button class="tab" data-act="goto" data-view="know">知识点</button>
     <button class="tab" data-act="goto" data-view="kp">专项练习</button>
+    <button class="tab" data-act="goto" data-view="syl">考纲对照</button>
     <button class="tab" data-act="goto" data-view="search">搜索</button>
     <button class="tab" data-act="goto" data-view="wrong">错题本</button>
     <button class="tab" data-act="goto" data-view="stats">统计</button>
@@ -2116,6 +2165,51 @@ const CHOICE = [
     options:['减少恢复时需要重做的日志量，缩短恢复时间','提高查询速度','防止死锁','实现授权控制'],
     answer:0,
     explain:'检查点把“恢复起点”前移：检查点之前已提交的事务不必重做，未提交的事务也不必回滚，从而大幅缩短恢复时间。'
+  },
+
+  /* ---- 2026 考纲补强：关系模型组成 / 集合运算条件 / 授权选项 / TCL 归属 ---- */
+  {
+    id:'c61', type:'choice', chapter:'ch2',
+    stem:'关系模型由三部分组成，下列选项中最准确的是（　）。',
+    options:[
+      '表、视图、索引',
+      '关系数据结构、关系操作集合、关系完整性约束',
+      '实体、属性、联系',
+      '外模式、模式、内模式'
+    ],
+    answer:1,
+    explain:'关系模型的三要素是：<b>关系数据结构</b>（二维表）、<b>关系操作集合</b>（选择、投影、连接、并、交、差等）、<b>关系完整性约束</b>（实体完整性、参照完整性、用户定义完整性）。表/视图/索引是对象，不是模型组成；实体-属性-联系是 E-R 模型；三级模式是数据库体系结构。'
+  },
+  {
+    id:'c62', type:'choice', chapter:'ch2',
+    stem:'关系 R(A,B) 与关系 S(A,B) 可以进行并、交、差运算，其前提条件是（　）。',
+    options:[
+      '两个关系的元组个数必须相同',
+      '两个关系必须来自同一个数据库',
+      '两个关系属性个数相同，且对应属性取自同一个域（同元、相容）',
+      '两个关系的主码必须相同'
+    ],
+    answer:2,
+    explain:'并、交、差都要求两关系<b>同元且相容</b>：属性个数相同、对应属性出自同一域。满足后 R∪S、R∩S、R−S 才有意义；元组个数不需要相同（并集元组数至多 m+n，因为有重复元组要被消去）。'
+  },
+  {
+    id:'c63', type:'choice', chapter:'ch7',
+    stem:'语句 <code>GRANT SELECT ON SC TO U1 WITH GRANT OPTION;</code> 中，<b>WITH GRANT OPTION</b> 的含义是（　）。',
+    options:[
+      'U1 只能查询 SC 表，不能做别的操作',
+      'U1 可以把刚获得的 SELECT 权限再转授给其他用户',
+      'U1 获得的是 SC 表的所有权，可以删除该表',
+      '该权限只能被使用一次'
+    ],
+    answer:1,
+    explain:'WITH GRANT OPTION 表示被授权者还能把这份权限继续授予别人，形成授权链；回收时用 <code>REVOKE SELECT ON SC FROM U1 CASCADE;</code> 可级联收回其转授出去的权限。授权与回收属于 <b>DCL</b>。'
+  },
+  {
+    id:'c64', type:'choice', chapter:'ch6',
+    stem:'下列语句中，属于 <b>TCL（事务控制语言）</b> 的是（　）。',
+    options:['COMMIT 与 ROLLBACK','GRANT 与 REVOKE','CREATE 与 DROP','SELECT 与 UPDATE'],
+    answer:0,
+    explain:'TCL 负责事务控制：COMMIT（提交）、ROLLBACK（回滚）、SAVEPOINT（保存点）。GRANT/REVOKE 属 DCL；CREATE/DROP 属 DDL；SELECT/UPDATE 属 DML。考试常把这四类打乱让你归类，记住“<b>定义 DDL、操纵 DML、控制权限 DCL、控制事务 TCL</b>”。'
   }
 ];
 
@@ -3725,6 +3819,432 @@ BEGIN T1　BEGIN T2　T1 修改 A　T2 修改 B　T1 COMMIT　—— 此时系�
 　　检查点之前已提交的事务不必重做；检查点时仍未提交的事务（在检查点之后也没提交的）需要 UNDO。
 　　这样能显著减少需要扫描和重做的日志量，缩短恢复时间。
 【补充】介质故障的恢复不同：需要装入最近的数据库副本（转储），再 REDO 其后所有已提交事务。`
+  },
+
+  /* ================= 2026 考纲补强：七大简答预测 + 综合设计 ================= */
+
+  /* ---- 简答 1：ACID ---- */
+  {
+    id:'e21', type:'essay', kind:'cc', chapter:'ch6',
+    title:'事务的 ACID 特性及其含义（简答必背 1）',
+    stem:`请回答：<br>
+(1) 事务的四个特性（ACID）分别是什么？写出英文全称与中文名称；<br>
+(2) 逐条说明含义，并各举一个“该特性被破坏时会出现什么后果”的例子；<br>
+(3) 说明这四个特性分别主要由 DBMS 的哪些机制来保证。`,
+    parts:[
+      { kind:'choice', label:'事务的原子性（Atomicity）主要由下列哪一种机制保证？', options:['日志文件与 UNDO 操作','S 锁与 X 锁','检查点','外模式/模式映像'], answer:0, score:16 },
+      { kind:'choice', label:'事务的持久性（Durability）主要由下列哪一种机制保证？', options:['COMMIT 时把日志强制写盘，恢复时用 REDO','给数据对象加 X 锁','为表建立索引','查询优化器'], answer:0, score:16 }
+    ],
+    rubric:[
+      { label:'写出原子性 Atomicity，含义为“事务的操作要么全做、要么全不做”', w:8, re:/原子性|atomicity|atomic/i },
+      { label:'写出一致性 Consistency，含义为“事务使数据库从一个一致性状态转到另一个一致性状态”', w:8, re:/一致性|consistency|consistent/i },
+      { label:'写出隔离性 Isolation，含义为“并发事务之间互不干扰”', w:8, re:/隔离性|isolation|isolat/i },
+      { label:'写出持久性 Durability，含义为“提交后的修改永久有效”', w:8, re:/持久性|durability|durabl/i },
+      { label:'给出破坏后果的举例（钱凭空消失 / 总额不平 / 脏读 / 断电丢数据）', w:8, re:/例如|比如|例：|丢失修改|脏读|断电/ },
+      { label:'指出原子性、持久性靠日志与 UNDO/REDO 保证，隔离性靠并发控制（封锁）保证', w:8, re:/undo|redo|日志|封锁|锁/ }
+    ],
+    selfCheck:[
+      { text:'四个特性的英文全称、中文名称都写对（Atomicity / Consistency / Isolation / Durability）', score:6 },
+      { text:'每条含义都落到关键词：全做或全不做、一致性状态、互不干扰、永久有效', score:8 },
+      { text:'四个“被破坏会怎样”的例子各写一个，且能对应到具体特性', score:6 }
+    ],
+    answer:`【四特性】
+① 原子性 Atomicity：事务是数据库操作的不可分割单位，要么全部执行，要么全部不执行（回滚到事务开始前的状态）。
+　 破坏后果：转账时 A 账户扣了 100 元、B 账户加钱时故障，钱凭空消失。
+② 一致性 Consistency：事务执行的结果必须使数据库从一个一致性状态变到另一个一致性状态（满足全部完整性约束）。
+　 破坏后果：转账前后两个账户余额之和不等，账目对不上。
+③ 隔离性 Isolation：一个事务的执行不能被其他事务干扰，并发事务的内部操作互不可见。
+　 破坏后果：读到别的事务尚未提交的中间值（脏读），或两次读同一数据结果不同（不可重复读）。
+④ 持久性 Durability：事务一旦提交，对数据库的修改就是永久的，后续故障也不应丢失。
+　 破坏后果：COMMIT 之后突然断电，重启后数据回到修改前。
+
+【由什么保证】
+· 原子性：日志文件 + UNDO（撤销未完成事务的修改）。
+· 一致性：完整性约束检查 + 应用逻辑 + 事务本身的正确编写（ACID 中唯一需要应用配合的一条）。
+· 隔离性：并发控制机制（封锁协议／两段锁协议／隔离级别、时间戳、MVCC）。
+· 持久性：日志先写原则（WAL）+ COMMIT 时日志强制落盘 + 恢复时 REDO + 定期转储。
+
+【一句话记忆】原子性靠日志撤销，持久性靠日志重做，隔离性靠封锁，一致性靠约束与业务逻辑。`
+  },
+
+  /* ---- 简答 2：选择与投影 ---- */
+  {
+    id:'e22', type:'essay', kind:'ra', chapter:'ch2',
+    title:'选择与投影的区别（简答必背 2）',
+    stem:`请回答：<br>
+(1) 比较关系代数中选择（σ）与投影（π）：操作对象、结果属性、是否消除重复元组；<br>
+(2) 设 S(SNO, SNAME, SDEPT, SAGE)，写出“查询计算机系年龄小于 20 岁的学生姓名”的关系代数表达式；<br>
+(3) 若把表达式中的投影去掉，只做选择，得到的结果与题目要求有何不同？`,
+    parts:[
+      { kind:'choice', label:'投影运算的结果中，重复元组应当如何处理？', options:['原样保留','自动消去重复元组','报错','由用户用 DISTINCT 决定'], answer:1, score:20 },
+      { kind:'choice', label:'“从表中挑出满足条件的行”对应哪一种运算？', options:['投影 π','选择 σ','连接 ⋈','除 ÷'], answer:1, score:20 }
+    ],
+    rubric:[
+      { label:'指出选择按“行/元组”操作，是水平方向筛选，结果属性不变', w:10, re:/行|元组|水平/ },
+      { label:'指出投影按“列/属性”操作，是垂直方向筛选，结果元组数可能减少', w:10, re:/列|属性|垂直/ },
+      { label:'指出投影要消除重复元组，选择不产生新的重复', w:8, re:/去重|消除重复|不重复|重复元组/ },
+      { label:'写出表达式 π_SNAME(σ_{SDEPT=计算机 ∧ SAGE<20}(S))（先选后投或先投后选均可，但条件要落在 S 上）', w:12, re:/(π|投影)[\s\S]{0,40}(σ|选择)|(σ|选择)[\s\S]{0,40}(π|投影)/ }
+    ],
+    selfCheck:[
+      { text:'三点区别齐全：操作对象（行/列）、结果属性（不变/只留指定列）、是否去重', score:10 },
+      { text:'表达式中同时出现选择条件（系别、年龄）与投影属性（姓名）', score:10 }
+    ],
+    answer:`【(1) 区别】
+· 操作对象：选择 σ 针对<b>元组（行）</b>，按条件挑出满足条件的行，是<b>水平</b>方向的操作；投影 π 针对<b>属性（列）</b>，挑出若干列，是<b>垂直</b>方向的操作。
+· 结果属性：σ 的结果关系模式与原关系相同（所有属性都保留）；π 的结果只保留指定的属性列。
+· 重复元组：π 之后可能产生重复元组，关系是集合，必须<b>自动消去重复</b>；σ 只是筛选行，不会产生新的重复。
+· 一句话：σ 选行不选列，π 选列不选行。
+
+【(2) 表达式】
+　π_SNAME ( σ_{SDEPT='计算机' ∧ SAGE<20} (S) )
+　（先做选择筛出计算机系且年龄小于 20 的元组，再投影出 SNAME 一列。）
+
+【(3) 只做选择会怎样】
+　σ_{SDEPT='计算机' ∧ SAGE<20}(S) 得到的是这些学生的<b>完整元组</b>（学号、姓名、系别、年龄四列都在），
+　而题目只要求“姓名”，所以必须再套一层投影把列裁到 SNAME，否则结果多出无关属性，不符合题意。`
+  },
+
+  /* ---- 简答 3：交并差条件 + 关系模型组成 ---- */
+  {
+    id:'e23', type:'essay', kind:'ra', chapter:'ch2',
+    title:'交、并、差的条件与关系模型的组成（简答必背 3）',
+    stem:`请回答：<br>
+(1) 关系代数中并（∪）、差（−）、交（∩）三种运算的适用条件是什么？“同元、相容”具体指什么？<br>
+(2) 关系模型由哪三部分组成？<br>
+(3) 用二维表的术语写出：一张表、表中的一行、表中的一列、列的取值范围、能唯一标识一行的属性组，分别叫什么？<br>
+(4) 若 R 有 3 个元组、S 有 4 个元组，R∪S 的元组数一定是 7 吗？为什么？`,
+    parts:[
+      { kind:'choice', label:'设 R(A,B)、S(B,C)，下列运算中有意义的是：', options:['R ∪ S','R − S','R ∩ S','以上都无意义'], answer:3, score:17 },
+      { kind:'choice', label:'关系中“能唯一标识一个元组的最小属性组”称为：', options:['主属性','候选码','外码','域'], answer:1, score:17 }
+    ],
+    rubric:[
+      { label:'指出并、差、交要求两个关系“同元且相容”：属性个数相同、对应属性取自同一个域', w:12, re:/属性个数|同元|列的个数|元数/ },
+      { label:'分别说明并（全部元组）、差（属于 R 不属于 S）、交（公共元组）的含义', w:8, re:/并[\s\S]{0,30}差|差[\s\S]{0,30}交|公共|不属于/ },
+      { label:'关系模型三要素：关系数据结构、关系操作集合、关系完整性约束', w:10, re:/数据结构[\s\S]{0,20}操作[\s\S]{0,20}完整性|完整性约束/ },
+      { label:'二维表术语对应：关系／元组／属性／域／候选码（主码）', w:8, re:/元组|属性|域|候选码|主码/ },
+      { label:'指出 R∪S 元组数不一定为 7，重复元组要被消去（最多 7 个）', w:8, re:/不一定|最多|重复/ }
+    ],
+    selfCheck:[
+      { text:'“同元”说清属性个数相同，“相容”说清对应属性同域', score:8 },
+      { text:'三要素与二维表五组术语都写全（关系/元组/属性/域/码）', score:6 },
+      { text:'并集元组数举例说明：若有重复元组，结果少于 7', score:6 }
+    ],
+    answer:`【(1) 三种运算的条件】
+　并（R∪S）、差（R−S）、交（R∩S）都要求 R 与 S <b>同元且相容</b>：
+　　· 同元：两个关系的属性个数相同（列数一样）；
+　　· 相容：对应属性取自同一个域（列的类型/取值范围一致），通常还要求属性名对应。
+　只有满足这一条件，两个关系的元组才能放在一起比较；否则运算无意义。
+　含义：R∪S = 属于 R 或属于 S 的元组；R−S = 属于 R 而不属于 S 的元组；R∩S = 同时属于两者的元组（可用 R−(R−S) 表示）。
+
+【(2) 关系模型的三要素】
+　① 关系数据结构：用二维表（关系）组织数据；
+　② 关系操作集合：选择、投影、连接、并、交、差、除等，特点是集合操作；
+　③ 关系完整性约束：实体完整性、参照完整性、用户定义完整性。
+
+【(3) 二维表术语】
+　表 → 关系（Relation）；一行 → 元组（Tuple）；一列 → 属性（Attribute）；
+　列的取值范围 → 域（Domain）；能唯一标识一行的最小属性组 → 候选码（选定一个为主码）。
+
+【(4) 不一定】
+　关系是元组的集合，并运算要<b>消去重复元组</b>。若 R 与 S 有相同的元组，R∪S 的元组数会小于 7，
+　只有在两者元组完全不重复时才等于 3+4=7。所以只能说“最多 7 个”。`
+  },
+
+  /* ---- 简答 4：故障类型与恢复 ---- */
+  {
+    id:'e24', type:'essay', kind:'rec', chapter:'ch7',
+    title:'数据库故障类型与恢复机制（简答必背 4）',
+    stem:`请回答：<br>
+(1) 数据库系统可能发生哪三类故障？分别说明故障范围（影响哪些数据）；<br>
+(2) 三类故障各自的恢复策略是什么？<br>
+(3) 日志文件在恢复中的作用是什么？如何判定一个事务该 REDO 还是 UNDO？<br>
+(4) 为什么介质故障的恢复必须依赖转储（备份）？`,
+    parts:[
+      { kind:'choice', label:'系统故障（如断电、操作系统崩溃）恢复时，对故障前已提交的事务应：', options:['UNDO','REDO','既不做 UNDO 也不做 REDO','重新执行整个事务'], answer:1, score:16 },
+      { kind:'choice', label:'下列故障中，必须使用数据库副本（转储）才能恢复的是：', options:['事务故障','系统故障','介质故障','死锁'], answer:2, score:16 }
+    ],
+    rubric:[
+      { label:'写出事务故障（单个事务非预期终止）', w:8, re:/事务故障/ },
+      { label:'写出系统故障（软故障：断电/OS 崩溃，内存内容丢失、磁盘完好）', w:8, re:/系统故障|软故障/ },
+      { label:'写出介质故障（硬故障：磁盘损坏，数据库本身被破坏）', w:8, re:/介质故障|硬故障|磁盘/ },
+      { label:'恢复策略：事务故障用 UNDO；系统故障 UNDO 未提交 + REDO 已提交；介质故障装入副本 + 重做日志', w:10, re:/undo[\s\S]{0,30}redo|装入|转储|副本/ },
+      { label:'日志判定：有 BEGIN 且有 COMMIT 记录 → REDO；无 COMMIT → UNDO', w:8, re:/commit|提交|未提交/ },
+      { label:'指出检查点可缩短恢复时间', w:6, re:/检查点|checkpoint/i }
+    ],
+    selfCheck:[
+      { text:'三类故障的名称与范围（单个事务 / 内存 + 磁盘完好 / 磁盘介质损坏）都写到', score:8 },
+      { text:'UNDO 与 REDO 的判定依据写清（日志中有无 COMMIT 记录）', score:6 },
+      { text:'说明介质故障需要 DBA 介入：装最新副本 + 重做其后已提交事务', score:6 }
+    ],
+    answer:`【(1) 三类故障】
+　① 事务故障：某个事务因运算溢出、违反完整性约束、被选中撤销、死锁被牺牲等原因非预期终止，
+　　 只影响该事务本身的修改，数据库其余部分正确。
+　② 系统故障（软故障）：CPU 故障、操作系统崩溃、突然停电等，导致内存缓冲区内容丢失、正在运行的事务全部中断，
+　　 但<b>磁盘上的数据库完好</b>。
+　③ 介质故障（硬故障）：磁盘损坏、磁头碰撞、瞬时的强磁场干扰等，使<b>存储数据库的介质被破坏</b>，
+　　 影响正在运行的事务和数据库本身，破坏性最大。
+
+【(2) 恢复策略】
+　· 事务故障：反向扫描日志，对该事务已做的修改执行 <b>UNDO</b>（撤销），强行回滚。
+　· 系统故障：重启后扫描日志 → 对故障前<b>已提交</b>的事务做 <b>REDO</b>（重做，保证持久性），
+　　对<b>未提交</b>的事务做 <b>UNDO</b>（撤销，保证原子性）。
+　· 介质故障：DBA 装入最近的数据库副本（转储文件），再装入日志副本，
+　　 REDO 自转储以来所有已提交的事务，把数据库恢复到故障前的一致状态。
+
+【(3) 日志的作用与判定】
+　日志按时间顺序记录每个事务的开始（BEGIN）、每次更新（事务标识、数据项、旧值、新值）与结束（COMMIT/ROLLBACK）。
+　恢复时按<b>有无 COMMIT 记录</b>判定：有 COMMIT → 已提交，必须 REDO（正向重做）；
+　只有 BEGIN 或更新、无 COMMIT → 未提交，必须 UNDO（反向恢复旧值）。
+　基本原则是“<b>先写日志</b>”（WAL）：修改数据库之前必须先把修改登记到日志，否则故障时无从恢复。
+　检查点（checkpoint）把恢复起点前移，检查点之前已提交的事务不必重做，从而缩短恢复时间。
+
+【(4) 为什么介质故障必须靠转储】
+　介质故障把数据库文件本身破坏了，日志只记录“怎么改的”，没有“改之前的完整数据”，
+　无法单靠日志重建整个数据库；必须以某个时刻的完整副本为起点，再用日志把之后的变化重做上来。
+　所以 DBA 必须定期转储（全量/增量）并异地保存日志副本。`
+  },
+
+  /* ---- 简答 5：完整性约束 ---- */
+  {
+    id:'e25', type:'essay', kind:'ic', chapter:'ch7',
+    title:'三类完整性约束及其与一致性的关系（简答必背 5）',
+    stem:`请回答：<br>
+(1) 关系数据库的实体完整性、参照完整性、用户定义完整性分别是什么？各举一例；<br>
+(2) 当参照完整性被破坏（如插入一个不存在的系号）时，DBMS 可以采取哪三种处理策略？<br>
+(3) 完整性约束与事务 ACID 中的“一致性（Consistency）”是什么关系？<br>
+(4) 除建表时的 PRIMARY KEY / FOREIGN KEY / CHECK 之外，还有哪些机制可以实现较复杂的完整性控制？`,
+    parts:[
+      { kind:'choice', label:'“外码的取值或者为空，或者等于被参照关系中某个主码值”属于：', options:['实体完整性','参照完整性','用户定义完整性','域完整性'], answer:1, score:15 },
+      { kind:'choice', label:'在 SC 表定义 FOREIGN KEY(SNO) REFERENCES S(SNO) ON DELETE CASCADE，删除 S 中某学生时：', options:['拒绝删除','把 SC 中该学生的选课记录一起删除','把 SC 中学号置空','只删除 S 中的记录，不动 SC'], answer:1, score:15 }
+    ],
+    rubric:[
+      { label:'实体完整性：主码非空且唯一（主属性不能取空值）', w:10, re:/实体完整性[\s\S]{0,40}主码|主码[\s\S]{0,20}非空|唯一/ },
+      { label:'参照完整性：外码取空值或等于被参照关系的主码值', w:10, re:/参照完整性[\s\S]{0,40}外码|外码[\s\S]{0,30}空值/ },
+      { label:'用户定义完整性：针对具体应用的数据约束（如成绩 0~100、性别取值）', w:8, re:/用户定义|check|业务|具体应用/ },
+      { label:'违约处理三种策略：拒绝（NO ACTION / RESTRICT）、级联（CASCADE）、设为空值（SET NULL）', w:10, re:/拒绝|级联|设为空|no action|cascade|set null/i },
+      { label:'指出完整性约束是“一致性”的重要保证之一，但一致性还依赖事务逻辑与并发控制', w:6, re:/一致性/ },
+      { label:'补充机制：CHECK 子句、断言（ASSERTION）、触发器（TRIGGER）、存储过程', w:6, re:/断言|触发器|trigger|assert/i }
+    ],
+    selfCheck:[
+      { text:'三类完整性各自的定义与一个具体例子都写到', score:8 },
+      { text:'参照完整性的三种违约处理策略名称（拒绝/级联/置空）与效果都写清', score:6 },
+      { text:'说明完整性约束只保证“单条语句不破坏约束”，一致性还要靠事务的原子性与并发控制', score:6 }
+    ],
+    answer:`【(1) 三类完整性】
+　① 实体完整性：关系的主码（主属性）不能取空值，且必须唯一，保证每个元组可被区分。
+　　 例：S(SNO, SNAME, …) 中 SNO 是主码，插入时不能为 NULL，也不能重复。
+　② 参照完整性：外码的取值要么为空值，要么等于被参照关系中某个元组的主码值，保证联系不“悬空”。
+　　 例：SC(SNO, CNO, GRADE) 中 SNO 引用 S(SNO)，不允许出现 S 表中不存在的学号。
+　③ 用户定义完整性：针对具体应用的语义约束，由用户在建表或用规则/触发器时定义。
+　　 例：GRADE 取值 0~100；性别只能取“男/女”；SAGE 在 15~45 之间。
+
+【(2) 参照完整性违约的三种处理】
+　· 拒绝（NO ACTION / RESTRICT）：不允许执行该操作，语句报错回滚（默认策略）。
+　· 级联（CASCADE）：被参照元组删除/更新时，同步删除/更新参照表中相关元组（ON DELETE CASCADE）。
+　· 设为空值（SET NULL）：把参照表中相关元组的外码置为 NULL（要求该外码允许空）。
+
+【(3) 与 ACID 中“一致性”的关系】
+　完整性约束是<b>一致性的静态保证</b>：它规定什么样的数据库状态是合法的，任何时刻（含事务结束时）都不能被破坏。
+　但一致性还包括业务语义（如“转账前后总额不变”），需要事务逻辑配合；
+　而并发执行时还要靠隔离性（封锁）防止中间状态被看到。可以说：
+　约束保证“状态合法”，事务的原子性保证“要么都在、要么都不在”，二者共同支撑一致性。
+
+【(4) 更复杂的完整性控制】
+　CHECK 子句（列/表级条件）、断言 ASSERTION（跨表约束）、触发器 TRIGGER（级联与复杂业务规则）、
+　以及应用层的存储过程与事务逻辑。`
+  },
+
+  /* ---- 简答 6：SQL 分类 + DBMS ---- */
+  {
+    id:'e26', type:'essay', kind:'sql4', chapter:'ch1',
+    title:'DBMS 的功能与 SQL 的四类语句（简答必背 6）',
+    stem:`请回答：<br>
+(1) 什么是 DBMS？它与 DB、DBS 的区别是什么？<br>
+(2) 列出 DBMS 的主要功能（至少 5 项）；<br>
+(3) SQL 按功能分为 DDL / DML / DCL / TCL 四类，分别写出中文名称、作用与两个代表语句；<br>
+(4) 说明“删除整表”应该用 DROP 还是 DELETE，二者区别是什么。`,
+    parts:[
+      { kind:'choice', label:'DBMS 在计算机系统中所处的层次是：', options:['位于用户与操作系统之间的一层数据管理软件','运行在浏览器中的前端框架','一种应用软件（如学生管理系统）','一种磁盘分区格式'], answer:0, score:15 },
+      { kind:'choice', label:'下列语句中，全部属于 DDL 的一组是：', options:['CREATE、ALTER、DROP','SELECT、INSERT、UPDATE','GRANT、REVOKE','COMMIT、ROLLBACK'], answer:0, score:15 }
+    ],
+    rubric:[
+      { label:'DBMS 定义：位于用户与操作系统之间、管理数据的系统软件', w:8, re:/系统软件|数据管理软件|操作系统/ },
+      { label:'区分 DB（数据集合）、DBMS（软件）、DBS（系统=DB+DBMS+应用+DBA+用户）', w:8, re:/DBS|数据库系统/ },
+      { label:'DBMS 功能至少 5 项：数据定义、数据操纵、数据库运行管理、建立与维护、数据组织存储、通信接口', w:10, re:/定义[\s\S]{0,40}操纵|运行管理|维护|存储/ },
+      { label:'DDL 与 DML 的名称、作用与语句（CREATE/ALTER/DROP；SELECT/INSERT/UPDATE/DELETE）', w:8, re:/DDL|数据定义/ },
+      { label:'DCL（GRANT/REVOKE）与 TCL（COMMIT/ROLLBACK/SAVEPOINT）', w:8, re:/grant|revoke|commit|rollback|TCL/i },
+      { label:'DROP 删除表结构连同数据，DELETE 只删元组、表结构保留，且可带 WHERE 回滚', w:8, re:/drop/i }
+    ],
+    selfCheck:[
+      { text:'DB、DBMS、DBS 三者的关系一句话说清（DBS = DB + DBMS + 应用 + DBA + 用户）', score:6 },
+      { text:'DBMS 功能列到 5 项以上，且不是把 SQL 语句当功能来写', score:8 },
+      { text:'四类语句的英文缩写、中文名称、代表语句全部对应正确', score:6 }
+    ],
+    answer:`【(1) 三者区别】
+　DB（Database，数据库）：长期存储在计算机内、有组织、可共享的数据集合，是“数据本身”。
+　DBMS（Database Management System，数据库管理系统）：位于用户与操作系统之间的<b>系统软件</b>，
+　　 负责科学地组织和存储数据、高效地获取和维护数据。它是“软件”，如 MySQL、Oracle、SQL Server。
+　DBS（Database System，数据库系统）：由数据库、DBMS（及支撑环境）、应用程序、DBA 和用户组成的<b>整体</b>。
+　关系：DBS = DB + DBMS + 应用程序 + DBA + 用户；DBMS 是 DBS 的核心。
+
+【(2) DBMS 的主要功能】
+　① 数据定义（DDL）：定义表、视图、索引、约束等数据库对象；
+　② 数据操纵（DML）：查询、插入、删除、修改；
+　③ 数据库的运行管理：并发控制、安全性检查、完整性检查、故障恢复；
+　④ 数据库的建立与维护：初始数据装载、备份与恢复、重组织与性能监控；
+　⑤ 数据组织、存储与管理：把数据映射到物理存储，管理缓冲区与索引；
+　⑥ 数据通信接口：提供应用程序接口（ODBC/JDBC）与网络访问能力。
+
+【(3) SQL 的四类语句】
+　· DDL（数据定义语言 Data Definition Language）：定义、修改、删除数据库对象。
+　　CREATE TABLE 建表；ALTER TABLE 改结构；DROP TABLE 删表；CREATE VIEW 建视图。
+　· DML（数据操纵语言 Data Manipulation Language）：操纵数据。
+　　SELECT 查询；INSERT 插入；UPDATE 修改；DELETE 删除。
+　· DCL（数据控制语言 Data Control Language）：控制存取权限。
+　　GRANT 授权；REVOKE 回收权限。
+　· TCL（事务控制语言 Transaction Control Language）：管理事务。
+　　COMMIT 提交；ROLLBACK 回滚；SAVEPOINT 设保存点。
+
+【(4) 删表用 DROP】
+　DROP TABLE SC; —— 删除<b>表结构连同全部数据</b>，表本身消失（属 DDL，自动提交）。
+　DELETE FROM SC WHERE …; —— 只删除<b>元组</b>，表结构保留（属 DML，可回滚、可带条件）。
+　若要清空但保留表结构，也可用 TRUNCATE TABLE（属 DDL，不可回滚，速度更快）。`
+  },
+
+  /* ---- 简答 7：范式与函数依赖 ---- */
+  {
+    id:'e27', type:'essay', kind:'fd', chapter:'ch5',
+    title:'函数依赖与 1NF/2NF/3NF 判定（简答必背 7）',
+    stem:`请回答：<br>
+(1) 写出函数依赖、部分函数依赖、传递函数依赖的定义；<br>
+(2) 写出 1NF、2NF、3NF 的定义，并说明三者是逐级加强的关系；<br>
+(3) 设 R(学号, 姓名, 课程号, 成绩)，函数依赖集 F = { (学号, 课程号)→成绩，学号→姓名 }，
+　　 判断 R 最高属于第几范式，说明理由；<br>
+(4) 把 R 分解为 3NF，写出分解结果并说明依据。`,
+    parts:[
+      { kind:'choice', label:'R(学号,课程号,成绩) 中 (学号,课程号)→成绩 属于：', options:['完全函数依赖','部分函数依赖','传递函数依赖','多值依赖'], answer:0, score:15 },
+      { kind:'choice', label:'解决“非主属性对码的部分函数依赖”要把关系提升到：', options:['1NF','2NF','3NF','BCNF'], answer:1, score:15 }
+    ],
+    rubric:[
+      { label:'函数依赖定义：X 的每个值唯一确定 Y 的值，记 X→Y', w:8, re:/唯一确定|决定|X\s*→\s*Y/ },
+      { label:'部分函数依赖：X→Y 但存在 X 的真子集 X′ 也能决定 Y', w:8, re:/真子集|子集|部分/ },
+      { label:'传递函数依赖：X→Y、Y→Z 且 Y 不决定 X、Z 不属于 Y', w:8, re:/传递/ },
+      { label:'1NF 属性不可再分；2NF 消除非主属性对码的部分依赖；3NF 消除传递依赖', w:10, re:/1NF|2NF|3NF|范式/ },
+      { label:'判定 R 只达到 1NF：码为(学号,课程号)，学号→姓名 是部分依赖', w:8, re:/1NF|一范式|第一范式|部分依赖/ },
+      { label:'分解结果：SC(学号,课程号,成绩)、S(学号,姓名)，并说明消除了部分依赖', w:8, re:/分解|SC|S\s*\(/ }
+    ],
+    selfCheck:[
+      { text:'三个定义都用“决定/唯一确定”说清，且部分依赖强调“码的真子集”', score:6 },
+      { text:'1NF→2NF→3NF 是逐级加强：2NF 在 1NF 基础上、3NF 在 2NF 基础上', score:6 },
+      { text:'判定过程写出候选码、指出部分依赖、给出分解结果三部分齐全', score:8 }
+    ],
+    answer:`【(1) 三种函数依赖】
+　· 函数依赖：设 R(U)，X、Y ⊆ U，若对 R 的任意两个元组，X 值相同则 Y 值必相同，
+　　 称“X 函数决定 Y”或“Y 函数依赖于 X”，记作 X→Y。
+　· 部分函数依赖：若 X→Y，且 X 存在真子集 X′ 使 X′→Y，则称 Y 部分函数依赖于 X。
+　　 例：(学号,课程号)→姓名，但学号→姓名，所以姓名对码是部分依赖。
+　· 传递函数依赖：若 X→Y，Y→Z，且 Y 不能决定 X、Z ⊄ Y，则称 Z 传递函数依赖于 X。
+　　 例：学号→系号，系号→系主任，则 学号→系主任 是传递依赖。
+
+【(2) 三级范式定义】
+　· 1NF：关系的每个属性都是不可再分的原子值（不允许“表中有表”）。
+　· 2NF：在 1NF 基础上，每个非主属性都<b>完全函数依赖</b>于候选码（消除部分函数依赖）。
+　· 3NF：在 2NF 基础上，每个非主属性既不部分也不<b>传递函数依赖</b>于候选码。
+　关系：1NF ⊃ 2NF ⊃ 3NF ⊃ BCNF，逐级加强，条件越来越严；满足高一级必然满足低一级。
+
+【(3) 判定 R】
+　R(学号, 姓名, 课程号, 成绩)，F = { (学号,课程号)→成绩，学号→姓名 }。
+　· 候选码：只有 (学号, 课程号) 能决定全部属性，故码为 (学号, 课程号)；主属性：学号、课程号；非主属性：姓名、成绩。
+　· 属性都是原子值 → 满足 1NF。
+　· 存在 学号→姓名，即非主属性“姓名”只依赖于码的一部分 → <b>存在部分函数依赖</b>，不满足 2NF。
+　结论：R 最高只属于 <b>1NF</b>。
+
+【(4) 分解为 3NF】
+　按“一事一表”把部分依赖拆开：
+　　SC(学号, 课程号, 成绩)　主码 (学号, 课程号)，成绩完全依赖于码 → 3NF；
+　　S(学号, 姓名)　　　　　 主码 学号，姓名完全且直接依赖于学号 → 3NF（且为 BCNF）。
+　分解后两个关系都消除了部分依赖与传递依赖，且是无损连接分解（公共属性“学号”是 S 的码）。
+　注：分解是否保持函数依赖需单独检查；本题的两个依赖都被保留。`
+  },
+
+  /* ---- 综合设计：E-R + 三表 + SQL + 授权 ---- */
+  {
+    id:'e28', type:'essay', kind:'er', chapter:'ch3',
+    title:'综合设计：E-R 图→关系模式→建表→授权→删表（供应管理）',
+    source:'王珊《数据库系统概论》(第5版) 第7章 数据库设计、第3章 SQL（建表 / 授权 / 删表）',
+    stem:`某供应管理业务的语义如下：<br>
+① 供应商：供应商号、供应商名、状态、所在城市；<br>
+② 零件：零件号、零件名、颜色、重量；<br>
+③ 项目：项目号、项目名、所在城市；<br>
+④ 一个供应商可以给多个项目供应多种零件，一个项目也可以使用多个供应商的多种零件；<br>
+⑤ 供应时要记录本次供应的数量。<br><br>
+请完成：<br>
+(1) 画出 E-R 图，说明实体、属性、联系及联系类型；<br>
+(2) 转换为关系模式（三大表 + 一张联系表），标出每个关系的主码与外码；<br>
+(3) 用 SQL 建立供应表 SPJ(SNO, PNO, JNO, QTY)，要求主码为 (SNO,PNO,JNO)，SNO/PNO/JNO 分别为引用 S、P、J 的外码且级联更新，QTY 默认 0 且必须大于 0；<br>
+(4) 把 SPJ 表的 SELECT、UPDATE 权限授予用户 U1，并允许其转授；随后收回 U1 的 UPDATE 权限；<br>
+(5) 写出删除 SPJ 表的语句，并说明 DROP TABLE 与 DELETE FROM 的区别。`,
+    parts:[
+      { kind:'choice', label:'供应商、零件、项目三者之间“供应”联系的类型是：', options:['1:1','1:N','M:N','三个实体之间不存在联系'], answer:2, score:8 },
+      { kind:'choice', label:'把 SPJ 表的查询与更新权限授予用户 U1，正确的语句是：', options:['GRANT SELECT, UPDATE ON SPJ TO U1;','GRANT SELECT, UPDATE TO SPJ ON U1;','REVOKE SELECT, UPDATE ON SPJ FROM U1;','GRANT SELECT, UPDATE ON SPJ FROM U1;'], answer:0, score:8 }
+    ],
+    rubric:[
+      { label:'识别出三个实体并列出属性（供应商/零件/项目）', w:8, re:/供应商[\s\S]{0,60}零件|零件[\s\S]{0,60}项目/ },
+      { label:'判定“供应”联系为多对多（M:N），并把数量作为联系属性', w:10, re:/多对多|m\s*:\s*n|m:n|数量|qty/i },
+      { label:'转换出 4 个关系模式，SPJ 主码为三码组合（SNO,PNO,JNO）', w:8, re:/SPJ|spj/ },
+      { label:'标出 SPJ 的三个外码分别引用 S、P、J', w:8, re:/外码|外键|foreign\s*key/i },
+      { label:'建表语句含 PRIMARY KEY 与 FOREIGN KEY … REFERENCES（级联更新 ON UPDATE CASCADE）', w:8, re:/primary\s*key[\s\S]{0,80}foreign\s*key|foreign\s*key/i },
+      { label:'QTY 用 DEFAULT 0 与 CHECK(QTY>0) 定义用户定义完整性', w:6, re:/check\s*\(|default/i },
+      { label:'GRANT … ON SPJ TO U1 WITH GRANT OPTION，并用 REVOKE … FROM U1 收回', w:8, re:/grant[\s\S]{0,60}revoke|revoke[\s\S]{0,60}grant/i },
+      { label:'DROP TABLE SPJ 删除表结构与数据；DELETE 只删元组、结构保留', w:6, re:/drop\s+table/i }
+    ],
+    selfCheck:[
+      { text:'E-R 图三要素与 M:N 标注正确，三个实体属性齐全', score:8 },
+      { text:'四个关系模式的主码、外码标注完整，说明 M:N 必须单独建表', score:8 },
+      { text:'授权与回收语句的语法（ON … TO … / ON … FROM …）写对', score:6 }
+    ],
+    answer:`【(1) E-R 图】
+　实体：供应商 S(<u>SNO</u>, SNAME, STATUS, CITY)、零件 P(<u>PNO</u>, PNAME, COLOR, WEIGHT)、
+　　　　项目 J(<u>JNO</u>, JNAME, CITY)。
+　联系：供应 SPJ（菱形），同时连接 S、P、J 三个实体，类型为多对多（M:N:P），
+　　　　联系属性为数量 QTY。
+　（画法：三个矩形分列，各挂椭圆属性；中间一个菱形“供应”，分别连到三个矩形，三条连线上标 m、n、p，菱形上挂椭圆“QTY”。）
+
+【(2) 关系模式】
+　S(<u>SNO</u>, SNAME, STATUS, CITY)
+　P(<u>PNO</u>, PNAME, COLOR, WEIGHT)
+　J(<u>JNO</u>, JNAME, CITY)
+　SPJ(<u>SNO</u>, <u>PNO</u>, <u>JNO</u>, QTY)　主码：(SNO, PNO, JNO)
+　　外码：SNO 参照 S(SNO)，PNO 参照 P(PNO)，JNO 参照 J(JNO)
+　要点：三元 M:N 联系必须单独建表，主码取三个实体主码的组合，联系自身的属性（QTY）一并带入。
+
+【(3) 建表】
+CREATE TABLE SPJ (
+　SNO CHAR(4) NOT NULL,
+　PNO CHAR(4) NOT NULL,
+　JNO CHAR(4) NOT NULL,
+　QTY INT DEFAULT 0,
+　PRIMARY KEY (SNO, PNO, JNO),
+　FOREIGN KEY (SNO) REFERENCES S(SNO) ON UPDATE CASCADE,
+　FOREIGN KEY (PNO) REFERENCES P(PNO) ON UPDATE CASCADE,
+　FOREIGN KEY (JNO) REFERENCES J(JNO) ON UPDATE CASCADE,
+　CHECK (QTY > 0)
+);
+　说明：PRIMARY KEY 体现实体完整性；三个 FOREIGN KEY 体现参照完整性；
+　　DEFAULT 与 CHECK 属于用户定义完整性。
+
+【(4) 授权与回收】
+GRANT SELECT, UPDATE ON SPJ TO U1 WITH GRANT OPTION;
+GRANT SELECT ON S, P, J TO U1;          -- 查询常需连表，一般一并授权
+REVOKE UPDATE ON SPJ FROM U1;            -- 收回更新权限（SELECT 仍保留）
+　说明：若 U1 已把 UPDATE 转授他人，回收时加 CASCADE 级联收回：
+　　REVOKE UPDATE ON SPJ FROM U1 CASCADE;
+
+【(5) 删表】
+DROP TABLE SPJ;
+　· DROP TABLE：删除<b>表结构连同全部数据</b>，表本身从数据库中消失（DDL，不可回滚）。
+　· DELETE FROM SPJ [WHERE …]：只删除<b>元组</b>，表结构保留，可带条件、可回滚（DML）。
+　· 若只是清空数据保留结构，也可用 TRUNCATE TABLE SPJ（DDL，不可回滚，速度快）。`
   }
 ];
 
@@ -3732,6 +4252,80 @@ BEGIN T1　BEGIN T2　T1 修改 A　T2 修改 B　T1 COMMIT　—— 此时系�
 const DB_BANK = [...CHOICE, ...TERM, ...FILL, ...ESSAY];
 const DB_BY_ID = Object.fromEntries(DB_BANK.map(q => [q.id, q]));
 const DB_CH_MAP = Object.fromEntries(CHAPTERS.map(c => [c.id, c]));
+
+/* ================================================================
+   2.5 考纲对照（数据库原理 · 2026 期末复习大纲）
+   ----------------------------------------------------------------
+   老师给的复习大纲拆成 5 个模块 / 29 个考点。每个考点只存「怎么从题干里认出它」，
+   题量不写死：渲染时用 sylQs() 现算，题库增删后这里自动跟着变。
+     t    : 考点名称（照抄大纲的措辞，便于对表）
+     re   : 匹配题干 / 标题 / 选项的正则（不含 g，避免 lastIndex 副作用）
+     ch   : 该考点对应的讲义章节（点「讲义」直接跳过去）
+     essay: 相关的简答/综合题（有就显示「做这题」）
+   ================================================================ */
+const DB_SYL = [
+  {
+    no:'一', name:'基础概念与体系结构', note:'名词解释 + 选择题的主战场：先把四个缩写分清，再记三级模式与两级映像。',
+    points:[
+      { t:'DB / DBMS / DBS / RDBMS 四个缩写', re:/DBMS|DBS|数据库系统|RDBMS/, ch:'ch1', essay:'e26' },
+      { t:'三级模式（外模式 / 模式 / 内模式）', re:/外模式|内模式|三级模式|两级映像|映像/, ch:'ch1' },
+      { t:'数据独立性（逻辑独立性与物理独立性）', re:/逻辑独立性|物理独立性|数据独立性/, ch:'ch1' },
+      { t:'C/S 与 B/S 体系结构', re:/C\/S|B\/S|浏览器\/服务器|客户机\/服务器/, ch:'ch1' },
+      { t:'SQL 的四类语句（DDL / DML / DCL / TCL）', re:/DDL|DML|DCL|TCL/, ch:'ch1', essay:'e26' }
+    ]
+  },
+  {
+    no:'二', name:'数据模型与概念设计（E-R 图）', note:'画图题的来源：三要素、三种联系类型、从概念设计到逻辑设计的转换规则。',
+    points:[
+      { t:'关系模型：二维表、元组、属性、码、域', re:/二维表|候选码|主码|外码/, ch:'ch2' },
+      { t:'E-R 三要素与图形符号（矩形 / 椭圆 / 菱形）', re:/矩形|椭圆|菱形|E-R|实体/, ch:'ch3', essay:'e01' },
+      { t:'联系类型 1:1 / 1:N / M:N', re:/多对多|一对多|1\s*[:：]\s*[1n]|m\s*[:：]\s*n|联系类型/, ch:'ch3', essay:'e02' },
+      { t:'设计流程：需求分析 → 概念设计 → 逻辑设计', re:/需求分析|概念结构|逻辑结构|设计阶段|设计过程/, ch:'ch3' },
+      { t:'E-R 图转换为关系模式（三大表）', re:/转换为关系模式|关系模式转换|转换成关系模式|E-R[\s\S]{0,12}关系模式/, ch:'ch3', essay:'e28' }
+    ]
+  },
+  {
+    no:'三', name:'SQL 语言（重点实操）', note:'卷面上分值最重的一块：建表、查询、授权、删表都要能默写。',
+    points:[
+      { t:'DDL：建表 / 修改表结构 / 删除整表', re:/建表|CREATE TABLE|ALTER TABLE|DROP TABLE/, ch:'ch4', essay:'e12' },
+      { t:'DML：插入、删除、修改、查询', re:/INSERT|UPDATE|DELETE/, ch:'ch4', essay:'e14' },
+      { t:'DCL：GRANT 授权与 REVOKE 回收', re:/GRANT|REVOKE|授权|回收/, ch:'ch4', essay:'e28' },
+      { t:'TCL：COMMIT / ROLLBACK / 保存点', re:/COMMIT|ROLLBACK|SAVEPOINT|事务控制/, ch:'ch6' },
+      { t:'多表连接、嵌套查询与集合运算', re:/连接|嵌套|EXISTS|UNION|子查询/, ch:'ch4', essay:'e03' },
+      { t:'分组统计（GROUP BY / HAVING / 聚合函数）', re:/GROUP BY|HAVING|COUNT|AVG|SUM/, ch:'ch4', essay:'e04' },
+      { t:'视图的定义与作用', re:/视图/, ch:'ch4', essay:'e13' }
+    ]
+  },
+  {
+    no:'四', name:'规范化理论（高频简答 / 设计）', note:'判断范式是送分题也是丢分题：先找候选码，再看部分依赖、传递依赖。',
+    points:[
+      { t:'函数依赖：完全 / 部分 / 传递', re:/函数依赖|部分函数依赖|传递函数依赖/, ch:'ch5', essay:'e27' },
+      { t:'1NF / 2NF / 3NF 的定义与判定', re:/1NF|2NF|3NF|第一范式|第二范式|第三范式/, ch:'ch5', essay:'e27' },
+      { t:'候选码、属性闭包、最小函数依赖集', re:/候选码|闭包|最小函数依赖/, ch:'ch5', essay:'e15' },
+      { t:'模式分解（无损连接 / 保持函数依赖）', re:/分解|无损|保持函数依赖/, ch:'ch5', essay:'e17' },
+      { t:'三类完整性约束（实体 / 参照 / 用户定义）', re:/实体完整性|参照完整性|用户定义完整性/, ch:'ch7', essay:'e25' }
+    ]
+  },
+  {
+    no:'五', name:'事务、并发、恢复与安全', note:'简答题固定出在这里：ACID、封锁协议、三类故障与恢复，几乎年年考。',
+    points:[
+      { t:'事务 ACID 四特性及含义', re:/ACID|原子性|隔离性|持久性/, ch:'ch6', essay:'e21' },
+      { t:'并发问题：丢失修改 / 脏读 / 不可重复读', re:/脏读|不可重复读|丢失修改|隔离级别|幻读/, ch:'ch6' },
+      { t:'封锁与协议（S 锁 / X 锁 / 三级协议 / 2PL）', re:/封锁|S 锁|X 锁|两段锁|2PL|共享锁|排它锁/, ch:'ch6', essay:'e19' },
+      { t:'可串行化与冲突可串行化判定', re:/可串行化|优先图/, ch:'ch6', essay:'e18' },
+      { t:'三类故障：事务故障 / 系统故障 / 介质故障', re:/事务故障|系统故障|介质故障/, ch:'ch7', essay:'e24' },
+      { t:'恢复机制：日志、UNDO / REDO、检查点、转储', re:/日志|UNDO|REDO|检查点|转储/, ch:'ch7', essay:'e20' },
+      { t:'安全性控制（授权、视图、角色、审计）', re:/授权|视图机制|角色|审计|存取控制/, ch:'ch7' }
+    ]
+  }
+];
+
+/* 综合题三件套：卷面最后一大题通常就在这三种里挑一种或几种组合 */
+const DB_SYL_DESIGN = [
+  { id:'e28', tag:'画 E-R + 转三大表 + SQL', t:'供应管理：三实体 M:N 联系 → 关系模式 → 建表 → 授权 → 删表' },
+  { id:'e12', tag:'建表 + 三类完整性', t:'用 CREATE TABLE 定义 S / C / SC，写主码、外码、CHECK、级联删除' },
+  { id:'e07', tag:'判范式 + 分解', t:'给关系模式与函数依赖集，求候选码、判范式、写出 3NF 分解' }
+];
 
 /* 题型中文名：数据库原理 4 种 + Hadoop 新增 7 种（多选 / 命令 / 代码 / HiveQL / 匹配 / 排序 / 纠错 / 简答） */
 const TYPE_NAME = {
@@ -14253,7 +14847,7 @@ const SUBJECTS = {
     knowNav: KNOW_NAV,
     types: ['choice', 'term', 'fill', 'essay'],
     desc: '王珊《数据库系统概论》七章：基础概念、关系运算、SQL、E-R 建模、函数依赖与范式、事务并发、安全与恢复。',
-    homeDesc: '覆盖基础概念、关系运算、E-R 建模、SQL 编写、函数依赖与范式、事务并发、安全与恢复七大考点。每章配一份<b>详细知识点讲义</b>，可以「先复习再刷题」；每题作答后给出<b>答案详解</b>——考点定位、逐项辨析与易错提醒。',
+    homeDesc: '覆盖基础概念、关系运算、E-R 建模、SQL 编写、函数依赖与范式、事务并发、安全与恢复七大考点。每章配一份<b>详细知识点讲义</b>，可以「先复习再刷题」；每题作答后给出<b>答案详解</b>——考点定位、逐项辨析与易错提醒。新增的<b>考纲对照</b>页把期末复习大纲拆成 5 个模块 29 个考点，逐条标注配套题量与正确率，并附<b>七大简答必背标准答案</b>与<b>综合设计题三件套</b>，可按考纲直接开一张 120 分钟的期末卷。',
     refs: [
       { name: '王珊、萨师煊《数据库系统概论》（第 5 版），高等教育出版社', note: '题库章节体系、术语与判分口径的依据' }
     ]
@@ -14874,9 +15468,25 @@ function startExam(){
   }
   startSession('exam', '模拟考 · 60 分钟', qs, { seconds: 60 * 60 });
 }
-/* 期末模拟卷：按大学期末常见卷面结构组卷（仅 Hadoop 科目） */
+/* 期末模拟卷：按大学期末常见卷面结构组卷（Hadoop / 数据库原理） */
 function startFinal(){
   const pick = (types, n) => pickRandom(allBank().filter(q => types.includes(q.type)), n);
+
+  /* 数据库原理：按考纲卷面 —— 选择 12 + 名词解释 6 + 填空 3 + 综合设计 2 + 理论简答 2 */
+  if (CUR_SUB === 'db') {
+    const design = allBank().filter(q => q.type === 'essay' && (q.kind === 'er' || q.kind === 'sql'));
+    const theory = allBank().filter(q => q.type === 'essay' && q.kind !== 'er' && q.kind !== 'sql');
+    const qs = [
+      ...pick(['choice'], 12),          /* 一、单项选择题 12 题 */
+      ...pick(['term'], 6),             /* 二、名词解释（缩写三连）6 题 */
+      ...pick(['fill'], 3),             /* 三、填空题 3 题 */
+      ...pickRandom(design, 2),         /* 四、综合设计题 2 题（E-R / SQL） */
+      ...pickRandom(theory, 2)          /* 五、简答题 2 题（ACID / 范式 / 故障…） */
+    ];
+    startSession('exam', '期末模拟卷 · 25 题 · 120 分钟', qs, { seconds: 120 * 60 });
+    return;
+  }
+
   const qs = [
     ...pick(['choice'], 12),          /* 一、单项选择题 12 题 */
     ...pick(['judge'], 8),            /* 二、判断题 8 题 */
@@ -14903,6 +15513,14 @@ function startKp(kp){
   if (!qs.length) { alert('这个知识点下暂时没有题目'); return; }
   startSession('kp', '知识点练习 · ' + kp, shuffle(qs));
 }
+/* 考纲对照页：按「模块 + 考点」直接组卷（数据库原理专用） */
+function startSyl(mi, pi){
+  const m = DB_SYL[mi]; if (!m) return;
+  const p = m.points[pi]; if (!p) return;
+  const qs = sylQs(p);
+  if (!qs.length) { alert('这个考点暂时没有配套题目，先点「讲义」看该章讲解吧～'); return; }
+  startSession('kp', '考纲考点 · ' + p.t, shuffle(qs));
+}
 /* ================================================================
    6. 视图渲染
    ================================================================ */
@@ -14916,6 +15534,7 @@ function render(){
       || ((view === 'quiz' || view === 'result' || view === 'chapter') && v === 'home');
     b.classList.toggle('active', active);
     if (v === 'terms') b.style.display = (CUR_SUB === 'hadoop') ? '' : 'none';
+    if (v === 'syl')   b.style.display = (CUR_SUB === 'db') ? '' : 'none';
   });
   if (view === 'subjects')             app.innerHTML = viewSubjects();
   else if (view === 'quiz' && session) app.innerHTML = viewQuiz();
@@ -14925,6 +15544,7 @@ function render(){
   else if (view === 'help')            app.innerHTML = viewHelp();
   else if (view === 'know')            app.innerHTML = viewKnow();
   else if (view === 'kp')              app.innerHTML = viewKp();
+  else if (view === 'syl')             app.innerHTML = viewSyl();
   else if (view === 'search')          app.innerHTML = viewSearch();
   else if (view === 'terms')           app.innerHTML = viewTerms();
   else if (view === 'chapter')         app.innerHTML = viewChapter(chapterId);
@@ -15022,9 +15642,9 @@ function viewSubjects(){
     <h2 class="card-title">怎么用</h2>
     <p class="card-sub">三个科目的学习路径一致：先看知识点，再分章节练，最后用随机卷与模拟考查漏补缺。</p>
     <ul class="doc-list">
-      <li><b>数据库原理</b>：七章讲义 + 161 题（选择 / 术语填空 / 填空 / 大题），侧重 SQL 与范式推导，判分按关键字与逻辑结构。</li>
-      <li><b>Hadoop 生态</b>：125 题，每题带知识点、难度、分步详解与 Apache 官方出处，含命令、代码、HiveQL、匹配、排序、纠错、简答七种题型。</li>
-      <li><b>数据结构</b>：按《数据结构（C语言版）》<b>第 3 版</b>（人邮 2024）八章体系，171 题，偏重基础概念与手算，含<b>序列填空</b>、C 语言算法填空、术语匹配与步骤排序；第 3 版新增的红黑树、并查集已覆盖。</li>
+      <li><b>数据库原理</b>：七章讲义 + ${SUBJECTS.db.bank.length} 题（选择 / 术语填空 / 填空 / 大题），侧重 SQL 与范式推导；新增<b>考纲对照</b>页，按期末大纲逐条标注考点与题量，并附七大简答必背。</li>
+      <li><b>Hadoop 生态</b>：${SUBJECTS.hadoop.bank.length} 题，每题带知识点、难度、分步详解与 Apache 官方出处，含命令、代码、HiveQL、匹配、排序、纠错、简答七种题型。</li>
+      <li><b>数据结构</b>：按《数据结构（C语言版）》<b>第 3 版</b>（人邮 2024）八章体系，${SUBJECTS.ds.bank.length} 题，偏重基础概念与手算，含<b>序列填空</b>、C 语言算法填空、术语匹配与步骤排序；第 3 版新增的红黑树、并查集已覆盖。</li>
       <li><b>进度隔离</b>：三科分别写入 <code>db_quiz_state_v1</code>、<code>hadoop_quiz_state_v1</code>、<code>ds_quiz_state_v1</code>，互不影响。</li>
       <li><b>iOS / 无痕浏览</b>：若浏览器禁止本地存储，页面顶部会出现固定提示，刷题与判分仍然可用，只是不保存进度。</li>
     </ul>
@@ -15103,10 +15723,18 @@ function viewHome(){
             : '6 选择/判断 + 4 命令/代码/填空 + 2 匹配/排序 + 3 简答，共 15 题，覆盖全模块。')}</span>
       <span class="m-meta">开始随机练习 →</span>
     </button>
-    ${CUR_SUB === 'hadoop' ? `<button class="mode-card" data-act="start-final" style="border-color:#a5b4fc;background:linear-gradient(135deg,#f5f7ff,#eef2ff)">
+    ${CUR_SUB === 'db' ? `<button class="mode-card" data-act="goto" data-view="syl" style="border-color:#a5b4fc;background:linear-gradient(135deg,#f5f7ff,#eef2ff)">
+      <span class="m-ico">${ICON.award}</span>
+      <span class="m-title">考纲对照</span>
+      <span class="m-desc">按老师给的复习大纲拆成 ${DB_SYL.length} 个模块 ${DB_SYL.reduce((a, m) => a + m.points.length, 0)} 个考点，逐条标注配套题量与正确率，附「七大简答必背」标准答案与综合题三件套。</span>
+      <span class="m-meta">按考纲过一遍 →</span>
+    </button>` : ''}
+    ${(CUR_SUB === 'hadoop' || CUR_SUB === 'db') ? `<button class="mode-card" data-act="start-final" style="border-color:#a5b4fc;background:linear-gradient(135deg,#f5f7ff,#eef2ff)">
       <span class="m-ico">${ICON.award}</span>
       <span class="m-title">期末模拟卷</span>
-      <span class="m-desc">按大学期末常见卷面出卷：单选 12 + 判断 8 + 填空 4 + 配对 2 + 简答 4，共 30 题，90 分钟。做完就知道自己能不能上考场。</span>
+      <span class="m-desc">${CUR_SUB === 'db'
+        ? '按考纲卷面出卷：选择 12 + 名词解释 6 + 填空 3 + 综合设计 2 + 简答 2，共 25 题，120 分钟。做完就知道能不能上考场。'
+        : '按大学期末常见卷面出卷：单选 12 + 判断 8 + 填空 4 + 配对 2 + 简答 4，共 30 题，90 分钟。做完就知道自己能不能上考场。'}</span>
       <span class="m-meta">开始期末卷 →</span>
     </button>` : ''}
     <button class="mode-card" data-act="start-exam">
@@ -15205,7 +15833,125 @@ function viewKp(){
   </div>`;
 }
 
-/* ---------------- 6.1.2 搜索 ---------------- */
+/* ---------------- 6.1.2 考纲对照（数据库原理） ----------------
+   题量、已练、正确率一律现算：sylQs() 按 DB_SYL 里的正则从题库捞题，
+   所以以后补题 / 删题，这一页不用改任何数字。
+   匹配范围只取「题干 + 标题 + 选项 + 小问」，不含解析与答案，
+   否则几乎每道题都会被算进每一个考点。
+*/
+function sylHay(q){
+  return [
+    q.stem || '', q.title || '', (q.options || []).join(' '),
+    (q.parts || []).map(x => x.label + ' ' + (x.options || []).join(' ')).join(' ')
+  ].join(' ');
+}
+function sylQs(p){ return DB_BANK.filter(q => p.re.test(sylHay(q))); }
+function statsOfQs(qs){
+  let touched = 0, seen = 0, right = 0;
+  qs.forEach(q => {
+    const r = S.records[q.id];
+    if (r) { touched++; seen += r.seen || 0; right += r.right || 0; }
+  });
+  return { total: qs.length, touched, seen, right, acc: seen ? Math.round(right / seen * 100) : 0 };
+}
+function viewSyl(){
+  const allPts = DB_SYL.reduce((a, m) => a.concat(m.points), []);
+  const withQ = allPts.filter(p => sylQs(p).length > 0).length;
+  const musts = ESSAY.filter(q => /简答必背/.test(q.title || ''))
+    .sort((a, b) => (+(a.title.match(/必背\s*(\d+)/) || [0, 99])[1]) - (+(b.title.match(/必背\s*(\d+)/) || [0, 99])[1]));
+
+  const mods = DB_SYL.map((m, mi) => {
+    const rows = m.points.map((p, pi) => {
+      const qs = sylQs(p);
+      const st = statsOfQs(qs);
+      const tone = st.total >= 4 ? 'ok' : (st.total >= 1 ? 'mid' : 'thin');
+      return `<div class="syl-row">
+        <span class="syl-dot ${tone}" title="配套题量">${st.total}</span>
+        <span class="syl-main">
+          <span class="syl-name">${esc(p.t)}</span>
+          <span class="syl-sub">${st.total} 题 · 已练 ${st.touched} 题 · ${st.seen ? '正确率 ' + st.acc + '%' : '尚未练习'}${st.total < 2 ? ' · 以讲义为主' : ''}</span>
+        </span>
+        <span class="syl-acts">
+          ${st.total ? `<button class="btn ghost" data-act="start-syl" data-m="${mi}" data-i="${pi}">练这组</button>` : ''}
+          <button class="btn ghost" data-act="open-know" data-ch="${p.ch}">讲义</button>
+        </span>
+      </div>`;
+    }).join('');
+    return `<div class="card">
+      <h2 class="card-title">${m.no}、${esc(m.name)}<span class="tag" style="margin-left:8px;font-weight:600">${m.points.length} 个考点</span></h2>
+      <p class="card-sub">${esc(m.note)}</p>
+      <div class="syl-list">${rows}</div>
+    </div>`;
+  }).join('');
+
+  const design = DB_SYL_DESIGN.map(d => {
+    const q = DB_BY_ID[d.id];
+    if (!q) return '';
+    return `<div class="syl-row">
+      <span class="syl-dot ok">题</span>
+      <span class="syl-main">
+        <span class="syl-name">${esc(q.title || d.t)}</span>
+        <span class="syl-sub">${esc(d.tag)} · ${esc(d.t)}</span>
+      </span>
+      <span class="syl-acts"><button class="btn ghost" data-act="practice-one" data-id="${esc(d.id)}">去做这题</button></span>
+    </div>`;
+  }).join('');
+
+  const essays = musts.map((q, i) => `
+    <details class="syl-essay">
+      <summary>
+        <span class="n">${i + 1}</span>${esc((q.title || '').replace(/（简答必背.*?）/, ''))}
+        <span class="syl-arrow"></span>
+      </summary>
+      <div class="syl-ans">${rich(q.answer)}</div>
+      <div class="syl-ans-foot">
+        <button class="btn primary" data-act="practice-one" data-id="${esc(q.id)}">去做这道题（可判分）</button>
+        <button class="btn ghost" data-act="open-know" data-ch="${esc(q.chapter)}">看本章讲义</button>
+      </div>
+    </details>`).join('');
+
+  return `
+  <div class="hero">
+    <h1>《数据库原理》考纲对照</h1>
+    <p>按老师给的复习大纲整理成 <b>${DB_SYL.length} 个模块 / ${allPts.length} 个考点</b>，每个考点都标了配套题量与你的练习情况；
+       带数字的方块是<b>当前题库里能对上的题数</b>（实时统计，不是写死的）。数字小也不代表不用看，点「讲义」即可看该章讲解。</p>
+    <div class="tags">
+      <span class="tag">考点覆盖 ${withQ}/${allPts.length}</span>
+      <span class="tag">题库 ${DB_BANK.length} 题</span>
+      <span class="tag">七大简答必背</span>
+      <span class="tag">综合设计题 ${DB_SYL_DESIGN.length} 道</span>
+    </div>
+    <div class="tags" style="margin-top:10px">
+      <button class="btn primary" data-act="start-final">按考纲开一张期末卷（120 分钟）</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">卷面怎么分布（大纲推测）</h2>
+    <p class="card-sub">复习时按分值分配时间：SQL 与范式是「会就能拿满」的硬分，名词解释与简答是「背了就有」的送分。</p>
+    <div class="syl-idea">
+      <div class="si"><b>选择题 · 概念辨析</b><span>选择 vs 投影、三种完整性、锁的类型、范式判定；看到「下列正确的是」先排除绝对化表述。</span></div>
+      <div class="si"><b>简答 + 名词解释</b><span>ACID、三类故障、SQL 四类语句、DBMS/DBS/DDL/DML/DCL/TCL 等缩写；答案按「定义 + 要点 + 一句例子」写。</span></div>
+      <div class="si"><b>综合设计题</b><span>画 E-R（矩形/椭圆/菱形）→ 转关系模式（标主外码）→ 写 SQL（建表、查询、授权、删表）→ 判范式并分解。</span></div>
+    </div>
+  </div>
+
+  ${mods}
+
+  <div class="card">
+    <h2 class="card-title">考前必背 · 七大简答预测</h2>
+    <p class="card-sub">这 7 题覆盖了大纲「简答/名词解释预测」的全部条目。先自己默写，再展开对答案；每题都能直接进入判分版练习。</p>
+    ${essays || '<div class="empty">暂无</div>'}
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">综合题三件套</h2>
+    <p class="card-sub">卷面最后一大题通常从这三类里挑：画图、写 SQL、判范式。三道题都带评分要点，写完能自动判分。</p>
+    <div class="syl-list">${design}</div>
+  </div>`;
+}
+
+/* ---------------- 6.1.3 搜索 ---------------- */
 let searchQ = '';
 
 function searchResultHtml(kw){
@@ -15496,7 +16242,7 @@ function renderEssayBody(q, r){
   /* 参考答案 / 评分要点面板（受开关控制） */
   let panels = '';
   if (r.showAnswer) {
-    panels += `<div class="answer-box"><div class="ab-title">参考答案</div>${esc(q.answer)}${q.answerNote ? `\n\n【补充】${esc(q.answerNote)}` : ''}</div>`;
+    panels += `<div class="answer-box"><div class="ab-title">参考答案</div>${rich(q.answer)}${q.answerNote ? `\n\n【补充】${rich(q.answerNote)}` : ''}</div>`;
   }
   if (r.showPoints) {
     const pts = (q.selfCheck || []).map((p, i) => `<div class="r-item"><span class="r-mark" style="background:#94a3b8">${i + 1}</span><span>${esc(p.text)}</span><span class="r-w">${p.score} 分</span></div>`).join('');
@@ -15795,6 +16541,13 @@ function viewHelp(){
       <li><b>分章节练习</b>：按七大考点逐块突破，题目包含该章全部选择、术语填空、填空与大题。</li>
       <li><b>随机组卷</b>：10 选择 + 10 术语填空 + 8 填空 + 2 大题，共 30 题，每次抽题顺序随机。</li>
       <li><b>模拟考</b>：10 选择 + 10 术语填空 + 6 填空 + 3 大题，60 分钟倒计时，时间到自动交卷。</li>
+    </ul>
+    <h3>2.5 考纲对照（数据库原理）</h3>
+    <ul>
+      <li><b>是什么</b>：把期末复习大纲拆成 <b>5 个模块 / 29 个考点</b>，每个考点显示配套题量、已练题数与正确率。这些数字是<b>按题库实时统计</b>的，补题后自动变化。</li>
+      <li><b>怎么用</b>：从上往下过一遍，题量少或正确率低的考点先点「讲义」看该章讲解，再点「练这组」只做这组题。</li>
+      <li><b>七大简答必背</b>：ACID、选择与投影、交并差、三类故障、完整性、SQL 分类、范式判定，展开即看标准答案，也能直接进入判分版练习。</li>
+      <li><b>期末模拟卷</b>：选择 12 + 名词解释 6 + 填空 3 + 综合设计 2 + 简答 2，共 25 题、120 分钟，按考纲卷面结构出题。</li>
     </ul>
     <h3>3. 知识点总结怎么看</h3>
     <p>顶部「知识点」标签页是完整的复习讲义，每章分为若干小节，小节内可能包含：</p>
@@ -16439,7 +17192,7 @@ function renderHTextFeedback(q, r){
   const ansTitle = q.type === 'fix' ? '改正后的完整代码' : (q.type === 'sql' ? '参考 HiveQL' : (q.type === 'code' ? '参考答案代码' : '参考答案'));
   const ansBlock = isCode
     ? `<div class="answer-box"><div class="ab-title">${ansTitle}</div><pre class="k-code" style="margin:0">${esc(q.answer)}</pre></div>`
-    : `<div class="answer-box"><div class="ab-title">${ansTitle}</div>${esc(q.answer)}</div>`;
+    : `<div class="answer-box"><div class="ab-title">${ansTitle}</div>${rich(q.answer)}</div>`;
 
   const detail = (g.detail || []).length ? `<div class="fb-exp"><b>采分点命中（${g.got}/${g.full}）</b>
     <div class="rubric-list">${g.detail.map(d => `
@@ -16960,6 +17713,7 @@ document.addEventListener('click', e => {
     }
     case 'submit-hq': submitHQ(); break;
     case 'start-kp': startKp(t.dataset.kp); break;
+    case 'start-syl': startSyl(Number(t.dataset.m), Number(t.dataset.i)); break;
     case 'do-search': updateSearchResults(); break;
 
     /* --- 统计页 --- */
