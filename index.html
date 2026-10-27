@@ -572,6 +572,8 @@ select.sel:disabled{opacity:1}
 .ref-list{display:grid;gap:2px}
 .ref-item{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.7;padding:6px 0;border-bottom:1px dashed var(--line)}
 .ref-item:last-child{border-bottom:none}
+.ref-tag{display:inline-block;margin-left:6px;padding:0 6px;border:1px solid var(--line);border-radius:999px;
+  font-size:10.5px;line-height:1.6;color:#9aa3b2;background:#f7f8fa;vertical-align:1px;white-space:nowrap}
 ul.doc-list{margin:6px 0 0;padding-left:20px}
 ul.doc-list li{font-size:13.5px;line-height:1.9;color:var(--ink-2)}
 
@@ -841,6 +843,26 @@ const CHAPTER_SRC = {
 };
 /* 出处：Hadoop 题用 source 字段；数据库原理题沿用原章节映射 */
 const srcOf = q => q.source || q.src || CHAPTER_SRC[q.chapter] || '自编题库';
+
+/* 数据库原理：教材本身没有网页版，无法"点击核对原文"。
+   这里按章给出能真正对得上的官方在线文档，只有能对上的章才给，
+   E-R 建模（ch3）与范式理论（ch5）是纯教材内容，不硬凑链接。 */
+const DB_DOC = {
+  ch1: { url:'https://www.postgresql.org/docs/current/tutorial-arch.html',
+         label:'PostgreSQL 文档 · 体系结构' },
+  ch2: { url:'https://www.postgresql.org/docs/current/queries-union.html',
+         label:'PostgreSQL 文档 · UNION/INTERSECT/EXCEPT' },
+  ch4: { url:'https://dev.mysql.com/doc/refman/8.0/en/sql-statements.html',
+         label:'MySQL 8.0 手册 · SQL 语句' },
+  ch6: { url:'https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html',
+         label:'MySQL 8.0 手册 · 事务隔离级别' },
+  ch7: { url:'https://dev.mysql.com/doc/refman/8.0/en/grant.html',
+         label:'MySQL 8.0 手册 · GRANT/REVOKE' }
+};
+/* 返回 {url,label} 或 null：题目自带链接优先，其次按科目章节兜底 */
+const refOf = q => q.referenceUrl
+  ? { url:q.referenceUrl, label: q.refLabel || '官方文档' }
+  : (CUR_SUB === 'db' && DB_DOC[q.chapter]) ? DB_DOC[q.chapter] : null;
 
 /* ================================================================
    1.5 知识点总结（KNOW）
@@ -14849,7 +14871,13 @@ const SUBJECTS = {
     desc: '王珊《数据库系统概论》七章：基础概念、关系运算、SQL、E-R 建模、函数依赖与范式、事务并发、安全与恢复。',
     homeDesc: '覆盖基础概念、关系运算、E-R 建模、SQL 编写、函数依赖与范式、事务并发、安全与恢复七大考点。每章配一份<b>详细知识点讲义</b>，可以「先复习再刷题」；每题作答后给出<b>答案详解</b>——考点定位、逐项辨析与易错提醒。新增的<b>考纲对照</b>页把期末复习大纲拆成 5 个模块 29 个考点，逐条标注配套题量与正确率，并附<b>七大简答必背标准答案</b>与<b>综合设计题三件套</b>，可按考纲直接开一张 120 分钟的期末卷。',
     refs: [
-      { name: '王珊、萨师煊《数据库系统概论》（第 5 版），高等教育出版社', note: '题库章节体系、术语与判分口径的依据' }
+      { name: '王珊、萨师煊《数据库系统概论》（第 5 版），高等教育出版社', note: '题库章节体系、术语与判分口径的依据；考题原文请翻书第 1–11 章' },
+      { name: 'MySQL 8.0 Reference Manual · SQL Statements', url: 'https://dev.mysql.com/doc/refman/8.0/en/sql-statements.html', note: '第 3 章 SQL 语句在线核对' },
+      { name: 'MySQL 8.0 Reference Manual · GRANT / REVOKE', url: 'https://dev.mysql.com/doc/refman/8.0/en/grant.html', note: '授权与权限回收' },
+      { name: 'MySQL 8.0 Reference Manual · InnoDB 事务隔离级别', url: 'https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html', note: '事务、隔离性与并发' },
+      { name: 'MySQL 8.0 Reference Manual · 备份与恢复', url: 'https://dev.mysql.com/doc/refman/8.0/en/backup-and-recovery.html', note: '故障类型与恢复机制' },
+      { name: 'PostgreSQL 文档 · 体系结构（客户机/服务器）', url: 'https://www.postgresql.org/docs/current/tutorial-arch.html', note: 'DBMS/DBS 与 C/S 架构' },
+      { name: 'PostgreSQL 文档 · UNION / INTERSECT / EXCEPT', url: 'https://www.postgresql.org/docs/current/queries-union.html', note: '并、交、差的「同元相容」' }
     ]
   },
   hadoop: {
@@ -15576,17 +15604,21 @@ function updateHeader(){
 }
 
 /* ---------------- 6.1 首页：科目选择 + 科目主页 ---------------- */
-/** 参考资料卡片（官方文档链接，可点击） */
+/** 参考资料卡片：只有真有链接的条目才说“可点击”，纸质教材明确标注 */
 function refsCard(list, title, sub){
   if (!list || !list.length) return '';
+  const hasLink = list.some(r => r.url);
   const items = list.map(r => `<div class="ref-item"><span>·</span><span>${
     r.url
       ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.name)}</a>`
-      : esc(r.name)
+      : `${esc(r.name)}<span class="ref-tag">无网页版</span>`
   }${r.note ? `<span class="hint">（${esc(r.note)}）</span>` : ''}</span></div>`).join('');
+  const def = hasLink
+    ? '蓝色带下划线的标题可以点击，在新标签页打开原文核对；标「无网页版」的是纸质教材，只能翻书对。'
+    : '下列均为纸质教材与配套资料，没有网页版，需翻书核对。';
   return `<div class="card" id="refs">
     <h2 class="card-title">${esc(title || '参考资料')}</h2>
-    <p class="card-sub">${esc(sub || '题目、默认参数与解析均依据下列官方文档整理，点击可直接打开核对原文。')}</p>
+    <p class="card-sub">${sub ? esc(sub) + ' ' : ''}${def}</p>
     <div class="ref-list">${items}</div>
   </div>`;
 }
@@ -15650,7 +15682,7 @@ function viewSubjects(){
     </ul>
   </div>
 
-  ${refsCard(allRefs, '参考资料 · 官方文档与教材', '题目、默认参数与解析均依据下列官方文档与教材整理，点击可直接打开核对原文。')}`;
+  ${refsCard(allRefs, '参考资料 · 官方文档与教材', '题目、默认参数与解析均依据下列资料整理。')}`;
 }
 
 /** 科目主页：章节 + 练习模式 + 进度 */
@@ -16049,6 +16081,7 @@ function viewQuiz(){
 /** 根据题型渲染题目卡（数据库原理 4 种 + Hadoop 新增 7 种） */
 function renderQuestion(q, r){
   const diffCls = q.difficulty === '易' ? 'e' : (q.difficulty === '难' ? 'h' : 'm');
+  const rf = refOf(q);
   const head = `<div class="q-head">
       <span class="badge">${TYPE_NAME[q.type]}</span>
       <span class="badge gray">${esc(chName(q.chapter))}</span>
@@ -16057,7 +16090,10 @@ function renderQuestion(q, r){
       ${q.title ? `<span class="badge gray b-title">${esc(q.title)}</span>` : ''}
       <span class="pts">满分 100</span>
     </div>
-    <div class="q-src">出处 · ${esc(srcOf(q))}${q.referenceUrl ? ` · <a href="${esc(q.referenceUrl)}" target="_blank" rel="noopener">官方文档</a>` : ''}</div>`;
+    <div class="q-src">出处 · ${esc(srcOf(q))}${
+      rf ? ` · <a href="${esc(rf.url)}" target="_blank" rel="noopener">${esc(rf.label)}</a>`
+         : (CUR_SUB === 'db' ? ' · <span class="ref-tag">教材原文 · 无网页版</span>' : '')
+    }</div>`;
 
   if (q.type === 'choice') return head + renderChoiceBody(q, r);
   if (q.type === 'judge')  return head + renderChoiceBody(q, r);
