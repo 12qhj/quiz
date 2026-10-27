@@ -3738,7 +3738,7 @@ const TYPE_NAME = {
   choice:'选择题', term:'术语填空', fill:'填空题', essay:'大题',
   multi:'多选题', cmd:'命令填空', code:'代码填空', sql:'HiveQL',
   match:'组件匹配', order:'流程排序', fix:'纠错题', text:'简答题',
-  seq:'序列填空'
+  seq:'序列填空', judge:'判断题'
 };
 /* 术语三连固定顺序：缩写 → 全称 → 中文 */
 const TERM_ROWS = [
@@ -7565,11 +7565,909 @@ const V4_CH14 = [
   }
 ];
 
+/* ================================================================
+   期末高频 · 简答题（21 题）
+   覆盖教材第 1–14 章最常出的大题，每题给出「答题要点 + 关键词判分」
+   ================================================================ */
+const H_EXAM_TEXT = [
+  {
+    id:'e-01', type:'text', chapter:'hc1',
+    knowledgePoint:'大数据的 4V 与四种计算模式',
+    tags:['大数据','4V','计算模式','简答'],
+    difficulty:'易',
+    plain:'这题是期末第一大题的常客。答法就两句话：4V 是「量大、样多、快、价值稀」；四种计算模式是「批、流、图、查询分析」，每种配一个框架名就行。',
+    stem:'简述大数据的 4V 特征，并说明大数据的四种典型计算模式及各自的代表框架。',
+    points:['4V：Volume 数据量大、Variety 类型多、Velocity 速度快、Value 价值密度低','批处理计算：MapReduce / Spark','流计算：Storm / Flink / Spark Streaming','图计算：Pregel / GraphX；查询分析计算：Hive / Impala'],
+    keys:[
+      { label:'4V 四个维度（量大、类型多、速度快、价值密度低）', any:['volume','variety','velocity','value','数据量','类型','速度','价值'] },
+      { label:'批处理计算及代表框架', any:['批处理','mapreduce','spark'] },
+      { label:'流计算及代表框架', any:['流计算','storm','flink','streaming'] },
+      { label:'图计算 / 查询分析计算及代表框架', any:['图计算','pregel','graphx','查询分析','hive','impala'] }
+    ],
+    answer:'4V：① Volume —— 数据量大，从 TB 到 PB、EB 级；② Variety —— 类型繁多，有结构化、半结构化、非结构化；③ Velocity —— 产生与处理速度快，很多场景要求秒级响应；④ Value —— 价值密度低，总量大但有用信息占比小。\n四种计算模式：① 批处理计算，面向大规模静态数据，代表 MapReduce、Spark；② 流计算，面向实时到达的流式数据，代表 Storm、Flink、Spark Streaming；③ 图计算，面向大规模图结构数据，代表 Pregel、GraphX；④ 查询分析计算，面向海量数据的交互式查询，代表 Hive、Impala。',
+    explanation:'4V 是「数据长什么样」，四种计算模式是「这种数据该怎么算」。两者常常合并出成大题：先写 4V，再按「批、流、图、查」四类各举一例，得分点就齐了。',
+    source:'教材 1.2 大数据的概念 · 1.6 大数据计算模式｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'e-02', type:'text', chapter:'hc2',
+    knowledgePoint:'Hadoop 生态各组件的定位与关系',
+    tags:['Hadoop','生态系统','简答'],
+    difficulty:'易',
+    plain:'这题就是让你当「导游」把 Hadoop 全家桶介绍一遍。记住一句话：HDFS 管存、MapReduce 管算、YARN 管分配资源，HBase 是数据库、Hive 是 SQL 翻译器、Sqoop 和 Flume 负责搬数据、ZooKeeper 负责协调。',
+    stem:'简述 Hadoop 生态系统中 HDFS、MapReduce、YARN、HBase、Hive 五个核心组件的定位，并说明它们之间的关系。',
+    points:['HDFS：分布式文件系统，负责海量数据的存储','MapReduce：分布式计算模型，负责批处理计算','YARN：资源管理调度框架，为各类应用分配 CPU 与内存','HBase：建立在 HDFS 上的列族数据库，支持随机实时读写','Hive：把 SQL 翻译成 MapReduce/Spark 作业的数据仓库工具'],
+    keys:[
+      { label:'HDFS 负责分布式存储', any:['hdfs','存储','文件系统'] },
+      { label:'MapReduce 负责分布式计算', any:['mapreduce','计算','批处理'] },
+      { label:'YARN 负责资源管理调度', any:['yarn','资源','调度'] },
+      { label:'HBase 是基于 HDFS 的列族数据库', any:['hbase','列族','数据库'] },
+      { label:'Hive 把 SQL 翻译成分布式作业', any:['hive','sql','数据仓库'] }
+    ],
+    answer:'HDFS 是分布式文件系统，把大文件切块多副本存放在普通机器集群上，解决「存得下」；MapReduce 是分布式计算模型，用 Map 与 Reduce 两个阶段完成批处理，解决「算得完」；YARN 是资源管理调度框架，把集群的 CPU 与内存统一分配，使 Hadoop 不只跑 MapReduce。\nHBase 建立在 HDFS 之上，提供按 RowKey 的随机实时读写；Hive 提供类 SQL 的查询接口，把 HiveQL 翻译成 MapReduce 或 Spark 作业执行，数据仍存在 HDFS 上。\n关系可以概括为：HDFS 是底座，YARN 是资源管家，MapReduce 是通用计算引擎，HBase 与 Hive 是面向不同场景的上层工具。',
+    explanation:'答题按「存 → 算 → 调度 → 上层工具」的顺序写，最后一句总结「HDFS 是底座、YARN 管资源、其余是上层应用」，结构分就拿到了。',
+    source:'教材 2.2 Hadoop 生态系统｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hadoop
+  },
+  {
+    id:'e-03', type:'text', chapter:'hc3',
+    knowledgePoint:'HDFS 读文件的过程',
+    tags:['HDFS','读流程','简答'],
+    difficulty:'中',
+    plain:'读文件和借书一样：先问管理员书在哪几个书架（NameNode 返回块位置），然后自己走到最近的书架取（直连 DataNode），取完一块再问下一块。关键点：数据不经过 NameNode。',
+    stem:'简述客户端从 HDFS 读取一个文件的完整过程。',
+    points:['客户端向 NameNode 请求文件的数据块位置','NameNode 返回每个块所在的 DataNode 列表（按距离排序）','客户端选择最近的 DataNode 建立连接，读取数据块','读完一个块再请求下一个块，直到文件读完；读取时校验 checksum'],
+    keys:[
+      { label:'向 NameNode 请求块位置', any:['namenode','位置','元数据','请求'] },
+      { label:'NameNode 返回 DataNode 列表', any:['datanode','列表','返回'] },
+      { label:'客户端直连最近的 DataNode 读取（数据不经过 NameNode）', any:['直连','最近','直接','不经过'] },
+      { label:'逐块读取，读时校验，失败换副本', any:['逐块','校验','checksum','副本','下一个块'] }
+    ],
+    answer:'① 客户端调用 FileSystem.open() 打开文件，向 NameNode 请求该文件的数据块位置信息；② NameNode 返回文件对应的所有块及其所在 DataNode 列表，并按与客户端的网络距离排序；③ 客户端选择距离最近的 DataNode 建立连接，直接读取数据块（数据不经过 NameNode 转发）；④ 读完一个块后继续读下一个块，直到整个文件读完；⑤ 读取过程中对数据做 checksum 校验，若某个 DataNode 出错或超时，客户端会换下一个副本重试。',
+    explanation:'三个采分点：<b>要地址</b>（问 NameNode）、<b>直连读</b>（数据不经过 NameNode）、<b>逐块 + 校验 + 换副本</b>。写流程（h1-14）是「申请块 → 建流水线 → 传包 → 回 ack」，读流程更简单，别把两者混起来答。',
+    source:'教材 3.6.1 读数据的过程｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hdfsArch
+  },
+  {
+    id:'e-04', type:'text', chapter:'hc3',
+    knowledgePoint:'HDFS 的优点与局限',
+    tags:['HDFS','优缺点','简答'],
+    difficulty:'中',
+    plain:'优点一句话：便宜机器也能存海量数据，坏一台不影响。缺点一句话：它只适合「一次写入、多次读取」的大文件，不适合频繁改、小文件多、要求毫秒响应的场景。',
+    stem:'简述 HDFS 的主要优点与局限性，并说明它适合与不适合哪些应用场景。',
+    points:['优点：多副本高容错，坏节点靠心跳自动恢复','优点：适合大文件顺序读，吞吐高，可跑在廉价机器上，加机器即可扩展','局限：不适合低延迟访问、随机写与文件就地修改','局限：不适合大量小文件（元数据压垮 NameNode 内存），且元数据集中存在单点问题'],
+    keys:[
+      { label:'高容错：多副本 + 心跳检测自动恢复', any:['副本','容错','心跳','恢复'] },
+      { label:'高吞吐、适合大文件顺序访问、可跑在廉价机器上', any:['吞吐','大文件','顺序','廉价','扩展'] },
+      { label:'不适合低延迟 / 随机写 / 频繁修改', any:['低延迟','随机写','修改','实时'] },
+      { label:'不适合大量小文件（元数据压垮 NameNode）', any:['小文件','元数据','内存'] }
+    ],
+    answer:'优点：① 高容错，数据块多副本存放（默认 3 份）并靠心跳检测自动恢复；② 适合大文件的顺序读写，吞吐量高；③ 可以构建在廉价商用机器上，成本低；④ 数据规模可线性扩展，加机器即可扩容。\n局限：① 不适合低延迟的数据访问，它面向的是高吞吐而非实时响应；② 不适合存储大量小文件，元数据常驻 NameNode 内存会被耗尽；③ 不支持文件的随机写与就地修改，只支持追加；④ 元数据集中在一个 NameNode 上，存在单点问题（靠 HA 缓解）。\n因此 HDFS 适合日志、离线批处理、数据仓库底层存储；不适合在线事务、实时数据库、大量小文件场景。',
+    explanation:'这题常与「HDFS 为什么不适合小文件」连着考，答完优缺点后顺手点一句「小文件问题的根源是元数据常驻内存」，能多拿分。',
+    source:'教材 3.2 HDFS 简介 · 3.4.5 HDFS 体系结构的局限性｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hdfsArch
+  },
+  {
+    id:'e-05', type:'text', chapter:'hc4',
+    knowledgePoint:'HBase 数据模型',
+    tags:['HBase','数据模型','简答'],
+    difficulty:'中',
+    plain:'把 HBase 想成一张「超级大的、可以随时加列的表格」：行有唯一编号（RowKey），列分成几个大类（列族），大类下面可以随便加小列，每个格子还能存多个历史版本。所谓「稀疏」，就是这行有这几列、那行有那几列，不用统一。',
+    stem:'简述 HBase 的数据模型，说明表、行、列族、列限定符、单元格与时间戳的含义，并解释「稀疏」指的是什么。',
+    points:['表由行组成，行由唯一 RowKey 标识，按 RowKey 字典序排序','列划分为若干列族，列族下可动态增加列限定符','单元格由「行键 + 列族 + 列限定符 + 时间戳」唯一确定','同一单元格可保存多个版本；不同行的列可以完全不同（稀疏）'],
+    keys:[
+      { label:'RowKey 唯一标识一行且按字典序排序', any:['rowkey','行键','唯一','排序','字典序'] },
+      { label:'列族是列的集合，列限定符可动态增加', any:['列族','columnfamily','限定符','动态'] },
+      { label:'单元格由四要素定位，多版本 + 时间戳', any:['时间戳','版本','单元格','四'] },
+      { label:'稀疏：不同行的列可以不同，空值不占空间', any:['稀疏','不占','空','不同'] }
+    ],
+    answer:'HBase 以表组织数据。表由若干行组成，每行用唯一的 RowKey（行键）标识，行按 RowKey 的字典序排列存储。列被划分为若干列族（Column Family），列族在建表时必须指定，列族下可以动态增加列限定符（Qualifier）。\n一个单元格（Cell）由「RowKey + 列族 + 列限定符 + 时间戳（版本）」四要素唯一确定，同一单元格可以保存多个历史版本。\n「稀疏」是指 HBase 不要求所有行拥有相同的列：某行可以只有两三列，另一行可以有几十列，未存储的列为空且不占用空间，因此适合字段不固定的海量数据。',
+    explanation:'四要素是必答项（RowKey、列族、列限定符、时间戳）；「稀疏」一定要解释成「不同行列不同、空值不占空间」，只说「稀疏」两个字不给分。',
+    source:'教材 4.3 HBase 数据模型｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hbase
+  },
+  {
+    id:'e-06', type:'text', chapter:'hc4',
+    knowledgePoint:'HBase 写入流程与写性能',
+    tags:['HBase','LSM','写入','简答'],
+    difficulty:'中',
+    plain:'HBase 写数据之所以快，是因为它「只往后加、从不改前面的」。过程是：先记日志（怕断电）→ 写内存并排好序 → 内存满了刷成磁盘文件 → 后台再慢慢合并。代价是读的时候要翻好几处。',
+    stem:'简述 HBase 写入一条数据的过程，并说明为什么它的写入性能很高。',
+    points:['先写 HLog（WAL）保证故障可恢复','再写 MemStore（内存）并按键排序','MemStore 达到阈值后 flush 成 HFile','后台通过 compaction 合并小文件、清理过期版本'],
+    keys:[
+      { label:'先写 WAL / HLog 保证可靠性', any:['hlog','wal','日志'] },
+      { label:'再写 MemStore 内存并排序', any:['memstore','内存'] },
+      { label:'达到阈值 flush 成 HFile', any:['flush','hfile','刷'] },
+      { label:'compaction 合并、清理过期数据', any:['compaction','合并','过期'] }
+    ],
+    answer:'① 客户端向 RegionServer 发起写请求，先顺序追加到 HLog（WAL），保证 RegionServer 崩溃后能恢复；② 数据随后写入 MemStore（内存），并按 RowKey 与列排序；③ 当 MemStore 达到阈值时，flush 成一个 HFile 落盘；④ 后台通过 compaction 把小 HFile 合并成大文件，并清理已删除与过期的版本。\n写性能高的原因：所有写入都是「追加」，不做随机寻址与就地更新，也不等待磁盘随机写；写入先落内存，磁盘写是批量顺序的，因此吞吐很高。代价是读放大——读一个 key 可能要合并 MemStore 与多个 HFile，所以用 Bloom Filter 与 block cache 优化。',
+    explanation:'顺序写 + 内存缓冲 = 写快；代价是读放大与 compaction 开销。把「写快的原因」和「代价」都写上，比只列步骤更像大题答案。',
+    source:'教材 4.5 HBase 运行机制（Store / HLog）｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hbase
+  },
+  {
+    id:'e-07', type:'text', chapter:'hc5',
+    knowledgePoint:'CAP 理论与 CP/AP 取舍',
+    tags:['NoSQL','CAP','简答'],
+    difficulty:'中',
+    plain:'CAP 说的是：分布式系统在网络断开时，只能在「保证数据不错」和「保证有响应」之间选一个。因为网络断开是必然会发生的，所以实际只有 CP 和 AP 两类。银行转账是 CP，朋友圈点赞是 AP。',
+    stem:'简述 CAP 理论的含义，并说明 CP 与 AP 两类系统各自的取舍，各举一个例子。',
+    points:['C 一致性、A 可用性、P 分区容忍性','网络分区必然发生，因此实际在 C 与 A 之间取舍','CP：牺牲可用性保一致，如 ZooKeeper、银行交易','AP：牺牲强一致保可用，如 Cassandra、Redis 缓存'],
+    keys:[
+      { label:'解释 C、A、P 三者含义', any:['一致性','可用性','分区'] },
+      { label:'网络分区不可避免，只能在 C 与 A 间取舍', any:['不可避','取舍','二选一','分区必然'] },
+      { label:'CP 系统及例子', any:['cp','zookeeper','银行','强一致'] },
+      { label:'AP 系统及例子', any:['ap','cassandra','最终一致','缓存'] }
+    ],
+    answer:'CAP 指一致性（Consistency，所有副本同一时刻看到相同数据）、可用性（Availability，每个请求都能得到响应）、分区容忍性（Partition tolerance，网络中断时系统仍能运行）。\n由于分布式环境下网络分区必然发生，P 必须接受，因此真正的选择是在 C 与 A 之间：\n· CP 系统：宁可拒绝请求也不返回可能错误的数据，例如 ZooKeeper、银行转账类业务；\n· AP 系统：优先保证响应，允许短时间不一致，事后收敛，例如 Cassandra、Redis 做缓存、社交点赞。\n实际系统多通过 BASE（基本可用、软状态、最终一致）在 AP 方向落地，用最终一致性替代强一致。',
+    explanation:'很多同学把 CAP 答成「三者选两个」，要补一句「P 是前提，实际是在 C 与 A 之间选」，这才是得分点。',
+    source:'教材 5.5.1 CAP｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'e-08', type:'text', chapter:'hc5',
+    knowledgePoint:'NoSQL 四大类型与适用场景',
+    tags:['NoSQL','四大类型','简答'],
+    difficulty:'易',
+    plain:'四种 NoSQL 按「数据长什么样」来记：键值（像字典，一个键对一个值）、列族（像超宽的表格）、文档（像一个个 JSON 文件）、图（点和边）。答题时每种配一个代表产品和一个典型场景就行。',
+    stem:'简述 NoSQL 数据库的四大类型，说明各自的数据组织方式、代表产品与典型应用场景。',
+    points:['键值数据库：Redis、Memcached，用于缓存、会话、计数器','列族数据库：HBase、Cassandra，用于海量稀疏数据、按主键查询','文档数据库：MongoDB，用于结构不固定的对象存储','图数据库：Neo4j，用于社交关系、多跳查询'],
+    keys:[
+      { label:'键值数据库及代表产品', any:['键值','redis','memcached','缓存'] },
+      { label:'列族数据库及代表产品', any:['列族','hbase','cassandra'] },
+      { label:'文档数据库及代表产品', any:['文档','mongodb','json'] },
+      { label:'图数据库及代表产品', any:['图数据库','neo4j','关系'] }
+    ],
+    answer:'① 键值数据库：以 key-value 形式存储，读写极快但只能按 key 查，代表 Redis、Memcached，用于缓存、会话共享、计数器、排行榜；② 列族数据库：按行键与列族组织，适合海量稀疏数据，代表 HBase、Cassandra，用于日志、时序、按主键的随机读写；③ 文档数据库：以 JSON/BSON 文档为单位，字段可动态变化，代表 MongoDB，用于内容管理、商品、用户画像；④ 图数据库：以顶点和边存储关系，擅长多跳查询，代表 Neo4j，用于社交网络、推荐、风控关系分析。',
+    explanation:'「类型 + 代表产品 + 场景」三件套一起答，是最标准的给分结构。四个各占一个采分点，缺一个丢一份。',
+    source:'教材 5.4 NoSQL 的四大类型｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'e-09', type:'text', chapter:'hc6',
+    knowledgePoint:'云数据库的特点与上云挑战',
+    tags:['云数据库','简答'],
+    difficulty:'易',
+    plain:'云数据库就是「把数据库当水电用」：开箱即用、按量付费、自动备份扩容，不用自己买机器装软件。但数据放在别人机房，安全合规、迁移成本、长期费用和被厂商绑定这几件事要提前想清楚。',
+    stem:'什么是云数据库？它具备哪些特点？企业把数据库迁移到云上通常会面临哪些挑战？',
+    points:['云数据库是部署在云环境、以服务方式交付的数据库','特点：弹性伸缩、按需付费、免运维、高可用与自动备份','挑战：数据安全与合规、迁移改造成本、长期成本、厂商锁定'],
+    keys:[
+      { label:'定义：以服务方式交付的数据库', any:['服务','云','交付','托管'] },
+      { label:'弹性伸缩 / 按需付费 / 免运维', any:['弹性','按需','付费','免运维','自动'] },
+      { label:'数据安全与合规风险', any:['安全','合规','隐私'] },
+      { label:'迁移成本 / 长期费用 / 厂商锁定', any:['迁移','成本','锁定','绑定'] }
+    ],
+    answer:'云数据库是部署在云计算环境中、以服务形式交付的数据库，用户无需自建机房、安装软件与运维，按实际用量付费。\n特点：① 弹性伸缩，容量随业务增减；② 按需付费，避免一次性大额投入；③ 免运维，备份、监控、容灾、升级由平台负责；④ 高可用，通常自带多副本与故障切换。\n挑战：① 数据安全与合规，数据出机房需评估监管要求；② 迁移成本，SQL 方言、存储过程、应用改造都要投入；③ 长期成本，用久了可能比自建更贵；④ 厂商锁定，接口与生态绑定后迁移困难。',
+    explanation:'「特点」答四条、「挑战」答四条就够了。如果题目问「为什么不直接把数据库放云上」，把挑战那四条展开说。',
+    source:'教材 6.1 云数据库概述｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'e-10', type:'text', chapter:'hc7',
+    knowledgePoint:'Partitioner 与 Combiner 的区别',
+    tags:['MapReduce','Partitioner','Combiner','简答'],
+    difficulty:'中',
+    plain:'两者都在 map 之后、reduce 之前，但干的活完全不同：Partitioner 决定「这条数据该送给哪个 reduce」（分工），Combiner 决定「先在本地合并一下再送」（减量）。前者管去向，后者管数量。',
+    stem:'简述 MapReduce 中 Partitioner 与 Combiner 的作用，并说明二者的区别与使用限制。',
+    points:['Partitioner 按 key 决定 map 输出进入哪个 reduce，默认 hash(key) % reduce 数','Combiner 在 map 端做局部聚合，减少 Shuffle 传输量','区别：Partitioner 决定去向，Combiner 减少数据量','Combiner 只能用于满足结合律与交换律的运算，且可能一次都不执行'],
+    keys:[
+      { label:'Partitioner 决定分区去向，默认哈希取模', any:['partitioner','分区','哈希','取模','哪个reduce'] },
+      { label:'Combiner 在 map 端局部聚合，减少网络传输', any:['combiner','局部','聚合','减少','传输'] },
+      { label:'区别：一个定去向、一个减数据量', any:['区别','去向','数量','数据量'] },
+      { label:'Combiner 限制：需满足结合律、可能不执行、类型一致', any:['结合律','可能不','不执行','类型','限制'] }
+    ],
+    answer:'Partitioner 决定一条 map 输出记录被送到哪个 reduce 处理，默认实现是 hash(key) % numReduceTasks，保证相同 key 进入同一个 reduce，从而能被汇总到一起。\nCombiner 相当于「map 端的局部 reduce」，在溢写与归并阶段对同一个 key 的 value 先做一次合并，把大量 (word,1) 压成 (word,n)，显著减少 Shuffle 阶段的网络传输量与 reduce 端计算量。\n区别：Partitioner 解决「数据去哪」，影响正确性；Combiner 解决「数据多少」，影响性能。\nCombiner 的限制：只能用于满足结合律与交换律的运算（求和、求最大），求平均必须同时传 sum 与 count；它可能执行 0 次、1 次或多次，不能依赖它一定运行；输入输出类型必须与 map 输出一致。',
+    explanation:'「去向 vs 数量」是这道题的核心区别，一句话点出来就能拿分。限制部分答「结合律 + 可能不执行」两条即可。',
+    source:'教材 7.2.3 Shuffle 过程详解｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.mrTut
+  },
+  {
+    id:'e-11', type:'text', chapter:'hc7',
+    knowledgePoint:'MapReduce 编程模型的基本思想',
+    tags:['MapReduce','编程模型','简答'],
+    difficulty:'易',
+    plain:'MapReduce 就是「分而治之」：先把大任务切成很多小份并行做（Map），再把结果按 key 归类汇总（Reduce）。程序员只需要写这两个函数，切分、传输、容错都由框架包了。',
+    stem:'简述 MapReduce 编程模型的基本思想，并说明 Map 与 Reduce 两个阶段的输入输出形式。',
+    points:['思想：分而治之，把大任务拆成可并行的小任务再汇总','Map 阶段：输入 <k1,v1>，输出中间结果 <k2,list(v2)>','Reduce 阶段：输入 <k2,list(v2)>，输出最终结果 <k3,v3>','框架负责切分、调度、Shuffle、容错，用户只写两个函数'],
+    keys:[
+      { label:'分而治之的基本思想', any:['分而治之','拆分','并行','汇总'] },
+      { label:'Map 输入输出形式', any:['map','键值','key-value','中间'] },
+      { label:'Reduce 输入输出形式（同 key 聚合）', any:['reduce','聚合','相同key','分组'] },
+      { label:'框架负责调度与容错，用户只写函数', any:['框架','容错','调度','只写'] }
+    ],
+    answer:'MapReduce 采用「分而治之」的思想：把大规模数据处理任务拆分成许多可以并行执行的小任务，分别处理后汇总结果。\nMap 阶段：输入是 <k1, v1> 形式的记录（如行号与该行文本），由用户实现的 map() 逐条处理，输出中间结果 <k2, v2>；框架再按 key 分组，形成 <k2, list(v2)>。\nReduce 阶段：输入为 <k2, list(v2)>，用户实现的 reduce() 对同一个 key 的所有 value 做汇总，输出最终结果 <k3, v3> 写入 HDFS。\n调度、数据分发（Shuffle）、失败重试、副本容错全部由框架完成，用户只需实现 map() 与 reduce() 两个函数。',
+    explanation:'<k1,v1> → <k2,list(v2)> → <k3,v3> 这条链是标准答案。再补一句「框架负责切分、Shuffle 与容错」，就完整了。',
+    source:'教材 7.1 概述｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.mrTut
+  },
+  {
+    id:'e-12', type:'text', chapter:'hc8',
+    knowledgePoint:'HDFS HA 的实现原理',
+    tags:['HDFS','HA','QJM','简答'],
+    difficulty:'中',
+    plain:'单点故障的解法是「一主一备」：Active 干活、Standby 待命，两者靠 JournalNode 共享编辑日志保持一致，ZKFC 盯着主节点，一旦发现挂了就去 ZooKeeper 抢锁，把备的升为主。',
+    stem:'简述 HDFS 高可用（HA）的基本原理，说明 Active NameNode、Standby NameNode、JournalNode 与 ZKFC 各自的角色。',
+    points:['主备两个 NameNode，同一时刻只有一个 Active 对外服务','Standby 实时同步 Active 的 edits，随时可接管','JournalNode 集群（至少 3 个）共享 edits，写要过半确认','ZKFC 监控 NameNode 健康并通过 ZooKeeper 完成自动切换'],
+    keys:[
+      { label:'主备两个 NameNode，一个 Active 一个 Standby', any:['主备','active','standby','两个'] },
+      { label:'Standby 同步 edits，可随时接管', any:['同步','edits','接管','实时'] },
+      { label:'JournalNode 共享编辑日志，至少 3 个、过半确认', any:['journalnode','共享','过半','3'] },
+      { label:'ZKFC 监控 + ZooKeeper 选主完成自动切换', any:['zkfc','zookeeper','切换','监控'] }
+    ],
+    answer:'HA 的核心是部署两个 NameNode：同一时刻只有一个处于 Active 状态对外提供服务，另一个处于 Standby 状态待命。\nStandby 不是冷备，它会持续从共享存储读取 Active 写入的编辑日志（edits）并重放，保持内存中的元数据与 Active 基本一致，因此可以随时接管。\n共享 edits 由一组 JournalNode 提供（至少 3 个），Active 写日志需要过半数 JournalNode 确认才算成功，这样既能容忍单点故障，也能防止脑裂。\nZKFC（ZKFailoverController）部署在每个 NameNode 所在节点上，负责监控 NameNode 的健康状态，并在故障时通过 ZooKeeper 抢锁，将 Standby 提升为 Active，实现自动故障切换。',
+    explanation:'四个角色的职责都要点到，其中最容易漏的是「Standby 在实时同步 edits」和「JournalNode 要过半确认」这两句，往往是踩分点。',
+    source:'教材 8.2.1 HDFS HA｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hdfsHA
+  },
+  {
+    id:'e-13', type:'text', chapter:'hc9',
+    knowledgePoint:'Hive 的工作原理',
+    tags:['Hive','工作原理','简答'],
+    difficulty:'中',
+    plain:'Hive 自己不存数据也不算数据，它是个「翻译官」：你写 SQL，它查字典（Metastore）知道表在哪，再把 SQL 翻译成一串 MapReduce 或 Spark 作业交给 Hadoop 跑，最后把结果拿回来。',
+    stem:'简述 Hive 的工作原理，说明一条 HiveQL 语句是如何被转换成 MapReduce 作业执行的。',
+    points:['用户提交 HiveQL（CLI / JDBC / Web UI）','Driver 中的解析器生成语法树，编译器结合 Metastore 生成逻辑计划','优化器优化后生成物理计划（一组 MapReduce/Spark 作业）','交由执行引擎运行，结果返回用户；数据始终存放在 HDFS'],
+    keys:[
+      { label:'用户通过 CLI/JDBC 提交 HiveQL', any:['cli','jdbc','接口','提交'] },
+      { label:'解析与编译：生成语法树 / 逻辑计划，查 Metastore', any:['解析','编译','语法树','metastore','元数据'] },
+      { label:'优化后生成物理计划，转成 MapReduce/Spark 作业', any:['优化','物理','mapreduce','spark','作业'] },
+      { label:'执行引擎运行，数据存在 HDFS', any:['执行','hdfs','运行'] }
+    ],
+    answer:'① 用户通过 CLI、JDBC/ODBC 或 Web UI 提交 HiveQL；② Driver 的解析器（Parser）将 SQL 解析成抽象语法树；③ 编译器（Compiler）结合 Metastore 中的表结构、分区、数据位置等元数据，生成逻辑执行计划；④ 优化器（Optimizer）对逻辑计划做优化（如分区裁剪、谓词下推、join 重排）；⑤ 生成物理计划，把 SQL 转换成若干个 MapReduce 或 Spark 作业；⑥ 交由 Hadoop 执行引擎运行，结果返回客户端。整个过程 Hive 只负责「翻译与调度」，数据始终存放在 HDFS 上。',
+    explanation:'答题按「提交 → 解析 → 编译（查元数据）→ 优化 → 转成作业 → 执行」六步写。最后补一句「Hive 不存数据」能体现理解深度。',
+    source:'教材 9.2 Hive 系统架构 · 9.3 Hive 工作原理｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hiveDDL
+  },
+  {
+    id:'e-14', type:'text', chapter:'hc9',
+    knowledgePoint:'Hive 与传统关系数据库的区别',
+    tags:['Hive','关系数据库','对比','简答'],
+    difficulty:'中',
+    plain:'Hive 长得像数据库，但骨子里不一样：数据存在 HDFS、查询靠跑作业（慢）、写入时不检查格式（读时模式）、不支持行级更新和事务。它适合大批量离线分析，不适合在线业务。',
+    stem:'从数据存储、执行引擎、延迟、模式检查、事务与更新等方面，比较 Hive 与传统关系数据库的差异。',
+    points:['存储：Hive 数据在 HDFS，关系库在本地文件系统','执行：Hive 转成 MapReduce/Spark 作业，关系库有专门优化器','延迟：Hive 分钟级，关系库毫秒到秒级','模式：Hive 读时模式，关系库写时模式；Hive 不支持行级更新与完整事务'],
+    keys:[
+      { label:'存储位置不同：HDFS vs 本地文件系统', any:['hdfs','本地','存储'] },
+      { label:'执行方式不同：转成分布式作业 vs 专用执行引擎', any:['mapreduce','spark','作业','引擎'] },
+      { label:'延迟差异：Hive 高延迟，关系库低延迟', any:['延迟','慢','分钟','实时'] },
+      { label:'读时模式 vs 写时模式；不支持行级更新/事务弱', any:['读时','写时','更新','事务','索引'] }
+    ],
+    answer:'① 数据存储：Hive 的数据存放在 HDFS 上，关系数据库存储在本地文件系统并由自身管理；② 执行引擎：Hive 把 SQL 翻译成 MapReduce/Spark 作业执行，关系数据库使用专门的执行引擎与索引；③ 延迟：Hive 启动作业开销大，通常分钟级；关系数据库可做到毫秒到秒级；④ 模式检查：Hive 是「读时模式」，写入时不校验、查询时才解析，关系数据库是「写时模式」，写入即校验；⑤ 更新与事务：Hive 不支持行级更新与删除，事务能力有限（仅 ORC 表支持 ACID），关系数据库支持完整事务与行级操作。\n因此 Hive 适合大规模离线批处理与数据仓库场景，关系数据库适合在线事务处理。',
+    explanation:'五条对比写全，最后一句「一个适合离线批处理、一个适合在线事务」是标准的收尾，很多老师就按这句给分。',
+    source:'教材 9.1.5 Hive 与传统数据库的对比分析｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hiveDDL
+  },
+  {
+    id:'e-15', type:'text', chapter:'hc10',
+    knowledgePoint:'RDD 的概念与特性',
+    tags:['Spark','RDD','血缘','简答'],
+    difficulty:'中',
+    plain:'RDD 可以理解成「一份只读、可以分块、记得自己怎么算出来的数据集」。它丢了不怕，因为记得血缘，可以照着重算一遍；这也是 Spark 能容错又不复制数据的原因。',
+    stem:'简述 RDD 的概念及其主要特性，并说明「血缘（Lineage）」的作用。',
+    points:['RDD 是只读、可分区的分布式数据集','特性：只读不可变、分区存储、血缘记录、惰性求值','血缘记录 RDD 之间的转换关系，丢失时可重算','容错靠重算而非数据复制，配合 checkpoint 截断血缘'],
+    keys:[
+      { label:'只读、可分区、分布式的数据集合', any:['只读','分区','分布式','集合'] },
+      { label:'不可变，转换会生成新 RDD', any:['不可变','新rdd','转换'] },
+      { label:'血缘记录依赖关系，故障时重算', any:['血缘','lineage','重算','依赖'] },
+      { label:'惰性求值，遇到 Action 才执行', any:['惰性','action','延迟'] }
+    ],
+    answer:'RDD（Resilient Distributed Dataset，弹性分布式数据集）是 Spark 的核心数据抽象，是一份只读、可分区、分布在集群内存或磁盘上的数据集合。\n主要特性：① 只读不可变，任何转换都会生成新的 RDD；② 分区存储，每个分区可独立并行计算；③ 记录血缘（Lineage），即由哪些 RDD 经过哪些操作而来；④ 惰性求值，Transformation 只记录不执行，直到遇到 Action 才真正计算。\n血缘的作用：当某个分区的数据丢失时，Spark 可以沿着血缘重新计算该分区，而不必像 MapReduce 那样把中间结果全部落盘、也不必做数据复制，从而以较低代价实现容错；配合 checkpoint 可以把血缘截断，避免链条过长导致恢复太慢。',
+    explanation:'「弹性」二字要落到血缘上：数据丢了能重算，所以叫弹性。这条说清楚，比背四条特性更值钱。',
+    source:'教材 10.3.4 RDD 的设计与运行原理｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.spark
+  },
+  {
+    id:'e-16', type:'text', chapter:'hc10',
+    knowledgePoint:'Spark 与 MapReduce 的对比',
+    tags:['Spark','MapReduce','对比','简答'],
+    difficulty:'中',
+    plain:'两者都是分布式计算，但 Spark 把中间结果放内存、用 DAG 优化执行、算子更丰富，所以在迭代计算上快一个数量级；MapReduce 每次都要落盘，胜在稳定成熟。',
+    stem:'从执行模型、中间结果、任务调度、适用场景等方面比较 Spark 与 MapReduce 的差异。',
+    points:['执行模型：MapReduce 只有 Map/Reduce 两阶段，Spark 是 DAG 多阶段','中间结果：MapReduce 落 HDFS 磁盘，Spark 尽量留在内存','调度：MapReduce 每个作业独立启动，Spark 一个应用内多任务复用','场景：Spark 适合迭代计算与交互分析，MapReduce 适合超大规模稳定批处理'],
+    keys:[
+      { label:'Spark 基于 DAG、算子丰富；MapReduce 只有 Map/Reduce', any:['dag','算子','两阶段','map reduce'] },
+      { label:'中间结果内存 vs 磁盘落盘', any:['内存','磁盘','落盘','hdfs'] },
+      { label:'迭代计算性能差异大（Spark 快一个数量级）', any:['迭代','快','性能','数量级'] },
+      { label:'适用场景：交互/迭代 vs 稳定批处理', any:['场景','迭代','交互','批处理'] }
+    ],
+    answer:'① 执行模型：MapReduce 只有 Map 与 Reduce 两个固定阶段，复杂逻辑需串联多个作业；Spark 基于 DAG，可表达多阶段有向无环图，算子丰富（map、filter、join、window 等）。② 中间结果：MapReduce 每个阶段都把结果写入 HDFS 磁盘，下一个作业再读；Spark 尽量把中间结果留在内存，必要时才溢写磁盘。③ 调度：MapReduce 每个作业单独启动，启动开销大；Spark 一个应用内多个 Task 复用 Executor，调度更轻。④ 容错：MapReduce 靠重跑任务，Spark 靠血缘重算。⑤ 适用场景：Spark 更适合迭代计算（机器学习）、交互式查询与流处理；MapReduce 更适合超大规模、对稳定性要求极高的离线批处理。',
+    explanation:'核心就一句：<b>中间结果放内存 + DAG 优化</b>，因此迭代场景快一个数量级。把这两点放在开头，后面再补细节。',
+    source:'教材 10.1.3 Spark 与 Hadoop 的对比｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.spark
+  },
+  {
+    id:'e-17', type:'text', chapter:'hc11',
+    knowledgePoint:'流计算与批处理的区别 / Storm 拓扑',
+    tags:['流计算','Storm','简答'],
+    difficulty:'中',
+    plain:'批处理是「先把水存进水库再处理」，流计算是「水管一直在流，来多少算多少」。Storm 的拓扑就是一张数据流图：Spout 负责喷数据，Bolt 负责加工，连起来一直跑。',
+    stem:'简述流计算与批处理的主要区别，并说明 Storm 的计算拓扑由哪些组件构成、各自的作用。',
+    points:['数据形态：批处理面向有界静态数据，流计算面向无界持续到达的数据','延迟：批处理分钟/小时级，流计算秒级甚至毫秒级','Storm 拓扑：Spout 产生数据源，Bolt 处理数据，可多级串联','拓扑提交后持续运行，直到被显式停止'],
+    keys:[
+      { label:'数据有无边界：静态 vs 持续到达', any:['无界','有界','持续','静态','实时'] },
+      { label:'延迟差异（批处理高、流计算低）', any:['延迟','秒','毫秒','分钟'] },
+      { label:'Spout 是数据源，Bolt 是处理节点', any:['spout','bolt','数据源','处理'] },
+      { label:'拓扑持续运行 / 数据流图', any:['拓扑','topology','持续','数据流'] }
+    ],
+    answer:'区别：① 数据形态，批处理面向已经存好的、有明确边界的数据，流计算面向源源不断到达、理论上没有终点的数据；② 延迟，批处理通常是分钟到小时级，流计算要求秒级甚至毫秒级；③ 计算方式，批处理一次处理全量，流计算对每条或每个小批次增量计算；④ 容错，流计算更强调不丢不重（至少一次 / 精确一次语义）。\nStorm 的计算逻辑封装在拓扑（Topology）中：Spout 是数据源组件，负责从外部系统持续读取数据并向下游发射 Tuple；Bolt 是处理组件，负责过滤、聚合、计算或写出结果，Bolt 可以多级串联形成处理链。拓扑提交后长期运行，直到被显式 kill。',
+    explanation:'「数据有无边界」是本质区别，先答这句。Storm 部分只要说清 Spout 产数据、Bolt 处理数据、多级串联，就够。',
+    source:'教材 11.1 流计算概述 · 11.4 开源流计算框架 Storm｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.storm
+  },
+  {
+    id:'e-18', type:'text', chapter:'hc12',
+    knowledgePoint:'Flink 时间语义与 Watermark',
+    tags:['Flink','Watermark','时间语义','简答'],
+    difficulty:'难',
+    plain:'流数据会乱序、会迟到，所以 Flink 必须定一个「按什么时间算」。业务要按事件真正发生的时间算（事件时间），但系统不知道数据齐没齐，于是用 Watermark 声明「比我早的数据基本都到了」，窗口才敢结算。',
+    stem:'Flink 有哪三种时间语义？Watermark 的作用是什么？它如何解决数据乱序与迟到问题？',
+    points:['三种时间：事件时间、摄入时间、处理时间','事件时间最贴合业务，但需处理乱序','Watermark 表示「事件时间小于该值的数据基本已到齐」','Watermark 推进到窗口结束时间时触发窗口计算；迟到数据靠 allowed lateness 或侧输出处理'],
+    keys:[
+      { label:'三种时间语义：事件时间 / 摄入时间 / 处理时间', any:['事件时间','摄入','处理时间','event time'] },
+      { label:'事件时间反映数据真实发生时刻', any:['事件时间','发生','真实'] },
+      { label:'Watermark 表示时间进度，用于触发窗口', any:['watermark','水位','进度','触发'] },
+      { label:'迟到数据处理：allowed lateness / 侧输出', any:['迟到','lateness','侧输出','允许'] }
+    ],
+    answer:'三种时间语义：① 事件时间（Event Time）—— 数据实际发生的时间，写在数据里，最能反映业务真实情况；② 摄入时间（Ingestion Time）—— 数据进入 Flink 的时间；③ 处理时间（Processing Time）—— 数据被算子处理时的机器时间，最简单但结果不可重现。\nWatermark 是「事件时间进度条」：它是一个不断推进的时间戳，表示「事件时间小于该值的数据基本已经到齐」。当 Watermark 推进到某个窗口的结束时间时，系统就触发该窗口的计算并输出结果。\n解决乱序：因为有 Watermark，系统不必等到所有数据都到，而是按时间进度触发，允许一定范围内的乱序；对真正迟到的数据，可以设置 allowed lateness 让窗口延迟销毁并补算，或用侧输出流（side output）单独收集后另行修正。',
+    explanation:'这题的关键是「Watermark = 时间进度条，用来判断窗口何时可以结算」。先讲清这个比喻，再补三种时间和迟到处理，层次就出来了。',
+    source:'教材 12.6 Flink 编程模型（时间语义 / Watermark）｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.flink
+  },
+  {
+    id:'e-19', type:'text', chapter:'hc12',
+    knowledgePoint:'Flink 与 Spark Streaming 的对比',
+    tags:['Flink','Spark Streaming','对比','简答'],
+    difficulty:'中',
+    plain:'最大的差别是处理模型：Spark Streaming 把数据攒成小批再算（微批），Flink 来一条算一条（原生流）。所以 Flink 延迟更低、更能表达「真正的事件驱动」，Spark 的优势是和批处理共用一套代码。',
+    stem:'比较 Flink 与 Spark Streaming 在处理模型、延迟、时间语义与容错方面的差异。',
+    points:['Spark Streaming 是微批（micro-batch），Flink 是原生流','延迟：Flink 毫秒级，Spark Streaming 至少一个批次间隔','时间语义：Flink 原生支持事件时间与 Watermark','容错：Flink 基于 Checkpoint 的精确一次，Spark 靠 RDD 血缘与 WAL'],
+    keys:[
+      { label:'微批 vs 原生流（逐条处理）', any:['微批','micro','批次','原生流','逐条'] },
+      { label:'延迟差异', any:['延迟','毫秒','秒级','批次间隔'] },
+      { label:'Flink 完整支持事件时间与 Watermark', any:['事件时间','watermark','时间语义'] },
+      { label:'容错：Checkpoint 精确一次 vs 血缘/WAL', any:['checkpoint','血缘','wal','精确一次','容错'] }
+    ],
+    answer:'① 处理模型：Spark Streaming 采用微批（micro-batch）模型，把流切成一个个小批次（DStream）再交给 Spark 引擎处理；Flink 是原生流处理，数据逐条流动、逐条计算，批处理只是「有界流」的特例。② 延迟：Spark Streaming 的最小延迟受批次间隔限制，通常几百毫秒到秒级；Flink 可做到毫秒级。③ 时间语义：Flink 完整支持事件时间、摄入时间、处理时间，并提供 Watermark 处理乱序；Spark Streaming 早期以处理时间为主，结构化流才逐步补齐事件时间能力。④ 容错：Flink 基于分布式快照（Checkpoint）实现精确一次的端到端语义；Spark Streaming 靠 RDD 血缘重算与 WAL 保证不丢数据。⑤ 生态：Spark 的优势是与批处理、SQL、机器学习共用一套引擎。',
+    explanation:'只要点出「微批 vs 原生流」这一个核心差异，这题就已经拿到大半分；其余按延迟、时间、容错逐条补。',
+    source:'教材 12.2.4 Flink 是理想的流计算框架｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.flink
+  },
+  {
+    id:'e-20', type:'text', chapter:'hc13',
+    knowledgePoint:'BSP 模型与 Pregel 计算模型',
+    tags:['图计算','BSP','Pregel','简答'],
+    difficulty:'难',
+    plain:'BSP 就是把计算分成一轮轮「超步」：每个人先算自己的、再给邻居发消息、然后所有人一起等齐了才进下一轮。Pregel 在此基础上规定「以顶点为中心」，每个顶点每轮做三件事：读消息、更新自己、发消息。',
+    stem:'简述 BSP（整体同步并行）模型的计算过程，并说明 Pregel 的「以顶点为中心」编程模型是如何工作的。',
+    points:['BSP 把计算划分为一系列超步','每个超步包含：本地计算、消息通信、同步屏障','Pregel 中每个顶点每轮：读取消息 → 更新自身值 → 向邻居发送消息','所有顶点都不再变化且无消息时收敛，计算结束'],
+    keys:[
+      { label:'超步划分计算，同步屏障保证一致性', any:['超步','superstep','同步','屏障'] },
+      { label:'超步三阶段：计算、通信、同步', any:['计算','通信','同步'] },
+      { label:'顶点每轮读消息、更新、发消息', any:['顶点','消息','更新','邻居'] },
+      { label:'收敛条件：无变化且无消息', any:['收敛','不再变化','结束','无消息'] }
+    ],
+    answer:'BSP 模型把整个计算划分为一系列「超步」（Superstep），每个超步内部依次完成三件事：① 本地计算，各顶点并行地根据自己的数据和收到的消息更新状态；② 消息通信，顶点把新状态沿边发送给邻居；③ 同步屏障，所有顶点都完成本轮后才统一进入下一超步，从而保证不会读到下一轮的数据。\nPregel 采用「以顶点为中心」的模型：每个顶点在每一轮超步中执行一个用户函数，函数中可以完成三件事——读取上一轮收到的消息、更新自己的值、向邻居顶点发送新消息。顶点还可以选择「停止投票」（vote to halt）暂时休眠，收到新消息时再被唤醒。\n当所有顶点都处于休眠状态、且系统中没有待处理消息时，整个计算收敛结束。',
+    explanation:'BSP 答「三步 + 同步屏障」，Pregel 答「读消息、更新、发消息」。最后补一句收敛条件，就完整了。',
+    source:'教材 13.3 Pregel 图计算模型｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.graphx
+  },
+  {
+    id:'e-21', type:'text', chapter:'hc14',
+    knowledgePoint:'数据可视化的作用与选图原则',
+    tags:['可视化','选图','简答'],
+    difficulty:'易',
+    plain:'可视化就是「把数字变成眼睛能直接比较的图形」。选图的原则只有一条：先想清楚你要表达什么关系——比大小用柱状、看趋势用折线、看占比用饼图、看分布用直方图、看相关用散点图。',
+    stem:'数据可视化的主要作用是什么？在选择图表类型时应遵循哪些原则？请举例说明。',
+    points:['作用：把抽象数据转为视觉形式，帮助发现规律、辅助决策、便于沟通','原则：按要表达的关系选图（比较、趋势、占比、分布、相关）','原则：优先使用位置等精确视觉通道，避免误导性画法','示例：比大小用柱状图、看趋势用折线图、看占比用饼图、看相关用散点图'],
+    keys:[
+      { label:'作用：直观呈现数据、发现规律、辅助决策与沟通', any:['直观','规律','决策','沟通','呈现'] },
+      { label:'按数据关系选图（比较/趋势/占比/分布/相关）', any:['关系','比较','趋势','占比','分布','相关'] },
+      { label:'优先使用精确视觉通道（位置 > 长度 > 颜色）', any:['视觉通道','位置','长度','颜色'] },
+      { label:'避免误导：纵轴从 0 开始、不截断数据', any:['误导','纵轴','截断','0'] }
+    ],
+    answer:'作用：① 把抽象的数据转换为图形，让人快速直观地理解数据的规模、结构与变化；② 帮助发现数据中的模式、异常与关联，辅助分析与决策；③ 是数据结论对外沟通的有效载体，比表格更易传达。\n原则：① 先明确要表达的关系，再选图形——比较大小用柱状图、看趋势用折线图、看占比用饼图或堆叠柱、看分布用直方图或箱线图、看相关性用散点图；② 优先使用精度高的视觉通道，位置与长度的分辨能力明显强于颜色深浅与面积，重要数值应用位置编码；③ 避免误导性画法，如纵轴不从 0 开始、用 3D 饼图夸大差异、只截取有利区间的数据。',
+    explanation:'「作用三条 + 原则三条 + 五个对应关系」是标准给分结构。最后那条「避免误导」很容易被忽略，写上能加分。',
+    source:'教材 14.1 可视化概述｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.echarts
+  }
+];
+
+/* ================================================================
+   期末高频 · 判断题（22 题）+ 补缺选择题（15 题）
+   ================================================================ */
+const H_EXAM_JUDGE = [
+  {
+    id:'j-01', type:'judge', chapter:'hc3',
+    knowledgePoint:'HDFS 与小文件',
+    tags:['HDFS','判断'],
+    difficulty:'易',
+    plain:'错。HDFS 最怕小文件：文件再多，元数据都要塞进 NameNode 的内存里，文件数一多内存就撑爆。所以小文件要先合并再存。',
+    stem:'判断：HDFS 非常适合存储大量小文件，因为每个小文件只占一个块，不会浪费空间。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。HDFS 的小文件问题是元数据问题：每个文件、每个块在 NameNode 内存中约占用 150 字节，与文件实际大小无关。一亿个 1KB 的小文件会产生数 GB 元数据，耗尽 NameNode 内存；同时每个小文件通常对应一个 Map 任务，启动开销远大于计算本身。正确做法是先用 HAR、SequenceFile、ORC/Parquet 合并成大文件，或改用 HBase 存储。',
+    source:'教材 3.4.5 HDFS 体系结构的局限性｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hdfsArch
+  },
+  {
+    id:'j-02', type:'judge', chapter:'hc3',
+    knowledgePoint:'NameNode 与 DataNode 的职责',
+    tags:['HDFS','NameNode','判断'],
+    difficulty:'易',
+    plain:'错。NameNode 只记「账」——哪个文件切成哪些块、每块在哪台机器上，它一个字节的真实数据都不存。真正存数据的是 DataNode。',
+    stem:'判断：NameNode 负责存储文件的数据块，DataNode 负责记录文件的元数据。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误，两者职责正好相反。NameNode 存储的是元数据（目录树、文件与块的映射、块与 DataNode 的映射），全部常驻内存，不保存任何真实数据；DataNode 才是实际存储数据块的节点，并定期通过心跳向 NameNode 汇报自身状态与块列表。',
+    source:'教材 3.3.2 名称节点和数据节点｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hdfsArch
+  },
+  {
+    id:'j-03', type:'judge', chapter:'hc3',
+    knowledgePoint:'Secondary NameNode 的定位',
+    tags:['HDFS','Secondary NameNode','判断'],
+    difficulty:'中',
+    plain:'错，这是最经典的陷阱。它的名字里有 Secondary，但根本不是备份：NameNode 挂了它顶不上去，它只是定期帮忙把 fsimage 和 edits 合并一下。',
+    stem:'判断：Secondary NameNode 是 NameNode 的热备份，NameNode 故障时它可以立即接管对外服务。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。Secondary NameNode 只做一件事：定期把 fsimage 与 edits 合并成新的 fsimage（检查点），减轻 NameNode 启动时的日志重放压力。它不实时同步 edits、不对外提供服务、也不保存数据块，NameNode 故障时无法接管。官方文档已将其标记为 deprecated，建议改用 Checkpoint Node 或 Backup Node；真正的高可用方案是 NameNode HA（Active/Standby + JournalNode + ZKFC）。',
+    source:'教材 3.3.3 第二名称节点｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hdfsHA
+  },
+  {
+    id:'j-04', type:'judge', chapter:'hc3',
+    knowledgePoint:'HDFS 块与副本默认值',
+    tags:['HDFS','块','副本','判断'],
+    difficulty:'易',
+    plain:'对。Hadoop 2.x 起块大小默认 128MB（1.x 是 64MB），副本数默认 3 份。这两个数字是选择题和判断题的高频考点。',
+    stem:'判断：在 Hadoop 2.x 及之后的版本中，HDFS 的默认块大小为 128MB，默认副本数为 3。（　）',
+    options:['正确','错误'],
+    answer:0,
+    explanation:'正确。Hadoop 2.x/3.x 的 dfs.blocksize 默认 128MB（Hadoop 1.x 为 64MB），dfs.replication 默认 3。块设得大是为了减少寻址开销、让 NameNode 管理的块数更少；3 副本是可靠性与存储开销的折中，配合机架感知放置可同时防机器故障与机架断电。',
+    source:'教材 3.3.1 块 · 3.5.1 数据的冗余存储｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hdfsArch
+  },
+  {
+    id:'j-05', type:'judge', chapter:'hc7',
+    knowledgePoint:'Map 输出的去向',
+    tags:['MapReduce','Shuffle','判断'],
+    difficulty:'中',
+    plain:'错。map 的输出不直接写 HDFS，而是先进内存缓冲区，再溢写到本地磁盘，由 reduce 通过网络拉走。最终结果才写 HDFS。',
+    stem:'判断：MapReduce 中 map() 的输出会直接写入 HDFS，再由 reduce 从 HDFS 读取。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。map() 通过 context.write 输出的中间结果先写入内存中的环形缓冲区（默认 100MB），达到 0.80 阈值后溢写到本地磁盘临时文件，再经归并；reduce 通过 Shuffle 阶段从各 map 节点的本地磁盘拉取属于自己的分区数据。只有最终的 reduce 输出才由 OutputFormat 写入 HDFS。中间结果不经过 HDFS，这也是 MapReduce 与 Spark 内存计算的差别之一。',
+    source:'教材 7.2.3 Shuffle 过程详解｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.mrTut
+  },
+  {
+    id:'j-06', type:'judge', chapter:'hc7',
+    knowledgePoint:'Combiner 的执行时机',
+    tags:['MapReduce','Combiner','判断'],
+    difficulty:'中',
+    plain:'错。Combiner 只是「优化手段」，框架可能一次都不用、也可能用多次。所以你的程序不能依赖它一定运行，否则换个数据量结果就变了。',
+    stem:'判断：只要在 Driver 中设置了 Combiner，框架就一定会对每个 key 执行一次合并。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。Combiner 是否执行、执行几次由框架决定，与溢写次数、数据量、是否发生归并都有关：可能执行 0 次（数据量很小、没触发溢写），也可能执行多次（多次溢写各自合并）。因此 Combiner 只能作为优化手段，不能改变业务语义，且必须满足结合律与交换律（求平均这类运算需同时传 sum 与 count）。',
+    source:'教材 7.2.3 Shuffle 过程详解（Combiner）｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.mrTut
+  },
+  {
+    id:'j-07', type:'judge', chapter:'hc7',
+    knowledgePoint:'分区与相同 key',
+    tags:['MapReduce','Partitioner','判断'],
+    difficulty:'易',
+    plain:'对。默认分区规则是「key 的哈希对 reduce 数取余」，同一个 key 算出来永远是同一个数，所以一定进同一个 reduce，这样才能被汇总到一起。',
+    stem:'判断：在默认 Partitioner 下，相同的 key 一定会被发送到同一个 reduce 任务。（　）',
+    options:['正确','错误'],
+    answer:0,
+    explanation:'正确。默认 HashPartitioner 的规则是 hash(key) % numReduceTasks，同一个 key 的哈希值固定，因此计算结果固定，必然进入同一个 reduce。这正是 MapReduce 能把相同 key 的 value 聚合成一组交给 reduce() 的前提。注意：如果自定义了 Partitioner 且未保证同 key 同分区，聚合结果就会出错。',
+    source:'教材 7.2.3 Shuffle 过程详解｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.mrTut
+  },
+  {
+    id:'j-08', type:'judge', chapter:'hc2',
+    knowledgePoint:'YARN 中 RM 与 AM 的职责',
+    tags:['YARN','ResourceManager','判断'],
+    difficulty:'中',
+    plain:'错。ResourceManager 只管「把资源分出去」，不管某个作业的任务跑得怎么样。每个作业自己的调度、监控、失败重试，是 ApplicationMaster 干的。',
+    stem:'判断：YARN 中的 ResourceManager 负责单个作业内部的任务调度与失败重试。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。ResourceManager 是全局的，只负责把集群资源以 Container 的形式分配给各个应用，内部的 Scheduler 只做分配、不做监控；单个作业内部的任务编排、资源申请、状态监控与失败重试由该作业专属的 ApplicationMaster 负责。这种「资源管理」与「作业调度」分离，正是 YARN 相对 MRv1 的核心改进。',
+    source:'教材 8.3.3 YARN 体系结构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.yarn
+  },
+  {
+    id:'j-09', type:'judge', chapter:'hc2',
+    knowledgePoint:'Hadoop 2.0 的通用性',
+    tags:['Hadoop','YARN','判断'],
+    difficulty:'易',
+    plain:'对。1.0 只能跑 MapReduce，2.0 把资源管理抽成 YARN 之后，Spark、Flink、Storm 都能跑在同一个集群上，Hadoop 从「一个框架」变成了「一个平台」。',
+    stem:'判断：Hadoop 2.0 引入 YARN 之后，同一个集群上除了 MapReduce 还可以运行 Spark、Flink 等其他计算框架。（　）',
+    options:['正确','错误'],
+    answer:0,
+    explanation:'正确。YARN 把「资源管理」从 MapReduce 中剥离出来，MapReduce 只是运行在 YARN 上的一个应用。只要计算框架实现了 YARN 的 ApplicationMaster 接口，就可以共享同一个集群资源，这正是 Hadoop 从单一计算框架演进为通用大数据平台的关键。',
+    source:'教材 8.1 Hadoop 的优化与发展｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.yarn
+  },
+  {
+    id:'j-10', type:'judge', chapter:'hc4',
+    knowledgePoint:'HBase 的事务能力',
+    tags:['HBase','事务','判断'],
+    difficulty:'中',
+    plain:'错。HBase 只保证「同一行」内的原子性，不能跨行、跨表做事务。需要强事务的场景应该用关系数据库。',
+    stem:'判断：HBase 支持跨行、跨表的事务，可以直接替代关系数据库处理转账类业务。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。HBase 只提供基于 RowKey 的单行事务，即对同一行的多个列操作具有原子性，不支持跨行、跨表事务；也不支持多表 join 与二级索引（需借助 Phoenix 等外部方案）。因此它适合海量稀疏数据的按主键读写，不能替代关系数据库处理转账、账务这类强事务业务。',
+    source:'教材 4.1.3 HBase 与传统关系数据库的对比分析｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hbase
+  },
+  {
+    id:'j-11', type:'judge', chapter:'hc4',
+    knowledgePoint:'HBase 列族数量',
+    tags:['HBase','列族','判断'],
+    difficulty:'中',
+    plain:'错。列族不是越多越灵活，而是越多越慢：每个列族在底层都要占一套内存和文件，列族一多就产生大量小文件，刷盘和合并压力陡增。官方建议 2~3 个以内。',
+    stem:'判断：为了提高灵活性，HBase 表的列族数量应该尽量多，最好每个列单独一个列族。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。HBase 每个列族在底层对应独立的 Store（MemStore + 多个 HFile），列族越多，小文件越多，flush 与 compaction 的压力越大，读写性能都会下降。官方建议一张表的列族控制在 2~3 个以内，把经常一起查询的列放在同一个列族里。',
+    source:'教材 4.3 HBase 数据模型（列族）｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hbase
+  },
+  {
+    id:'j-12', type:'judge', chapter:'hc5',
+    knowledgePoint:'NoSQL 的定位',
+    tags:['NoSQL','判断'],
+    difficulty:'易',
+    plain:'错。NoSQL 不是「更好的数据库」，而是「另一种取舍」：它放弃了强事务和复杂查询，换来扩展性和高并发。该用关系库的地方还得用关系库。',
+    stem:'判断：NoSQL 数据库全面优于关系数据库，新项目应该一律使用 NoSQL。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。NoSQL 与关系数据库是互补关系：NoSQL 以放弃强事务、复杂 join 与统一模式为代价，换取水平扩展、高并发与灵活结构；关系数据库在数据一致性、事务完整性、复杂查询方面仍不可替代。选型应看业务需求——账务、订单等强事务场景用关系库，海量写入、缓存、日志、关系网络等场景才用 NoSQL。',
+    source:'教材 5.3 NoSQL 与关系数据库的比较｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'j-13', type:'judge', chapter:'hc5',
+    knowledgePoint:'CAP 的取舍',
+    tags:['NoSQL','CAP','判断'],
+    difficulty:'中',
+    plain:'错。CAP 不可能三者同时满足，尤其是在网络断开的时候。真实系统只能要么保一致、要么保可用，所以才有 CP 和 AP 两类。',
+    stem:'判断：一个分布式系统可以同时完全满足一致性、可用性和分区容忍性这三个要求。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。CAP 定理指出：当网络分区发生时，系统无法同时保证一致性与可用性，必须在两者之间取舍。由于分布式环境下分区不可避免，实际系统分为 CP（如 ZooKeeper）与 AP（如 Cassandra）两类。所谓「CA 系统」只在单机、不存在分区的理想情况下成立。',
+    source:'教材 5.5.1 CAP｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'j-14', type:'judge', chapter:'hc5',
+    knowledgePoint:'键值数据库的适用性',
+    tags:['NoSQL','Redis','判断'],
+    difficulty:'易',
+    plain:'错。键值数据库就是个「大字典」，只能按 key 取值，做不了多表关联和多跳查询。要查复杂关系得上图数据库或关系库。',
+    stem:'判断：键值数据库（如 Redis）非常适合存储实体之间的复杂关联关系，并支持多跳查询。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。键值数据库以 key-value 形式存储，只能按 key 直接取值，不支持范围查询、多表关联与多跳遍历。适合存会话、缓存、计数器、排行榜等简单结构；处理复杂关联关系应使用图数据库（如 Neo4j）或关系数据库。',
+    source:'教材 5.4.1 键值数据库｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.redis
+  },
+  {
+    id:'j-15', type:'judge', chapter:'hc9',
+    knowledgePoint:'Hive 外部表的删表行为',
+    tags:['Hive','外部表','判断'],
+    difficulty:'中',
+    plain:'错，这正是外部表的意义。删外部表只删「目录里的登记信息」，HDFS 上的数据文件还在，其他工具照常能用。所以共享数据一定要建外部表。',
+    stem:'判断：删除 Hive 外部表时，HDFS 上对应的数据文件也会被一并删除。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。删除外部表（EXTERNAL TABLE）只删除 Metastore 中的元数据，HDFS 上的数据目录与文件保持不变；删除内部表（Managed Table）才会同时删除元数据与数据。因此多人或多工具共享同一份原始数据时应使用外部表，避免误删。',
+    source:'教材 9.1.5 Hive 与传统数据库的对比分析｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hiveDDL
+  },
+  {
+    id:'j-16', type:'judge', chapter:'hc9',
+    knowledgePoint:'Hive 的更新能力',
+    tags:['Hive','ACID','判断'],
+    difficulty:'中',
+    plain:'错。Hive 天生是「一次写入、批量读」的，不支持随便改某一行。虽然有 ACID 表，但限制多（必须 ORC 格式），不要把它当成支持在线更新的数据库。',
+    stem:'判断：Hive 像 MySQL 一样支持随意的行级更新与删除，适合做在线交易系统。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。Hive 面向批量分析，传统上不支持行级更新与删除，只支持整表或分区的覆盖写入。虽然 Hive 0.14 之后引入了 ACID 事务表（要求 ORC 存储格式并设置 transactional 属性），但性能与适用场景仍不适合 OLTP。在线交易类业务应使用关系数据库。',
+    source:'教材 9.1.5 Hive 与传统数据库的对比分析｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hiveAcid
+  },
+  {
+    id:'j-17', type:'judge', chapter:'hc10',
+    knowledgePoint:'RDD 的不可变性',
+    tags:['Spark','RDD','判断'],
+    difficulty:'易',
+    plain:'错。RDD 是只读的，改不了。你对它做的每次 map、filter，其实都是「生成一个新的 RDD」，老的那个原封不动——这也是它能放心并行、能靠血缘重算的前提。',
+    stem:'判断：RDD 是可变的，可以对同一个 RDD 原地修改其中的数据。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。RDD 是只读、不可变的数据集合，任何 Transformation（map、filter 等）都不会修改原 RDD，而是生成一个新的 RDD，并记录二者之间的血缘关系。不可变性使计算可以安全地并行与重算，是 Spark 容错机制的基础。',
+    source:'教材 10.3.4 RDD 的设计与运行原理｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.spark
+  },
+  {
+    id:'j-18', type:'judge', chapter:'hc10',
+    knowledgePoint:'宽依赖与 Shuffle',
+    tags:['Spark','依赖','判断'],
+    difficulty:'中',
+    plain:'对。宽依赖意味着「多个上游分区的数据要汇总到一个下游分区」，必须跨机器搬数据，这就是 Shuffle，Spark 也在这里切出一个新的 Stage。',
+    stem:'判断：Spark 中宽依赖会触发 Shuffle，并成为划分 Stage 的依据。（　）',
+    options:['正确','错误'],
+    answer:0,
+    explanation:'正确。窄依赖指父 RDD 的每个分区只被一个子分区使用，可以在同一节点流水线执行；宽依赖指多个父分区要汇总到一个子分区（如 groupByKey、reduceByKey、join），必须跨节点 Shuffle。DAGScheduler 从后往前遍历 DAG，遇到宽依赖就切分出一个新 Stage。',
+    source:'教材 10.3.4 RDD 的设计与运行原理（依赖）｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.spark
+  },
+  {
+    id:'j-19', type:'judge', chapter:'hc11',
+    knowledgePoint:'Kafka 的顺序保证',
+    tags:['Kafka','顺序','判断'],
+    difficulty:'中',
+    plain:'错。Kafka 只保证「同一个分区内」有序，不保证整个主题有序。想让某个用户的消息有序，就把他所有消息用同一个 key 发，这样一定进同一个分区。',
+    stem:'判断：Kafka 能保证一个 Topic 下所有消息的全局顺序。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。Kafka 只保证同一分区（Partition）内消息有序，不保证跨分区的全局有序。若业务需要某类消息有序，应使用相同的 key，因为默认按 hash(key) % 分区数 选择分区，相同 key 必然进入同一分区。',
+    source:'教材 11.2 流计算的处理流程｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.kafka
+  },
+  {
+    id:'j-20', type:'judge', chapter:'hc12',
+    knowledgePoint:'Flink 批流一体',
+    tags:['Flink','批流一体','判断'],
+    difficulty:'中',
+    plain:'对。Flink 把「流」当根本，把「批」当成「有界流」的特例，所以一套引擎就能同时做实时和离线，代码基本不用改。',
+    stem:'判断：Flink 以流处理为核心，把批处理视为有界流的特例，从而实现批流一体。（　）',
+    options:['正确','错误'],
+    answer:0,
+    explanation:'正确。Flink 的设计理念是「流是第一公民」：无界流是常态，有界流（如一个已存好的文件）只是流的特例。因此同一套运行时与 API 既能处理实时流，也能处理离线批数据，实现「批流一体」，这也是它相对 Spark Streaming（微批）在延迟与语义上的优势来源。',
+    source:'教材 12.1 Flink 简介｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.flink
+  },
+  {
+    id:'j-21', type:'judge', chapter:'hc13',
+    knowledgePoint:'BSP 的同步屏障',
+    tags:['图计算','BSP','判断'],
+    difficulty:'中',
+    plain:'对。同步屏障就是「大家一起等」：这一轮所有人都算完、消息都发完，才允许进入下一轮，避免算得快的人提前看到别人的新值。',
+    stem:'判断：BSP 模型中每个超步结束时有同步屏障，必须等所有顶点完成本轮计算后才进入下一超步。（　）',
+    options:['正确','错误'],
+    answer:0,
+    explanation:'正确。BSP 每个超步包含本地计算、消息通信、同步屏障三个阶段。同步屏障保证所有顶点都完成本轮计算与消息发送后才统一进入下一轮，从而避免一部分顶点读到另一部分顶点尚未更新的数据，使并行计算的结果与串行语义一致。',
+    source:'教材 13.3.3 Pregel 的计算过程｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.graphx
+  },
+  {
+    id:'j-22', type:'judge', chapter:'hc14',
+    knowledgePoint:'可视化误导手法',
+    tags:['可视化','判断'],
+    difficulty:'易',
+    plain:'对。纵轴不从 0 开始，会把很小的差距画成「暴涨」。这是最常见的误导手法，看图表时先看坐标轴起点。',
+    stem:'判断：柱状图的纵轴如果不从 0 开始，会放大小幅差异，可能造成误导。（　）',
+    options:['正确','错误'],
+    answer:0,
+    explanation:'正确。柱状图依赖长度的比例来表达数量，纵轴不从 0 开始会破坏这种比例关系：例如 101 与 103 的差异，在 100 起始的坐标里会被画成数倍高度差，从而夸大结论。折线图截断纵轴的影响相对小，但同样需要标注清楚。',
+    source:'教材 14.1.3 可视化的重要作用｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.echarts
+  }
+];
+
+const H_EXAM_CHOICE = [
+  {
+    id:'x-01', type:'choice', chapter:'hc1',
+    knowledgePoint:'大数据的发展历程与三次信息化浪潮',
+    tags:['大数据','发展历程'],
+    difficulty:'易',
+    plain:'教材把人信息技术的三次浪潮对应成三件事：个人计算机（1980 年代）、互联网（1995 年前后）、物联网与云计算（2005 年后）。大数据正是第三次浪潮之后出现的。',
+    stem:'按教材的划分，第三次信息化浪潮的核心标志是？（　）',
+    options:['个人计算机的普及', '互联网的普及', '物联网与云计算的兴起', '人工智能的爆发'],
+    answer:2,
+    explanation:'教材把信息化浪潮分为三次：第一次以个人计算机为代表（1980 年代），第二次以互联网为代表（1995 年前后），第三次以物联网和云计算为代表（2009 年后）。第三次浪潮带来了数据产生方式的变革——数据从「人产生」变为「机器自动产生」，规模爆炸式增长，直接催生大数据时代。',
+    source:'教材 1.1.1 第三次信息化浪潮｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'x-02', type:'choice', chapter:'hc1',
+    knowledgePoint:'大数据关键技术',
+    tags:['大数据','关键技术'],
+    difficulty:'易',
+    plain:'教材把大数据技术分成两层：一层是「怎么把数据弄进来、放起来」（采集、存储、管理），一层是「怎么算出来、用起来」（计算、分析、可视化）。选择题常问「哪一项不属于关键技术」。',
+    stem:'按教材的归纳，下列哪一项不属于大数据的关键技术？（　）',
+    options:['数据采集与预处理', '数据存储与管理', '数据处理与分析与可视化', '芯片制造工艺'],
+    answer:3,
+    explanation:'教材把大数据关键技术归纳为：数据采集、数据预处理、数据存储与管理、数据处理与分析、数据可视化与应用等。芯片制造属于硬件制造领域，不属于大数据技术体系的组成。',
+    source:'教材 1.5 大数据关键技术｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'x-03', type:'choice', chapter:'hc2',
+    knowledgePoint:'Hadoop 的三种安装模式',
+    tags:['Hadoop','安装模式'],
+    difficulty:'易',
+    plain:'三种模式的区别就两点：进程是不是分开跑、用不用 HDFS。单机模式用本地文件系统；伪分布式每个守护进程都独立启动、用 HDFS；完全分布式是多台机器分工。',
+    stem:'Hadoop 的三种安装模式中，所有守护进程都运行在同一台机器上、使用 HDFS 且各自独立 JVM 进程的是？（　）',
+    options:['单机模式', '伪分布式模式', '完全分布式模式', '高可用模式'],
+    answer:1,
+    explanation:'伪分布式模式指在一台机器上启动 NameNode、DataNode、ResourceManager、NodeManager 等所有守护进程，每个进程独立运行在各自的 JVM 中，并使用 HDFS 而非本地文件系统，相当于「一台机器模拟一个集群」，适合学习与开发调试。单机模式使用本地文件系统，完全分布式则跨多台机器部署。',
+    source:'教材 2.3 Hadoop 的安装与使用｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hadoop
+  },
+  {
+    id:'x-04', type:'choice', chapter:'hc3',
+    knowledgePoint:'HDFS 机架感知与副本放置',
+    tags:['HDFS','机架感知'],
+    difficulty:'中',
+    plain:'3 副本的放法是「本机一份、另一机架一份、那个机架再一份」。目的很明确：一台机器坏有备份，整个机架断电也还有备份。',
+    stem:'HDFS 采用机架感知的副本放置策略，当副本数为 3 时，第三个副本通常放在？（　）',
+    options:['与第一个副本同一节点', '与第二个副本同一机架的另一个节点', '任意一个随机节点', '客户端所在机器'],
+    answer:1,
+    explanation:'默认策略：第一个副本放在客户端所在节点（客户端不在集群内则随机选一个），第二个副本放在另一个机架的节点上，第三个副本放在第二个副本所在机架的另一个节点上。这样既保证跨机架冗余（防机架断电），又避免写带宽全部跨机架，兼顾可靠性与性能。',
+    source:'教材 3.5.2 数据存取策略｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hdfsArch
+  },
+  {
+    id:'x-05', type:'choice', chapter:'hc5',
+    knowledgePoint:'NewSQL 数据库',
+    tags:['NoSQL','NewSQL'],
+    difficulty:'中',
+    plain:'NewSQL 想「两全其美」：既要有 NoSQL 那种能不断加机器的扩展性，又要保留 SQL 和事务。代表是 TiDB、OceanBase 这类分布式关系数据库。',
+    stem:'关于 NewSQL 数据库，下列说法最准确的是？（　）',
+    options:['它是 NoSQL 的另一种叫法', '它放弃事务以换取扩展性', '它既支持 SQL 与事务，又具备分布式水平扩展能力', '它只能用于单机部署'],
+    answer:2,
+    explanation:'NewSQL 是一类新型数据库，目标是同时获得关系数据库的 SQL 支持与 ACID 事务保证，以及 NoSQL 的分布式水平扩展能力，代表产品有 TiDB、OceanBase、CockroachDB。它不是 NoSQL 的别名，也不放弃事务。',
+    source:'教材 5.6 从 NoSQL 到 NewSQL 数据库｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'x-06', type:'choice', chapter:'hc5',
+    knowledgePoint:'最终一致性的判定',
+    tags:['NoSQL','一致性'],
+    difficulty:'中',
+    plain:'关键词是「短时间不一致、之后会自动变一致」。这不是强一致（要求永远一致），而叫最终一致性，是 BASE 里的 E。',
+    stem:'某系统允许多个副本在短时间内数值不同，但保证在没有新写入的情况下，经过一段时间后所有副本会收敛到相同值。这属于？（　）',
+    options:['强一致性', '最终一致性', '弱一致性', '顺序一致性'],
+    answer:1,
+    explanation:'最终一致性（Eventually Consistent）指系统保证「如果没有新的更新，最终所有副本会达到一致状态」，期间允许短暂不一致。它是 BASE 理论中的 E（Eventually consistent），被大量 NoSQL 系统采用，用可用性与性能换取了瞬时强一致。',
+    source:'教材 5.5.3 最终一致性｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'x-07', type:'choice', chapter:'hc6',
+    knowledgePoint:'UMP 云数据库系统',
+    tags:['云数据库','UMP'],
+    difficulty:'中',
+    plain:'UMP 是阿里开源的云数据库系统，核心思路是「一个控制中心 + 一组代理」统一管理成百上千个 MySQL 实例，实现资源池化、读写分离和故障切换。',
+    stem:'关于 UMP 系统，下列说法正确的是？（　）',
+    options:['它是 Hadoop 生态中的资源调度框架', '它是阿里开源的云数据库系统，用代理统一管理大量 MySQL 实例', '它是 HBase 的底层存储格式', '它是 Flink 的状态后端'],
+    answer:1,
+    explanation:'UMP（Unified MySQL Platform）是阿里开源的云数据库系统，采用「Controller Server + RabbitMQ + Agent + Proxy + LVS」的架构，把大量 MySQL 实例池化管理，对外提供统一访问入口，实现读写分离、分库分表、故障自动切换与资源调度。',
+    source:'教材 6.3 云数据库系统架构（UMP）｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'x-08', type:'choice', chapter:'hc6',
+    knowledgePoint:'云数据库的分类',
+    tags:['云数据库','分类'],
+    difficulty:'中',
+    plain:'按「谁负责什么」分：托管型（云厂商管运维，你管 SQL）、云原生型（为云重新设计，存算分离）、Serverless（完全按用量）。选择题常问某产品属于哪类。',
+    stem:'关于云数据库的分类，下列理解正确的是？（　）',
+    options:['云数据库只有关系型一种', '云数据库按交付形态可分为托管型、云原生型与 Serverless 等', '云数据库就是虚拟机里自己装的 MySQL', '云数据库不支持弹性伸缩'],
+    answer:1,
+    explanation:'云数据库按交付与架构形态可分为：托管型（云厂商负责运维，用户使用标准数据库，如 RDS）、云原生型（为云环境重新设计，强调存算分离与弹性，如 PolarDB）、Serverless 型（按实际请求与存储计费、可缩容到零）。在虚拟机里自建数据库属于 IaaS 自运维，不属于云数据库服务。',
+    source:'教材 6.1.2 云数据库的概念｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'x-09', type:'choice', chapter:'hc9',
+    knowledgePoint:'Hive 分区与分桶',
+    tags:['Hive','分区','分桶'],
+    difficulty:'中',
+    plain:'分区是「目录」，分桶是「文件」。分区按字段值建子目录，分桶按 hash 取模切成固定数量的文件。两者常一起用，但作用不同。',
+    stem:'关于 Hive 的分区（Partition）与分桶（Bucket），下列说法正确的是？（　）',
+    options:['分区在存储上表现为子目录，分桶表现为固定数量的文件', '分区和分桶都是把数据切成固定数量的文件', '分桶在存储上表现为子目录', '两者都不能提高查询效率'],
+    answer:0,
+    explanation:'分区按分区字段的取值在 HDFS 上创建子目录（如 dt=2026-10-01/），查询时做分区裁剪，只扫需要的目录；分桶按分桶字段的哈希值对桶数取模，把数据分散到固定数量的文件中，便于抽样与 map 端 join。二者都可减少扫描的数据量。',
+    source:'教材 9.6.2 Hive 基本操作｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.hiveDDL
+  },
+  {
+    id:'x-10', type:'choice', chapter:'hc11',
+    knowledgePoint:'流计算的处理流程',
+    tags:['流计算','流程'],
+    difficulty:'易',
+    plain:'流处理链路分三段：先把数据实时采上来（采集），再实时算（计算），最后把结果提供出去（实时查询服务）。Kafka 常在采集和计算之间当缓冲。',
+    stem:'流计算的处理流程通常包含哪三个环节？（　）',
+    options:['采集 → 存储 → 备份', '数据实时采集 → 数据实时计算 → 实时查询服务', '建模 → 训练 → 预测', '抽取 → 转换 → 加载'],
+    answer:1,
+    explanation:'流计算的处理流程一般分为三步：① 数据实时采集，从各类数据源持续收集数据（如 Flume、Kafka）；② 数据实时计算，由流处理框架（Storm、Flink、Spark Streaming）对到达的数据增量计算；③ 实时查询服务，把计算结果写入数据库或缓存供业务实时查询展示。',
+    source:'教材 11.2 流计算的处理流程｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.storm
+  },
+  {
+    id:'x-11', type:'choice', chapter:'hc12',
+    knowledgePoint:'Flink 技术栈',
+    tags:['Flink','技术栈'],
+    difficulty:'中',
+    plain:'Flink 技术栈自上而下是：API 层（SQL / Table / DataStream / DataSet）、核心运行时（分布式流处理引擎）、部署层（本地 / YARN / K8s）。分层考法很常见。',
+    stem:'关于 Flink 技术栈的分层，下列说法正确的是？（　）',
+    options:['最上层是存储层，最下层是 SQL 层', '自上而下依次为 API 层、核心运行时、物理部署层', 'Flink 只有批处理 API，没有流处理 API', 'Flink 不能部署在 YARN 上'],
+    answer:1,
+    explanation:'Flink 技术栈自上而下分为三层：① API 层，包括 SQL、Table API、DataStream API（流）与 DataSet API（批）；② 核心运行时（Runtime），即分布式流处理引擎，负责作业图生成、调度、状态管理与容错；③ 物理部署层，支持本地、Standalone、YARN、Kubernetes 等部署方式。',
+    source:'教材 12.4 Flink 技术栈｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.flink
+  },
+  {
+    id:'x-12', type:'choice', chapter:'hc13',
+    knowledgePoint:'Pregel 的消息传递',
+    tags:['图计算','Pregel'],
+    difficulty:'难',
+    plain:'Pregel 里顶点之间只靠「发消息」交流，不能直接读别人的值。这样做的好处是不用加锁、不用互相等待，天然适合大规模并行。',
+    stem:'在 Pregel 的顶点中心模型中，顶点之间是如何交换信息的？（　）',
+    options:['直接读写相邻顶点的内存', '通过共享内存加锁同步', '沿边发送消息，下一超步读取', '通过 HDFS 中转文件'],
+    answer:2,
+    explanation:'Pregel 中顶点之间不共享内存、不能直接读写彼此的状态，只能沿出边发送消息；消息在下一超步被目标顶点读取。这种「消息传递」方式避免了锁竞争与远程读，配合 BSP 的同步屏障即可实现大规模并行图计算。',
+    source:'教材 13.3.2 顶点之间的消息传递｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.graphx
+  },
+  {
+    id:'x-13', type:'choice', chapter:'hc13',
+    knowledgePoint:'GraphX 的图表示',
+    tags:['Spark','GraphX'],
+    difficulty:'中',
+    plain:'GraphX 把图拆成两张表：顶点表（VertexRDD）和边表（EdgeRDD）。好处是图计算能和表格计算混着来，比如给每个顶点挂上用户画像再算 PageRank。',
+    stem:'Spark GraphX 中，属性图（Property Graph）是由哪两个 RDD 组成的？（　）',
+    options:['VertexRDD 与 EdgeRDD', 'RDD 与 DataFrame', 'BlockRDD 与 ShuffleRDD', 'MapRDD 与 ReduceRDD'],
+    answer:0,
+    explanation:'GraphX 用属性图表示数据：VertexRDD 存储顶点及其属性（id + attr），EdgeRDD 存储边及其属性（srcId + dstId + attr）。这样图可以退化为两张表参与 Spark 的 join、filter 等操作，实现图计算与表计算的统一。',
+    source:'教材 13.4.5 输入和输出（GraphX 图表示）｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.graphx
+  },
+  {
+    id:'x-14', type:'choice', chapter:'hc14',
+    knowledgePoint:'视觉通道的精度',
+    tags:['可视化','视觉通道'],
+    difficulty:'中',
+    plain:'人眼对不同视觉元素的敏感度不一样：比位置最准，比长度次之，比角度和面积就差很多，颜色深浅最不靠谱。所以重要数据要用位置来画。',
+    stem:'按视觉通道的表达精度从高到低排序，下列哪一项最合理？（　）',
+    options:['颜色深浅 > 面积 > 长度 > 位置', '位置 > 长度 > 角度 > 面积 > 颜色深浅', '面积 > 位置 > 颜色 > 长度', '角度 > 位置 > 长度 > 面积'],
+    answer:1,
+    explanation:'人眼对位置的判别最精确，其次是长度、角度、面积，最后是颜色深浅与形状。因此重要数值应优先用位置编码（散点图、条形图），颜色适合表达分类或粗略差异；这也解释了为什么不建议用饼图比较相近的占比（角度难以分辨）。',
+    source:'教材 14.1.1 什么是数据可视化（视觉编码）｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.echarts
+  },
+  {
+    id:'x-15', type:'choice', chapter:'hc14',
+    knowledgePoint:'可视化工具的分类',
+    tags:['可视化','工具'],
+    difficulty:'易',
+    plain:'教材把可视化工具分成入门级、信息图表、地图、时间线、高级分析几类。ECharts 属于信息图表类（前端图表库），Tableau 属于高级分析类。',
+    stem:'按教材的分类，Tableau 主要属于哪一类可视化工具？（　）',
+    options:['入门级工具', '信息图表工具', '高级分析工具', '地图工具'],
+    answer:2,
+    explanation:'教材把可视化工具分为入门级工具（Excel 等）、信息图表工具（ECharts、D3 等前端图表库）、地图工具、时间线工具和高级分析工具（Tableau、Gephi 等，支持交互式探索与多维分析）。Tableau 以拖拽式分析和丰富的交互能力著称，属于高级分析工具。',
+    source:'教材 14.2 可视化工具｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.echarts
+  }
+];
+
 const H_BANK = [
   ...H_HDFS1, ...H_HDFS2, ...H_MR, ...H_YARN, ...H_HIVE,
   ...H_HBASE, ...H_ZK, ...H_FLUME, ...H_KAFKA, ...H_SPARK, ...H_OLD,
   ...V4_CH1, ...V4_CH2, ...V4_CH3, ...V4_CH4, ...V4_CH5, ...V4_CH6, ...V4_CH7,
-  ...V4_CH8, ...V4_CH9, ...V4_CH10, ...V4_CH11, ...V4_CH12, ...V4_CH13, ...V4_CH14
+  ...V4_CH8, ...V4_CH9, ...V4_CH10, ...V4_CH11, ...V4_CH12, ...V4_CH13, ...V4_CH14,
+  ...H_EXAM_TEXT, ...H_EXAM_JUDGE, ...H_EXAM_CHOICE
 ];
 const H_BY_ID = Object.fromEntries(H_BANK.map(q => [q.id, q]));
 const H_CH_MAP = Object.fromEntries(H_CHAPTERS.map(c => [c.id, c]));
@@ -13372,7 +14270,7 @@ const SUBJECTS = {
     byId: H_BY_ID,
     know: H_KNOW,
     knowNav: H_KNOW_NAV,
-    types: ['choice', 'multi', 'fill', 'cmd', 'code', 'sql', 'match', 'order', 'fix', 'text'],
+    types: ['choice', 'judge', 'multi', 'fill', 'cmd', 'code', 'sql', 'match', 'order', 'fix', 'text'],
     desc: '教材：林子雨《大数据技术原理与应用》第 3 版。覆盖第 1–14 章：概述、Hadoop 架构、HDFS、HBase、NoSQL、云数据库、MapReduce、Hadoop 再探讨、Hive、Spark、流计算、Flink、图计算、数据可视化。',
     homeDesc: '按林子雨《大数据技术原理与应用》第 3 版（人邮 2021）的章节体系组织，覆盖<b>第 1–14 章</b>：大数据概述、Hadoop 架构、HDFS、HBase、NoSQL、云数据库、MapReduce、Hadoop 再探讨、Hive、Spark、流计算、Flink、图计算、数据可视化。每章配<b>详细知识点讲义</b>，每题标注<b>教材章节出处、知识点、难度与分步详解</b>；判分按题型区分（命令、代码、HiveQL、匹配、排序、纠错、简答）。',
     refs: [
@@ -13912,7 +14810,7 @@ function startSession(mode, title, qs, opts){
 /* 组卷规则：
    数据库原理（保持原样）：随机卷 = 10 选择 + 10 术语 + 8 填空 + 2 大题；
                             模拟考 = 10 选择 + 10 术语 + 6 填空 + 3 大题（60 分钟）
-   Hadoop 生态：随机卷 = 6 选择类 + 4 命令/代码/填空 + 2 匹配/排序 + 3 简答/HiveQL/纠错
+   Hadoop 生态：随机卷 = 6 选择/判断 + 4 命令/代码/填空 + 2 匹配/排序 + 3 简答/HiveQL/纠错
                 模拟考 = 10 + 6 + 2 + 3（60 分钟）
    题内顺序按题型分组，组内随机，与真实试卷一致。 */
 function startChapter(chId){
@@ -13939,7 +14837,7 @@ function startRandom(){
   } else {
     const pick = (types, n) => pickRandom(allBank().filter(q => types.includes(q.type)), n);
     qs = [
-      ...pick(['choice', 'multi'], 6),
+      ...pick(['choice', 'judge', 'multi'], 6),
       ...pick(['cmd', 'code', 'fill'], 4),
       ...pick(['match', 'order'], 2),
       ...pick(['sql', 'fix', 'text'], 3)
@@ -13968,13 +14866,25 @@ function startExam(){
   } else {
     const pick = (types, n) => pickRandom(allBank().filter(q => types.includes(q.type)), n);
     qs = [
-      ...pick(['choice', 'multi'], 10),
+      ...pick(['choice', 'judge', 'multi'], 10),
       ...pick(['cmd', 'code', 'fill'], 6),
       ...pick(['match', 'order'], 2),
       ...pick(['sql', 'fix', 'text'], 3)
     ];
   }
   startSession('exam', '模拟考 · 60 分钟', qs, { seconds: 60 * 60 });
+}
+/* 期末模拟卷：按大学期末常见卷面结构组卷（仅 Hadoop 科目） */
+function startFinal(){
+  const pick = (types, n) => pickRandom(allBank().filter(q => types.includes(q.type)), n);
+  const qs = [
+    ...pick(['choice'], 12),          /* 一、单项选择题 12 题 */
+    ...pick(['judge'], 8),            /* 二、判断题 8 题 */
+    ...pick(['fill'], 4),             /* 三、填空题 4 题 */
+    ...pick(['match', 'order'], 2),   /* 四、配对/流程题 2 题 */
+    ...pick(['text'], 4)              /* 五、简答题 4 题 */
+  ];
+  startSession('exam', '期末模拟卷 · 30 题 · 90 分钟', qs, { seconds: 90 * 60 });
 }
 function startWrongBook(){
   const ids = Object.keys(S.wrong);
@@ -14148,6 +15058,7 @@ function viewHome(){
     loop: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.2M21 12a9 9 0 0 1-15.5 6.2"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>',
     book: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 5.5v15"/><path d="M9 7.5h6M9 11h4"/></svg>',
     grid: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>',
+    award: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M8.5 14.5L7 22l5-3 5 3-1.5-7.5"/></svg>',
     search: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
   };
 
@@ -14189,9 +15100,15 @@ function viewHome(){
         ? '10 选择 + 10 术语填空 + 8 填空 + 2 大题，共 30 题，快速自测。'
         : (CUR_SUB === 'ds'
             ? '6 选择类 + 4 填空/序列 + 2 代码 + 3 匹配/排序/简答，共 15 题，覆盖八章。'
-            : '6 选择类 + 4 命令/代码/填空 + 2 匹配/排序 + 3 简答，共 15 题，覆盖全模块。')}</span>
+            : '6 选择/判断 + 4 命令/代码/填空 + 2 匹配/排序 + 3 简答，共 15 题，覆盖全模块。')}</span>
       <span class="m-meta">开始随机练习 →</span>
     </button>
+    ${CUR_SUB === 'hadoop' ? `<button class="mode-card" data-act="start-final" style="border-color:#a5b4fc;background:linear-gradient(135deg,#f5f7ff,#eef2ff)">
+      <span class="m-ico">${ICON.award}</span>
+      <span class="m-title">期末模拟卷</span>
+      <span class="m-desc">按大学期末常见卷面出卷：单选 12 + 判断 8 + 填空 4 + 配对 2 + 简答 4，共 30 题，90 分钟。做完就知道自己能不能上考场。</span>
+      <span class="m-meta">开始期末卷 →</span>
+    </button>` : ''}
     <button class="mode-card" data-act="start-exam">
       <span class="m-ico">${ICON.clock}</span>
       <span class="m-title">模拟考</span>
@@ -14199,7 +15116,7 @@ function viewHome(){
         ? '10 选择 + 10 术语填空 + 6 填空 + 3 大题，60 分钟倒计时，交卷后统一看结果。'
         : (CUR_SUB === 'ds'
             ? '10 选择类 + 6 填空/序列 + 2 代码 + 3 匹配/排序/简答，共 21 题，60 分钟倒计时。'
-            : '10 选择类 + 6 命令/代码/填空 + 2 匹配/排序 + 3 简答，60 分钟倒计时。')}</span>
+            : '10 选择/判断 + 6 命令/代码/填空 + 2 匹配/排序 + 3 简答，60 分钟倒计时。')}</span>
       <span class="m-meta">进入模拟考 →</span>
     </button>
     <button class="mode-card" data-act="start-wrong">
@@ -14397,6 +15314,7 @@ function renderQuestion(q, r){
     <div class="q-src">出处 · ${esc(srcOf(q))}${q.referenceUrl ? ` · <a href="${esc(q.referenceUrl)}" target="_blank" rel="noopener">官方文档</a>` : ''}</div>`;
 
   if (q.type === 'choice') return head + renderChoiceBody(q, r);
+  if (q.type === 'judge')  return head + renderChoiceBody(q, r);
   if (q.type === 'term')   return head + renderTermBody(q, r);
   if (q.type === 'fill')   return head + (q.knowledgePoint ? renderHFillBody(q, r) : renderFillBody(q, r));
   if (q.type === 'essay')  return head + renderEssayBody(q, r);
@@ -14459,8 +15377,9 @@ function renderChoiceBody(q, r){
       else if (i === r.sel) cls += ' wrong';
       cls += ' locked';
     } else if (r.sel === i) cls += ' selected';
+    const keyTxt = q.type === 'judge' ? (i === 0 ? '√' : '×') : 'ABCD'[i];
     return `<div class="${cls}" data-act="pick" data-i="${i}">
-      <span class="opt-key">${'ABCD'[i]}</span><span class="opt-txt">${esc(o)}</span>
+      <span class="opt-key">${keyTxt}</span><span class="opt-txt">${esc(o)}</span>
     </div>`;
   }).join('');
 
@@ -14469,8 +15388,8 @@ function renderChoiceBody(q, r){
     <div class="feedback ${ok ? 'fb-ok' : 'fb-bad'}">
       <div class="fb-title">${ok ? '✓ 回答正确' : '✗ 回答错误'}</div>
       <div class="fb-ans">
-        正确答案 <b class="ok">${'ABCD'[q.answer]}</b>
-        ${r.sel != null && r.sel !== q.answer ? `　·　你的选择 <b class="no">${'ABCD'[r.sel]}</b>` : ''}
+        正确答案 <b class="ok">${q.type === 'judge' ? (q.answer === 0 ? '√ 正确' : '× 错误') : 'ABCD'[q.answer]}</b>
+        ${r.sel != null && r.sel !== q.answer ? `　·　你的选择 <b class="no">${q.type === 'judge' ? (r.sel === 0 ? '√ 正确' : '× 错误') : 'ABCD'[r.sel]}</b>` : ''}
       </div>
       ${detailPanel(q, { sel: r.sel, answerLine: `${'ABCD'[q.answer]}. ${esc(q.options[q.answer])}` })}
     </div>` : '';
@@ -15928,6 +16847,7 @@ document.addEventListener('click', e => {
       render();
       break;
     case 'start-chapter': startChapter(t.dataset.ch); break;
+    case 'start-final': startFinal(); break;
     /* 章节准备页：先给「看知识点 / 直接练」的选择 */
     case 'open-chapter':
       if (view === 'quiz' && session) syncDraft();
