@@ -699,6 +699,27 @@ body[data-subj="ds"] .bar > i{background:linear-gradient(90deg,#2563eb,#0ea5e9)}
   margin:6px 0 0;font-size:12.5px;color:#8a6a2f;background:#fdf8ec;
   border:1px dashed #eddcb8;border-radius:8px;padding:6px 10px;line-height:1.7;
 }
+/* 教材图解 */
+.k-fig{margin:0;padding:0}
+.k-fig + .k-fig{margin-top:18px;padding-top:16px;border-top:1px dashed rgba(0,0,0,.1)}
+.fig-t{font-size:13.5px;font-weight:800;color:var(--ink);margin:0 0 8px}
+.fig-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 8px;overflow:hidden}
+.fig-box svg{width:100%;height:auto;display:block}
+.fig-cap{font-size:12.5px;line-height:1.85;color:var(--ink-2);margin:10px 2px 0}
+/* 重点与难点 */
+.kp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.kp-box{border-radius:11px;padding:11px 13px;font-size:13px;line-height:1.85}
+.kp-box.must{background:#f0fdf4;border:1px solid #bbf7d0}
+.kp-box.hard{background:#fff7ed;border:1px solid #fed7aa}
+.kp-box .kb-t{font-size:12px;font-weight:800;letter-spacing:.4px;margin-bottom:5px}
+.kp-box.must .kb-t{color:#166534}
+.kp-box.hard .kb-t{color:#9a3412}
+.kp-box ul{margin:0;padding-left:17px}
+.kp-box li{margin:2px 0;color:var(--ink-2)}
+.kp-tip{margin-top:10px;font-size:12.5px;line-height:1.8;color:#7c5a12;background:#fffbeb;border:1px dashed #fde68a;border-radius:9px;padding:8px 11px}
+@media (max-width:560px){
+  .kp-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -7557,6 +7578,1045 @@ const H_CH_MAP = Object.fromEntries(H_CHAPTERS.map(c => [c.id, c]));
    Hadoop 科目 · 术语对照表（英文 → 中文 → 一句话解释）
    按教材章节归组，供「术语速查」视图与题目内自动注解使用。
    ================================================================ */
+/* ================================================================
+   教材图解（第一批）：大数据流程 / Hadoop 生态 / HDFS 体系 / HDFS 写流程
+   / MapReduce 执行流程 / HDFS HA
+   所有图均为内联 SVG，无外部依赖，浅色主题。
+   ================================================================ */
+const H_FIG1 = {
+  hc1: [{
+    t: '大数据处理的基本流程（教材 1.5 节）',
+    cap: '教材把大数据处理拆成「采集 → 存储 → 处理分析 → 可视化 → 应用」五步。记住这条主线，后面每一章都能挂到其中一个环节上。',
+    svg: `<svg viewBox="0 0 680 190" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="ar1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="16" y="40" width="112" height="60" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="72" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#3730a3">数据采集</text>
+    <text x="72" y="84" text-anchor="middle" font-size="10.5" fill="#6366f1">Flume · Sqoop</text>
+    <rect x="150" y="40" width="112" height="60" rx="10" fill="#ecfeff" stroke="#a5f3fc"/>
+    <text x="206" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#155e75">数据存储</text>
+    <text x="206" y="84" text-anchor="middle" font-size="10.5" fill="#0891b2">HDFS · HBase</text>
+    <rect x="284" y="40" width="112" height="60" rx="10" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="340" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#5b21b6">处理分析</text>
+    <text x="340" y="84" text-anchor="middle" font-size="10.5" fill="#7c3aed">MapReduce · Spark</text>
+    <rect x="418" y="40" width="112" height="60" rx="10" fill="#fff7ed" stroke="#fed7aa"/>
+    <text x="474" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">数据可视化</text>
+    <text x="474" y="84" text-anchor="middle" font-size="10.5" fill="#ea580c">ECharts · 图表</text>
+    <rect x="552" y="40" width="112" height="60" rx="10" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="608" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">应用服务</text>
+    <text x="608" y="84" text-anchor="middle" font-size="10.5" fill="#16a34a">推荐 · 风控</text>
+    <g stroke="#94a3b8" stroke-width="1.4">
+      <line x1="130" y1="70" x2="146" y2="70" marker-end="url(#ar1)"/>
+      <line x1="264" y1="70" x2="280" y2="70" marker-end="url(#ar1)"/>
+      <line x1="398" y1="70" x2="414" y2="70" marker-end="url(#ar1)"/>
+      <line x1="532" y1="70" x2="548" y2="70" marker-end="url(#ar1)"/>
+    </g>
+    <text x="340" y="20" text-anchor="middle" font-size="12" fill="#64748b">数据从「产生」流向「产生价值」</text>
+    <rect x="16" y="126" width="648" height="44" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="340" y="146" text-anchor="middle" font-size="11.5" fill="#475569">教材第 1 章对应关系：4V 讲「数据长什么样」，五种计算模式（批 / 流 / 图 / 查询分析）讲「第三步怎么算」</text>
+    <text x="340" y="164" text-anchor="middle" font-size="11.5" fill="#94a3b8">本书第 3–6 章属「存储」环节，第 7–13 章属「处理分析」环节，第 14 章属「可视化」环节</text>
+  </g>
+</svg>`
+  }],
+
+  hc2: [{
+    t: 'Hadoop 生态系统分层（教材 2.2 节）',
+    cap: '教材把 Hadoop 生态画成「一层一层的积木」：越往下越基础，上层都建在下层之上。考试问「某组件属于哪一层」，照这张图答即可。',
+    svg: `<svg viewBox="0 0 680 330" xmlns="http://www.w3.org/2000/svg" role="img">
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="0" y="14" width="680" height="62" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="14" y="40" font-size="11.5" font-weight="700" fill="#4338ca">查询与分析</text>
+    <text x="14" y="58" font-size="10" fill="#818cf8">不用写 MapReduce</text>
+    <g>
+      <rect x="112" y="24" width="104" height="42" rx="8" fill="#fff" stroke="#c7d2fe"/>
+      <text x="164" y="43" text-anchor="middle" font-size="12" font-weight="600" fill="#3730a3">Hive</text>
+      <text x="164" y="58" text-anchor="middle" font-size="9.5" fill="#6366f1">SQL 查数据</text>
+      <rect x="226" y="24" width="104" height="42" rx="8" fill="#fff" stroke="#c7d2fe"/>
+      <text x="278" y="43" text-anchor="middle" font-size="12" font-weight="600" fill="#3730a3">Pig</text>
+      <text x="278" y="58" text-anchor="middle" font-size="9.5" fill="#6366f1">脚本式数据流</text>
+      <rect x="340" y="24" width="104" height="42" rx="8" fill="#fff" stroke="#c7d2fe"/>
+      <text x="392" y="43" text-anchor="middle" font-size="12" font-weight="600" fill="#3730a3">Mahout</text>
+      <text x="392" y="58" text-anchor="middle" font-size="9.5" fill="#6366f1">机器学习算法</text>
+      <rect x="454" y="24" width="104" height="42" rx="8" fill="#fff" stroke="#c7d2fe"/>
+      <text x="506" y="43" text-anchor="middle" font-size="12" font-weight="600" fill="#3730a3">Ambari</text>
+      <text x="506" y="58" text-anchor="middle" font-size="9.5" fill="#6366f1">集群管理界面</text>
+      <rect x="568" y="24" width="104" height="42" rx="8" fill="#fff" stroke="#c7d2fe"/>
+      <text x="620" y="43" text-anchor="middle" font-size="12" font-weight="600" fill="#3730a3">Oozie</text>
+      <text x="620" y="58" text-anchor="middle" font-size="9.5" fill="#6366f1">作业流调度</text>
+    </g>
+
+    <rect x="0" y="86" width="680" height="62" rx="9" fill="#ecfeff" stroke="#a5f3fc"/>
+    <text x="14" y="112" font-size="11.5" font-weight="700" fill="#0e7490">数据采集</text>
+    <text x="14" y="130" font-size="10" fill="#22d3ee">把数据搬进来</text>
+    <g>
+      <rect x="112" y="96" width="104" height="42" rx="8" fill="#fff" stroke="#a5f3fc"/>
+      <text x="164" y="115" text-anchor="middle" font-size="12" font-weight="600" fill="#155e75">Flume</text>
+      <text x="164" y="130" text-anchor="middle" font-size="9.5" fill="#0891b2">收日志</text>
+      <rect x="226" y="96" width="104" height="42" rx="8" fill="#fff" stroke="#a5f3fc"/>
+      <text x="278" y="115" text-anchor="middle" font-size="12" font-weight="600" fill="#155e75">Sqoop</text>
+      <text x="278" y="130" text-anchor="middle" font-size="9.5" fill="#0891b2">搬关系库数据</text>
+      <rect x="340" y="96" width="104" height="42" rx="8" fill="#fff" stroke="#a5f3fc"/>
+      <text x="392" y="115" text-anchor="middle" font-size="12" font-weight="600" fill="#155e75">Kafka</text>
+      <text x="392" y="130" text-anchor="middle" font-size="9.5" fill="#0891b2">消息队列缓冲</text>
+    </g>
+
+    <rect x="0" y="158" width="680" height="62" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="14" y="184" font-size="11.5" font-weight="700" fill="#6d28d9">计算</text>
+    <text x="14" y="202" font-size="10" fill="#a78bfa">真正干活</text>
+    <g>
+      <rect x="112" y="168" width="104" height="42" rx="8" fill="#fff" stroke="#ddd6fe"/>
+      <text x="164" y="187" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">MapReduce</text>
+      <text x="164" y="202" text-anchor="middle" font-size="9.5" fill="#7c3aed">批处理</text>
+      <rect x="226" y="168" width="104" height="42" rx="8" fill="#fff" stroke="#ddd6fe"/>
+      <text x="278" y="187" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">Spark</text>
+      <text x="278" y="202" text-anchor="middle" font-size="9.5" fill="#7c3aed">内存计算</text>
+      <rect x="340" y="168" width="104" height="42" rx="8" fill="#fff" stroke="#ddd6fe"/>
+      <text x="392" y="187" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">Tez</text>
+      <text x="392" y="202" text-anchor="middle" font-size="9.5" fill="#7c3aed">DAG 优化执行</text>
+      <rect x="454" y="168" width="104" height="42" rx="8" fill="#fff" stroke="#ddd6fe"/>
+      <text x="506" y="187" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">Flink</text>
+      <text x="506" y="202" text-anchor="middle" font-size="9.5" fill="#7c3aed">流计算</text>
+    </g>
+
+    <rect x="0" y="230" width="680" height="62" rx="9" fill="#fff7ed" stroke="#fed7aa"/>
+    <text x="14" y="256" font-size="11.5" font-weight="700" fill="#c2410c">资源调度</text>
+    <text x="14" y="274" font-size="10" fill="#fb923c">谁用哪台机器</text>
+    <g>
+      <rect x="112" y="240" width="470" height="42" rx="8" fill="#fff" stroke="#fed7aa"/>
+      <text x="347" y="259" text-anchor="middle" font-size="12" font-weight="600" fill="#9a3412">YARN</text>
+      <text x="347" y="274" text-anchor="middle" font-size="9.5" fill="#ea580c">ResourceManager + NodeManager + ApplicationMaster + Container（教材 8.3 节）</text>
+    </g>
+
+    <rect x="0" y="302" width="680" height="22" rx="7" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="14" y="317" font-size="11" font-weight="700" fill="#166534">存储：HDFS（文件）· HBase（表）· 共同点是都建在普通机器集群上</text>
+  </g>
+</svg>`
+  }],
+
+  hc3: [{
+    t: 'HDFS 体系结构：谁管账、谁存数据（教材 3.4 节）',
+    cap: '一句话记：NameNode 是「账本」（只记元数据，不存数据），DataNode 是「仓库」（存真实的块）。客户端读写数据时只问 NameNode 要地址，真正的数据从 DataNode 直接走。',
+    svg: `<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="20" y="26" width="132" height="66" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+    <text x="86" y="50" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3730a3">Client 客户端</text>
+    <text x="86" y="70" text-anchor="middle" font-size="10" fill="#6366f1">提交读写请求</text>
+    <text x="86" y="85" text-anchor="middle" font-size="10" fill="#6366f1">自己传输数据</text>
+
+    <rect x="210" y="18" width="240" height="82" rx="10" fill="#e0e7ff" stroke="#818cf8"/>
+    <text x="330" y="40" text-anchor="middle" font-size="12.5" font-weight="700" fill="#312e81">NameNode 名称节点（主）</text>
+    <text x="330" y="58" text-anchor="middle" font-size="10.5" fill="#4338ca">元数据全部常驻内存</text>
+    <text x="330" y="75" text-anchor="middle" font-size="10" fill="#6366f1">目录树 / 文件→块 / 块→DataNode 位置</text>
+    <text x="330" y="91" text-anchor="middle" font-size="9.5" fill="#818cf8">磁盘上是 fsimage + edits</text>
+
+    <rect x="486" y="26" width="176" height="66" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="5 4"/>
+    <text x="574" y="48" text-anchor="middle" font-size="11.5" font-weight="700" fill="#64748b">Secondary NameNode</text>
+    <text x="574" y="66" text-anchor="middle" font-size="9.5" fill="#94a3b8">只做检查点合并 · 不是热备</text>
+    <text x="574" y="81" text-anchor="middle" font-size="9.5" fill="#b45309">官方已标 deprecated</text>
+
+    <g>
+      <rect x="44" y="170" width="160" height="70" rx="10" fill="#ecfdf5" stroke="#86efac"/>
+      <text x="124" y="192" text-anchor="middle" font-size="11.5" font-weight="700" fill="#166534">DataNode 1</text>
+      <text x="124" y="210" text-anchor="middle" font-size="9.5" fill="#16a34a">块 A · 块 B</text>
+      <text x="124" y="226" text-anchor="middle" font-size="9.5" fill="#4ade80">每 3 秒心跳</text>
+
+      <rect x="224" y="170" width="160" height="70" rx="10" fill="#ecfdf5" stroke="#86efac"/>
+      <text x="304" y="192" text-anchor="middle" font-size="11.5" font-weight="700" fill="#166534">DataNode 2</text>
+      <text x="304" y="210" text-anchor="middle" font-size="9.5" fill="#16a34a">块 A · 块 C</text>
+      <text x="304" y="226" text-anchor="middle" font-size="9.5" fill="#4ade80">每 3 秒心跳</text>
+
+      <rect x="404" y="170" width="160" height="70" rx="10" fill="#ecfdf5" stroke="#86efac"/>
+      <text x="484" y="192" text-anchor="middle" font-size="11.5" font-weight="700" fill="#166534">DataNode 3</text>
+      <text x="484" y="210" text-anchor="middle" font-size="9.5" fill="#16a34a">块 B · 块 C</text>
+      <text x="484" y="226" text-anchor="middle" font-size="9.5" fill="#4ade80">每 3 秒心跳</text>
+    </g>
+
+    <g stroke="#94a3b8" stroke-width="1.3" fill="none">
+      <path fill="none" d="M154 60 L206 60" marker-end="url(#ar2)"/>
+      <path fill="none" d="M330 104 L330 130" marker-end="url(#ar2)"/>
+      <path fill="none" d="M330 130 L124 130 L124 166" marker-end="url(#ar2)"/>
+      <path fill="none" d="M330 130 L484 130 L484 166" marker-end="url(#ar2)"/>
+      <path fill="none" d="M86 96 L86 140 L64 140 L64 166" stroke-dasharray="5 4" marker-end="url(#ar2)"/>
+    </g>
+    <text x="180" y="54" font-size="9.5" fill="#64748b">① 要地址</text>
+    <text x="338" y="122" font-size="9.5" fill="#64748b">② 返回块位置</text>
+    <text x="24" y="132" font-size="9.5" fill="#64748b">③ 直接读数据</text>
+
+    <rect x="20" y="262" width="640" height="62" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="34" y="282" font-size="11" font-weight="700" fill="#92400e">要点：数据不经过 NameNode 转发</text>
+    <text x="34" y="298" font-size="10.5" fill="#a16207">客户端拿到位置后直连 DataNode，所以 NameNode 不会成为读写带宽瓶颈；</text>
+    <text x="34" y="314" font-size="10.5" fill="#a16207">但它一旦挂掉，整个集群都无法定位数据——这正是后面 HA 要解决的问题。</text>
+  </g>
+</svg>`
+  }, {
+    t: 'HDFS 写文件：机架感知 + 流水线（教材 3.5.2 / 3.6.2 节）',
+    cap: '写文件只有两件事：先向 NameNode 要「把块放哪几台」，然后客户端带着数据沿流水线一级级往下传。副本为什么这么放？因为要同时防「一台机器坏」和「一个机架断电」。',
+    svg: `<svg viewBox="0 0 680 330" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs>
+    <marker markerUnits="userSpaceOnUse" id="mma" markerWidth="7" markerHeight="7" refX="6" refY="2.6" orient="auto">
+      <path d="M0,0 L6,2.6 L0,5.2 Z" fill="#3b82f6"/></marker>
+    <marker markerUnits="userSpaceOnUse" id="mmb" markerWidth="7" markerHeight="7" refX="6" refY="2.6" orient="auto">
+      <path d="M0,0 L6,2.6 L0,5.2 Z" fill="#f59e0b"/></marker>
+  </defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="220" y="8" width="240" height="44" rx="9" fill="#e0e7ff" stroke="#818cf8"/>
+    <text x="340" y="27" text-anchor="middle" font-size="11" font-weight="700" fill="#312e81">NameNode</text>
+    <text x="340" y="43" text-anchor="middle" font-size="9" fill="#4338ca">按机架感知返回 3 个 DataNode 地址</text>
+
+    <text x="340" y="74" text-anchor="middle" font-size="9.5" fill="#2563eb">数据包正向流动：Client → DN1 → DN2 → DN3</text>
+
+    <rect x="24" y="86" width="130" height="66" rx="9" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="89" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">Client</text>
+    <text x="89" y="125" text-anchor="middle" font-size="9" fill="#3b82f6">切成 packet</text>
+    <text x="89" y="140" text-anchor="middle" font-size="9" fill="#3b82f6">默认 64KB</text>
+
+    <rect x="178" y="86" width="130" height="66" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="243" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">DataNode 1</text>
+    <text x="243" y="125" text-anchor="middle" font-size="9" fill="#16a34a">机架 A · 本机</text>
+    <text x="243" y="140" text-anchor="middle" font-size="9" fill="#4ade80">写盘后转发</text>
+
+    <rect x="332" y="86" width="130" height="66" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="397" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">DataNode 2</text>
+    <text x="397" y="125" text-anchor="middle" font-size="9" fill="#16a34a">机架 B · 远程</text>
+    <text x="397" y="140" text-anchor="middle" font-size="9" fill="#4ade80">写盘后转发</text>
+
+    <rect x="486" y="86" width="130" height="66" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="551" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">DataNode 3</text>
+    <text x="551" y="125" text-anchor="middle" font-size="9" fill="#16a34a">机架 B · 同架</text>
+    <text x="551" y="140" text-anchor="middle" font-size="9" fill="#4ade80">最后一站</text>
+
+    <g stroke="#3b82f6" stroke-width="1.5" fill="none">
+      <line x1="154" y1="112" x2="174" y2="112" marker-end="url(#mma)"/>
+      <line x1="308" y1="112" x2="328" y2="112" marker-end="url(#mma)"/>
+      <line x1="462" y1="112" x2="482" y2="112" marker-end="url(#mma)"/>
+    </g>
+
+    <text x="340" y="176" text-anchor="middle" font-size="9.5" fill="#b45309">确认（ack）反向回传：全部确认后客户端才发下一个 packet</text>
+
+    <g stroke="#f59e0b" stroke-width="1.3" stroke-dasharray="4 3" fill="none">
+      <path d="M551 152 L551 164 L397 164 L397 158" marker-end="url(#mmb)"/>
+      <path d="M397 164 L243 164 L243 158" marker-end="url(#mmb)"/>
+      <path d="M243 164 L89 164 L89 158" marker-end="url(#mmb)"/>
+    </g>
+
+    <rect x="16" y="192" width="648" height="126" rx="9" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="30" y="212" font-size="10.5" font-weight="700" fill="#334155">为什么第 3 个副本放「另一个机架的另一台机器」？</text>
+    <text x="30" y="232" font-size="9.5" fill="#475569">① 第 1 个放本机 —— 写了最快；</text>
+    <text x="30" y="250" font-size="9.5" fill="#475569">② 第 2 个放另一个机架 —— 万一整个机架断电，数据还在；</text>
+    <text x="30" y="268" font-size="9.5" fill="#475569">③ 第 3 个放那个远程机架里的另一台 —— 两机架都有冗余，又不把写带宽全压在一个机架上。</text>
+    <text x="30" y="290" font-size="9.5" fill="#94a3b8">考试常问：「为什么不是 3 个都放本机？」——因为机架级故障会同时带走 3 份，等于没有冗余。</text>
+    <text x="30" y="308" font-size="9.5" fill="#94a3b8">另外：写入过程中任何一个 DataNode 失败，客户端会重建流水线并剔除坏节点，保证 3 份最终都写成功。</text>
+  </g>
+</svg>`
+  }],
+
+  hc6: [{
+    t: '云数据库：把运维交给平台（教材 6.1 / 6.3 节）',
+    cap: '云数据库不是「另一种数据库」，而是「数据库以服务方式交付」。考点往往落在「弹性、按需、免运维、多租户、存算分离」这几个词上，理解这层意思就会做题。',
+    svg: `<svg viewBox="0 0 680 316" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="h1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="8" y="20" font-size="10.5" font-weight="700" fill="#64748b">自建数据库 vs 云数据库：差别在「谁负责运维」</text>
+
+    <rect x="8" y="32" width="300" height="150" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="24" y="52" font-size="10.5" font-weight="700" fill="#475569">自建：你什么都得管</text>
+    <rect x="24" y="64" width="268" height="26" rx="5" fill="#fff" stroke="#e2e8f0"/>
+    <text x="34" y="81" font-size="9" fill="#64748b">应用（你写）</text>
+    <rect x="24" y="94" width="268" height="26" rx="5" fill="#fff" stroke="#e2e8f0"/>
+    <text x="34" y="111" font-size="9" fill="#64748b">数据库软件：安装、升级、打补丁（你）</text>
+    <rect x="24" y="124" width="268" height="26" rx="5" fill="#fff" stroke="#e2e8f0"/>
+    <text x="34" y="141" font-size="9" fill="#64748b">备份、监控、容灾、扩容（你）</text>
+    <rect x="24" y="154" width="268" height="20" rx="5" fill="#fef2f2" stroke="#fecaca"/>
+    <text x="34" y="168" font-size="8.5" fill="#b91c1c">机器、机房、电力（你的成本）</text>
+
+    <rect x="328" y="32" width="344" height="150" rx="10" fill="#f0f9ff" stroke="#bae6fd"/>
+    <text x="344" y="52" font-size="10.5" font-weight="700" fill="#0369a1">云数据库：只管写 SQL，其余交给平台</text>
+    <rect x="344" y="64" width="312" height="26" rx="5" fill="#fff" stroke="#bae6fd"/>
+    <text x="354" y="81" font-size="9" fill="#0369a1">应用（你写）</text>
+    <rect x="344" y="94" width="312" height="26" rx="5" fill="#e0f2fe" stroke="#7dd3fc"/>
+    <text x="354" y="111" font-size="9" font-weight="700" fill="#0369a1">云数据库服务：弹性伸缩 · 自动备份 · 高可用 · 监控（平台管）</text>
+    <rect x="344" y="124" width="312" height="26" rx="5" fill="#fff" stroke="#bae6fd"/>
+    <text x="354" y="141" font-size="9" fill="#0369a1">按用量付费：用多少算多少，不用可以先缩容</text>
+    <rect x="344" y="154" width="312" height="20" rx="5" fill="#ecfdf5" stroke="#bbf7d0"/>
+    <text x="354" y="168" font-size="8.5" fill="#15803d">代价：数据放在别人机房，要评估合规与厂商锁定</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <path fill="none" d="M308 107 L324 107" marker-end="url(#h1)"/>
+    </g>
+
+    <text x="8" y="208" font-size="10.5" font-weight="700" fill="#64748b">云原生数据库的两个关键词</text>
+    <rect x="8" y="218" width="330" height="86" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="22" y="238" font-size="10" font-weight="700" fill="#1d4ed8">存储与计算分离</text>
+    <text x="22" y="257" font-size="9" fill="#3b82f6">计算节点只负责算，数据统一放在共享存储层。</text>
+    <text x="22" y="274" font-size="9" fill="#3b82f6">好处：算力不够加算力、存储不够加存储，互不牵连；</text>
+    <text x="22" y="291" font-size="9" fill="#3b82f6">也便于做只读副本和秒级扩容。</text>
+
+    <rect x="350" y="218" width="322" height="86" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="364" y="238" font-size="10" font-weight="700" fill="#5b21b6">多租户</text>
+    <text x="364" y="257" font-size="9" fill="#7c3aed">一套系统同时服务很多客户，靠隔离保证互不干扰：</text>
+    <text x="364" y="274" font-size="9" fill="#7c3aed">资源隔离（限流、配额）、数据隔离（加密、权限）、</text>
+    <text x="364" y="291" font-size="9" fill="#7c3aed">故障隔离（一个租户出问题不拖垮别人）。</text>
+  </g>
+</svg>`
+  }],
+
+  hc7: [{
+    t: 'MapReduce 执行全过程（教材 7.2 节，含 Shuffle）',
+    cap: '这张图是第 7 章的总纲：左边三块在 map 端，右边两块在 reduce 端，中间虚线框就是 Shuffle。凡是「数据要按 key 重新分配」的活，都发生在虚线框里。',
+    svg: `<svg viewBox="0 0 680 392" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="ar5" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="8" y="20" font-size="10.5" font-weight="700" fill="#64748b">map 端（本地计算）</text>
+    <text x="556" y="20" font-size="10.5" font-weight="700" fill="#64748b">reduce 端</text>
+
+    <rect x="8" y="32" width="118" height="68" rx="9" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="67" y="53" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1d4ed8">输入分片</text>
+    <text x="67" y="69" text-anchor="middle" font-size="8.5" fill="#3b82f6">InputSplit</text>
+    <text x="67" y="86" text-anchor="middle" font-size="8.5" fill="#94a3b8">逻辑切分，非物理</text>
+
+    <rect x="134" y="32" width="112" height="68" rx="9" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="190" y="53" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1d4ed8">map()</text>
+    <text x="190" y="69" text-anchor="middle" font-size="8.5" fill="#3b82f6">逐条处理</text>
+    <text x="190" y="86" text-anchor="middle" font-size="8.5" fill="#94a3b8">输出 &lt;k,v&gt;</text>
+
+    <rect x="254" y="32" width="154" height="68" rx="9" fill="#eef2ff" stroke="#a5b4fc"/>
+    <text x="331" y="51" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4338ca">环形缓冲区</text>
+    <text x="331" y="66" text-anchor="middle" font-size="8.5" fill="#6366f1">默认 100MB · 记分区与排序索引</text>
+    <text x="331" y="81" text-anchor="middle" font-size="8.5" fill="#6366f1">写满一部分就启动溢写</text>
+    <text x="331" y="95" text-anchor="middle" font-size="8.5" font-weight="700" fill="#ef4444">用满 80% 触发</text>
+
+    <rect x="416" y="32" width="126" height="68" rx="9" fill="#eef2ff" stroke="#a5b4fc"/>
+    <text x="479" y="51" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4338ca">溢写 Spill</text>
+    <text x="479" y="67" text-anchor="middle" font-size="8.5" fill="#6366f1">按「分区 + key」排序</text>
+    <text x="479" y="82" text-anchor="middle" font-size="8.5" fill="#6366f1">落成磁盘临时文件</text>
+    <text x="479" y="95" text-anchor="middle" font-size="8.5" fill="#94a3b8">后台线程执行</text>
+
+    <rect x="550" y="32" width="122" height="68" rx="9" fill="#eef2ff" stroke="#a5b4fc"/>
+    <text x="611" y="51" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4338ca">归并 Merge</text>
+    <text x="611" y="67" text-anchor="middle" font-size="8.5" fill="#6366f1">多个小文件多路合并</text>
+    <text x="611" y="82" text-anchor="middle" font-size="8.5" fill="#6366f1">一次最多开 10 个流</text>
+    <text x="611" y="95" text-anchor="middle" font-size="8.5" fill="#94a3b8">io.sort.factor</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <line x1="128" y1="66" x2="132" y2="66" marker-end="url(#ar5)"/>
+      <line x1="248" y1="66" x2="252" y2="66" marker-end="url(#ar5)"/>
+      <line x1="410" y1="66" x2="414" y2="66" marker-end="url(#ar5)"/>
+      <line x1="544" y1="66" x2="548" y2="66" marker-end="url(#ar5)"/>
+    </g>
+
+    <rect x="8" y="120" width="664" height="118" rx="10" fill="none" stroke="#c4b5fd" stroke-dasharray="6 5"/>
+    <text x="340" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed">Shuffle 阶段（map 输出之后、reduce 执行之前，最耗时的环节）</text>
+
+    <rect x="24" y="152" width="152" height="72" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="100" y="172" text-anchor="middle" font-size="10" font-weight="700" fill="#5b21b6">分区 Partitioner</text>
+    <text x="100" y="189" text-anchor="middle" font-size="8.5" fill="#7c3aed">hash(key) % reduce 数</text>
+    <text x="100" y="204" text-anchor="middle" font-size="8.5" fill="#7c3aed">决定这条记录去哪个 reduce</text>
+    <text x="100" y="218" text-anchor="middle" font-size="8" fill="#a78bfa">默认 HashPartitioner</text>
+
+    <rect x="190" y="152" width="152" height="72" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="266" y="172" text-anchor="middle" font-size="10" font-weight="700" fill="#5b21b6">拷贝 Fetch</text>
+    <text x="266" y="189" text-anchor="middle" font-size="8.5" fill="#7c3aed">reduce 主动去各 map 拉数据</text>
+    <text x="266" y="204" text-anchor="middle" font-size="8.5" fill="#7c3aed">默认 5 路并行</text>
+    <text x="266" y="218" text-anchor="middle" font-size="8" fill="#a78bfa">只拉属于自己的分区</text>
+
+    <rect x="356" y="152" width="160" height="72" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="436" y="172" text-anchor="middle" font-size="10" font-weight="700" fill="#5b21b6">归并 + 分组</text>
+    <text x="436" y="189" text-anchor="middle" font-size="8.5" fill="#7c3aed">把相同 key 的 value 聚成一组</text>
+    <text x="436" y="204" text-anchor="middle" font-size="8.5" fill="#7c3aed">一次 reduce() 处理一组</text>
+    <text x="436" y="218" text-anchor="middle" font-size="8" fill="#a78bfa">Reduce 端归并</text>
+
+    <rect x="530" y="152" width="126" height="72" rx="9" fill="#fef3c7" stroke="#fcd34d"/>
+    <text x="593" y="172" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e">Combiner</text>
+    <text x="593" y="189" text-anchor="middle" font-size="8.5" fill="#b45309">map 端先局部聚合</text>
+    <text x="593" y="204" text-anchor="middle" font-size="8.5" fill="#b45309">大幅减少网络传输</text>
+    <text x="593" y="218" text-anchor="middle" font-size="8" fill="#d97706">可能一次都不执行</text>
+
+    <rect x="8" y="256" width="152" height="60" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="84" y="277" text-anchor="middle" font-size="10.5" font-weight="700" fill="#166534">reduce()</text>
+    <text x="84" y="294" text-anchor="middle" font-size="8.5" fill="#16a34a">(k, [v1,v2,…]) → 汇总值</text>
+    <text x="84" y="308" text-anchor="middle" font-size="8" fill="#4ade80">相同 key 只调一次</text>
+
+    <rect x="176" y="256" width="136" height="60" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="244" y="277" text-anchor="middle" font-size="10.5" font-weight="700" fill="#166534">输出 OutputFormat</text>
+    <text x="244" y="294" text-anchor="middle" font-size="8.5" fill="#16a34a">part-r-00000 …</text>
+    <text x="244" y="308" text-anchor="middle" font-size="8" fill="#4ade80">落到 HDFS</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <line x1="340" y1="100" x2="340" y2="116" marker-end="url(#ar5)"/>
+      <path fill="none" d="M331 240 L331 248 L84 248 L84 252" marker-end="url(#ar5)"/>
+      <line x1="160" y1="286" x2="172" y2="286" marker-end="url(#ar5)"/>
+    </g>
+
+    <rect x="328" y="256" width="344" height="60" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="342" y="274" font-size="9.5" font-weight="700" fill="#92400e">三个最容易记混的点</text>
+    <text x="342" y="290" font-size="8.5" fill="#a16207">① 溢写阈值 0.80（不是 0.70）　② reduce 端缓冲比例 0.70</text>
+    <text x="342" y="304" font-size="8.5" fill="#a16207">③ Combiner 可能 0 次/1 次/多次执行，不能依赖它一定运行</text>
+  </g>
+</svg>`
+  }],
+
+  hc8: [{
+    t: 'HDFS HA：主备如何切换（教材 8.2.1 节）',
+    cap: '单点故障的解法是「一主一备」：Active 干活、Standby 待命，两者通过 JournalNode 共享编辑日志保持一致，ZKFC 负责发现故障并触发切换。注意：备节点不是摆设，它一直在同步数据，所以能立刻接班。',
+    svg: `<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="ar6" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="16" y="26" width="184" height="76" rx="10" fill="#dcfce7" stroke="#86efac"/>
+    <text x="108" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">NameNode（Active）</text>
+    <text x="108" y="67" text-anchor="middle" font-size="9.5" fill="#16a34a">对外提供服务</text>
+    <text x="108" y="83" text-anchor="middle" font-size="9.5" fill="#16a34a">写 edits 到 JournalNode</text>
+    <text x="108" y="97" text-anchor="middle" font-size="9" fill="#4ade80">客户端读写都找它</text>
+
+    <rect x="480" y="26" width="184" height="76" rx="10" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="572" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">NameNode（Standby）</text>
+    <text x="572" y="67" text-anchor="middle" font-size="9.5" fill="#64748b">待命，不对外服务</text>
+    <text x="572" y="83" text-anchor="middle" font-size="9.5" fill="#64748b">持续读取 edits 保持同步</text>
+    <text x="572" y="97" text-anchor="middle" font-size="9" fill="#94a3b8">随时可接班</text>
+
+    <g>
+      <rect x="246" y="18" width="188" height="34" rx="8" fill="#e0e7ff" stroke="#a5b4fc"/>
+      <text x="340" y="40" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3730a3">JournalNode 1</text>
+      <rect x="246" y="58" width="188" height="34" rx="8" fill="#e0e7ff" stroke="#a5b4fc"/>
+      <text x="340" y="80" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3730a3">JournalNode 2</text>
+      <rect x="246" y="98" width="188" height="34" rx="8" fill="#e0e7ff" stroke="#a5b4fc"/>
+      <text x="340" y="120" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3730a3">JournalNode 3</text>
+    </g>
+    <text x="340" y="150" text-anchor="middle" font-size="9.5" fill="#6366f1">至少 3 个 · 写日志要过半确认 · 允许坏 1 台</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <path fill="none" d="M200 60 L242 60" marker-end="url(#ar6)"/>
+      <path fill="none" d="M438 60 L476 60" marker-end="url(#ar6)"/>
+    </g>
+
+    <rect x="150" y="176" width="150" height="60" rx="9" fill="#fef3c7" stroke="#fcd34d"/>
+    <text x="225" y="197" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">ZKFC</text>
+    <text x="225" y="214" text-anchor="middle" font-size="9" fill="#b45309">监控 NN 健康</text>
+    <text x="225" y="228" text-anchor="middle" font-size="9" fill="#b45309">抢锁抢到就升主</text>
+
+    <rect x="380" y="176" width="150" height="60" rx="9" fill="#fef3c7" stroke="#fcd34d"/>
+    <text x="455" y="197" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">ZKFC</text>
+    <text x="455" y="214" text-anchor="middle" font-size="9" fill="#b45309">监控 NN 健康</text>
+    <text x="455" y="228" text-anchor="middle" font-size="9" fill="#b45309">抢锁抢到就升主</text>
+
+    <rect x="266" y="262" width="148" height="52" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="340" y="283" text-anchor="middle" font-size="11" font-weight="700" fill="#5b21b6">ZooKeeper 集群</text>
+    <text x="340" y="300" text-anchor="middle" font-size="9" fill="#7c3aed">存锁 + 选主 + 通知</text>
+
+    <g stroke="#94a3b8" stroke-width="1.2">
+      <path fill="none" d="M225 172 L225 140 L244 140" marker-end="url(#ar6)"/>
+      <path fill="none" d="M455 172 L455 140 L440 140" marker-end="url(#ar6)"/>
+      <path fill="none" d="M225 240 L225 288 L262 288" marker-end="url(#ar6)"/>
+      <path fill="none" d="M455 240 L455 288 L418 288" marker-end="url(#ar6)"/>
+    </g>
+
+    <rect x="16" y="256" width="230" height="62" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="30" y="274" font-size="10" font-weight="700" fill="#92400e">故障切换过程</text>
+    <text x="30" y="291" font-size="8.5" fill="#a16207">① ZKFC 发现主节点失联</text>
+    <text x="30" y="306" font-size="8.5" fill="#a16207">② 抢到 ZK 锁，备节点升为 Active</text>
+  </g>
+</svg>`
+  }]
+};
+
+const H_FIG = H_FIG1;
+/* ==== 教材图解（第二批）：HBase / CAP / Hive / Spark / Kafka / Flink Watermark
+   / Pregel BSP / 可视化流程
+   ================================================================ */
+Object.assign(H_FIG1, {
+  hc4: [{
+    t: 'HBase 系统架构与写入路径（教材 4.4 / 4.5 节）',
+    cap: 'HBase 只有两个角色：HMaster 管「分配」，RegionServer 管「读写」。写入之所以快，是因为它从不改旧数据：先记日志，再写内存，最后批量刷盘，靠后台合并来整理。',
+    svg: `<svg viewBox="0 0 680 350" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="b1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="230" y="14" width="220" height="46" rx="9" fill="#e0e7ff" stroke="#818cf8"/>
+    <text x="340" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#312e81">HMaster</text>
+    <text x="340" y="50" text-anchor="middle" font-size="9" fill="#4338ca">分配 Region · 负载均衡 · 建表删表（不碰数据）</text>
+
+    <rect x="14" y="104" width="122" height="60" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="75" y="125" text-anchor="middle" font-size="11" font-weight="700" fill="#5b21b6">ZooKeeper</text>
+    <text x="75" y="142" text-anchor="middle" font-size="9" fill="#7c3aed">选主 · 存 meta 位置</text>
+    <text x="75" y="156" text-anchor="middle" font-size="9" fill="#7c3aed">记录 RS 在线状态</text>
+
+    <rect x="160" y="84" width="200" height="106" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="260" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">RegionServer 1</text>
+    <rect x="172" y="112" width="86" height="30" rx="5" fill="#fff" stroke="#bbf7d0"/>
+    <text x="215" y="131" text-anchor="middle" font-size="9" fill="#166534">Region A</text>
+    <rect x="264" y="112" width="86" height="30" rx="5" fill="#fff" stroke="#bbf7d0"/>
+    <text x="307" y="131" text-anchor="middle" font-size="9" fill="#166534">Region B</text>
+    <text x="260" y="160" text-anchor="middle" font-size="9" fill="#16a34a">每个 Region 对应一组 Store</text>
+    <text x="260" y="176" text-anchor="middle" font-size="9" fill="#16a34a">Store = MemStore + 多个 HFile</text>
+
+    <rect x="160" y="204" width="200" height="106" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="260" y="224" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">RegionServer 2</text>
+    <rect x="172" y="232" width="86" height="30" rx="5" fill="#fff" stroke="#bbf7d0"/>
+    <text x="215" y="251" text-anchor="middle" font-size="9" fill="#166534">Region C</text>
+    <rect x="264" y="232" width="86" height="30" rx="5" fill="#fff" stroke="#bbf7d0"/>
+    <text x="307" y="251" text-anchor="middle" font-size="9" fill="#166534">Region D</text>
+    <text x="260" y="282" text-anchor="middle" font-size="9" fill="#16a34a">Region 多了会自动分裂</text>
+    <text x="260" y="298" text-anchor="middle" font-size="9" fill="#16a34a">由 HMaster 重新分配负载</text>
+
+    <rect x="386" y="84" width="280" height="226" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="400" y="104" font-size="11" font-weight="700" fill="#334155">一次写入的经历（LSM-Tree）</text>
+
+    <rect x="400" y="114" width="252" height="34" rx="7" fill="#fff" stroke="#cbd5e1"/>
+    <text x="412" y="135" font-size="10" fill="#0f172a">① 先写 HLog（WAL）—— 断电可恢复</text>
+    <rect x="400" y="154" width="252" height="34" rx="7" fill="#fff" stroke="#cbd5e1"/>
+    <text x="412" y="175" font-size="10" fill="#0f172a">② 再写 MemStore（内存）—— 排序</text>
+    <rect x="400" y="194" width="252" height="34" rx="7" fill="#fff" stroke="#cbd5e1"/>
+    <text x="412" y="215" font-size="10" fill="#0f172a">③ 攒满阈值 → flush 成 HFile</text>
+    <rect x="400" y="234" width="252" height="34" rx="7" fill="#fff" stroke="#cbd5e1"/>
+    <text x="412" y="255" font-size="10" fill="#0f172a">④ 后台 compaction 合并小文件</text>
+    <text x="400" y="288" font-size="9.5" fill="#64748b">全程只追加、不改旧数据，所以写入吞吐高；</text>
+    <text x="400" y="303" font-size="9.5" fill="#64748b">代价是读要合并多处，靠 Bloom Filter 减少读盘。</text>
+
+    <rect x="160" y="322" width="506" height="24" rx="7" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="172" y="338" font-size="9.5" fill="#1d4ed8">底层存储：HFile 最终都落在 HDFS 上（HBase 不直接管磁盘）</text>
+
+    <g stroke="#94a3b8" stroke-width="1.2">
+      <path fill="none" d="M236 62 L236 80" marker-end="url(#b1)"/>
+      <path fill="none" d="M340 62 L340 78 L262 78" marker-end="url(#b1)"/>
+      <path fill="none" d="M138 132 L156 132" marker-end="url(#b1)"/>
+    </g>
+  </g>
+</svg>`
+  }],
+
+  hc5: [{
+    t: 'CAP 三角：为什么必须做取舍（教材 5.5.1 节）',
+    cap: 'CAP 的关键不是「三选二」，而是「网络分区一定会发生」，所以真正要选的是出问题时保 C 还是保 A。教材的结论：分区容忍 P 必须接受，于是系统分成 CP 与 AP 两类。',
+    svg: `<svg viewBox="0 0 680 322" xmlns="http://www.w3.org/2000/svg" role="img">
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <polygon points="340,32 168,262 512,262" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <circle cx="340" cy="32" r="7" fill="#4f6ef7"/>
+    <circle cx="168" cy="262" r="7" fill="#0ea5a4"/>
+    <circle cx="512" cy="262" r="7" fill="#f59e0b"/>
+    <text x="340" y="20" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3730a3">C 一致性</text>
+    <text x="340" y="66" text-anchor="middle" font-size="9.5" fill="#6366f1">所有副本同一时刻看到同样的值</text>
+    <text x="168" y="288" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0f766e">A 可用性</text>
+    <text x="168" y="306" text-anchor="middle" font-size="9.5" fill="#0d9488">每个请求都能得到响应</text>
+    <text x="512" y="288" text-anchor="middle" font-size="12.5" font-weight="700" fill="#b45309">P 分区容忍</text>
+    <text x="512" y="306" text-anchor="middle" font-size="9.5" fill="#d97706">网络断了系统照常运行</text>
+
+    <text x="222" y="130" text-anchor="middle" font-size="11" font-weight="700" fill="#4338ca">CP</text>
+    <text x="222" y="148" text-anchor="middle" font-size="9" fill="#6366f1">宁可拒绝，也不给错</text>
+    <text x="222" y="162" text-anchor="middle" font-size="9" fill="#94a3b8">银行转账 · ZooKeeper</text>
+
+    <text x="462" y="130" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309">CA</text>
+    <text x="462" y="148" text-anchor="middle" font-size="9" fill="#d97706">单机数据库才能做到</text>
+    <text x="462" y="162" text-anchor="middle" font-size="9" fill="#94a3b8">一旦分布式就守不住</text>
+
+    <text x="340" y="228" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e">AP</text>
+    <text x="340" y="246" text-anchor="middle" font-size="9" fill="#0d9488">先返回，稍后一致</text>
+    <text x="340" y="260" text-anchor="middle" font-size="9" fill="#94a3b8">点赞 · 浏览量 · Cassandra</text>
+
+    <rect x="16" y="20" width="132" height="90" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="28" y="40" font-size="10.5" font-weight="700" fill="#92400e">BASE 是什么</text>
+    <text x="28" y="58" font-size="9" fill="#a16207">基本可用 BA</text>
+    <text x="28" y="74" font-size="9" fill="#a16207">软状态 S</text>
+    <text x="28" y="90" font-size="9" fill="#a16207">最终一致 E</text>
+    <text x="28" y="104" font-size="8.5" fill="#b45309">AP 的落地做法</text>
+
+    <rect x="530" y="20" width="134" height="90" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="542" y="40" font-size="10.5" font-weight="700" fill="#1d4ed8">ACID 是什么</text>
+    <text x="542" y="58" font-size="9" fill="#3b82f6">原子 · 一致 · 隔离 · 持久</text>
+    <text x="542" y="74" font-size="9" fill="#3b82f6">关系数据库的铁律</text>
+    <text x="542" y="90" font-size="9" fill="#3b82f6">CP 的典型代表</text>
+    <text x="542" y="104" font-size="8.5" fill="#60a5fa">扩展难，但绝不将就</text>
+  </g>
+</svg>`
+  }],
+
+  hc9: [{
+    t: 'Hive 系统架构：SQL 是怎么变成分布式作业的（教材 9.2 / 9.3 节）',
+    cap: 'Hive 自己不存数据也不算数据，它是个「翻译官」：接收 SQL → 查元数据知道表在哪 → 编译成 MapReduce/Spark 作业 → 交给 Hadoop 跑。所以它慢在启动作业，快在能处理超大数据量。',
+    svg: `<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="c1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="16" y="16" width="196" height="86" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="114" y="36" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1d4ed8">用户接口</text>
+    <text x="114" y="55" text-anchor="middle" font-size="9.5" fill="#3b82f6">CLI 命令行</text>
+    <text x="114" y="72" text-anchor="middle" font-size="9.5" fill="#3b82f6">JDBC / ODBC（给程序用）</text>
+    <text x="114" y="89" text-anchor="middle" font-size="9.5" fill="#3b82f6">Web UI</text>
+
+    <rect x="240" y="16" width="240" height="120" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="360" y="36" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5b21b6">Driver 驱动器</text>
+    <rect x="254" y="46" width="212" height="24" rx="5" fill="#fff" stroke="#e9d5ff"/>
+    <text x="360" y="62" text-anchor="middle" font-size="9" fill="#6d28d9">① Parser 解析 SQL → 语法树</text>
+    <rect x="254" y="74" width="212" height="24" rx="5" fill="#fff" stroke="#e9d5ff"/>
+    <text x="360" y="90" text-anchor="middle" font-size="9" fill="#6d28d9">② Compiler 查元数据 → 逻辑计划</text>
+    <rect x="254" y="102" width="212" height="24" rx="5" fill="#fff" stroke="#e9d5ff"/>
+    <text x="360" y="118" text-anchor="middle" font-size="9" fill="#6d28d9">③ Optimizer 优化 → 物理计划（若干作业）</text>
+
+    <rect x="508" y="16" width="156" height="86" rx="9" fill="#fef3c7" stroke="#fcd34d"/>
+    <text x="586" y="36" text-anchor="middle" font-size="11.5" font-weight="700" fill="#92400e">Metastore</text>
+    <text x="586" y="55" text-anchor="middle" font-size="9" fill="#b45309">元数据：库 / 表 / 字段</text>
+    <text x="586" y="72" text-anchor="middle" font-size="9" fill="#b45309">分区 / 数据位置</text>
+    <text x="586" y="89" text-anchor="middle" font-size="9" fill="#b45309">默认 Derby，生产用 MySQL</text>
+
+    <rect x="240" y="160" width="424" height="70" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="452" y="182" text-anchor="middle" font-size="11.5" font-weight="700" fill="#166534">执行引擎</text>
+    <rect x="256" y="192" width="120" height="28" rx="5" fill="#fff" stroke="#bbf7d0"/>
+    <text x="316" y="211" text-anchor="middle" font-size="9" fill="#166534">MapReduce</text>
+    <rect x="388" y="192" width="120" height="28" rx="5" fill="#fff" stroke="#bbf7d0"/>
+    <text x="448" y="211" text-anchor="middle" font-size="9" fill="#166534">Spark / Tez</text>
+    <rect x="520" y="192" width="128" height="28" rx="5" fill="#fff" stroke="#bbf7d0"/>
+    <text x="584" y="211" text-anchor="middle" font-size="9" fill="#166534">Impala（不经 MR）</text>
+
+    <rect x="240" y="256" width="424" height="46" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="452" y="277" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">HDFS / HBase（数据真正所在）</text>
+    <text x="452" y="293" text-anchor="middle" font-size="9" fill="#3b82f6">Hive 只是「指向数据的目录」，删表是否删数据看内部表还是外部表</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <path fill="none" d="M212 58 L236 58" marker-end="url(#c1)"/>
+      <path fill="none" d="M480 58 L504 58" marker-end="url(#c1)"/>
+      <path fill="none" d="M360 136 L360 156" marker-end="url(#c1)"/>
+      <path fill="none" d="M452 230 L452 252" marker-end="url(#c1)"/>
+      <path fill="none" d="M114 102 L114 200 L236 200" marker-end="url(#c1)"/>
+    </g>
+
+    <rect x="16" y="160" width="196" height="142" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="28" y="180" font-size="10.5" font-weight="700" fill="#92400e">两个高频考点</text>
+    <text x="28" y="200" font-size="9" fill="#a16207"><tspan font-weight="700">内部表</tspan>：删表连数据一起删</text>
+    <text x="28" y="218" font-size="9" fill="#a16207"><tspan font-weight="700">外部表</tspan>：删表只删元数据</text>
+    <text x="28" y="240" font-size="9" fill="#a16207"><tspan font-weight="700">分区</tspan>：按字段建子目录，查询只扫需要的目录</text>
+    <text x="28" y="258" font-size="9" fill="#a16207"><tspan font-weight="700">分桶</tspan>：按 hash 取模切成 N 个文件</text>
+    <text x="28" y="280" font-size="9" fill="#b45309">读时模式：先存文件，查询时才解析——</text>
+    <text x="28" y="294" font-size="9" fill="#b45309">所以能直接吃原始日志，错误也拖到查询才暴露</text>
+  </g>
+</svg>`
+  }],
+
+  hc10: [{
+    t: 'Spark 运行架构与 Stage 划分（教材 10.3 节）',
+    cap: '上半张是「谁来跑」：Driver 出计划、Cluster Manager 给资源、Executor 干活。下半张是「怎么切」：遇到宽依赖（要 Shuffle）就切一刀，切出一个新 Stage。',
+    svg: `<svg viewBox="0 0 680 392" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="d1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="16" y="16" width="196" height="96" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="114" y="36" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1d4ed8">Driver 驱动器</text>
+    <text x="114" y="55" text-anchor="middle" font-size="9" fill="#3b82f6">创建 SparkContext</text>
+    <text x="114" y="72" text-anchor="middle" font-size="9" fill="#3b82f6">DAGScheduler：DAG → Stage</text>
+    <text x="114" y="89" text-anchor="middle" font-size="9" fill="#3b82f6">TaskScheduler：Stage → Task</text>
+    <text x="114" y="105" text-anchor="middle" font-size="8.5" fill="#60a5fa">整个应用的「总指挥」</text>
+
+    <rect x="248" y="26" width="150" height="76" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="323" y="46" text-anchor="middle" font-size="11" font-weight="700" fill="#5b21b6">Cluster Manager</text>
+    <text x="323" y="64" text-anchor="middle" font-size="9" fill="#7c3aed">YARN / Standalone</text>
+    <text x="323" y="80" text-anchor="middle" font-size="9" fill="#7c3aed">分配 CPU 与内存</text>
+    <text x="323" y="95" text-anchor="middle" font-size="8.5" fill="#a78bfa">只给资源，不管任务</text>
+
+    <rect x="434" y="16" width="230" height="46" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="549" y="35" text-anchor="middle" font-size="10.5" font-weight="700" fill="#166534">Executor 1</text>
+    <text x="549" y="51" text-anchor="middle" font-size="8.5" fill="#16a34a">多个 Task 线程 + 缓存</text>
+    <rect x="434" y="70" width="230" height="46" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="549" y="89" text-anchor="middle" font-size="10.5" font-weight="700" fill="#166534">Executor 2</text>
+    <text x="549" y="105" text-anchor="middle" font-size="8.5" fill="#16a34a">任务失败会自动重试</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <path fill="none" d="M216 50 L244 50" marker-end="url(#d1)"/>
+      <path fill="none" d="M402 50 L430 44" marker-end="url(#d1)"/>
+      <path fill="none" d="M402 70 L430 90" marker-end="url(#d1)"/>
+    </g>
+
+    <text x="16" y="146" font-size="11" font-weight="700" fill="#64748b">DAG 是怎么切成 Stage 的（遇到宽依赖就切一刀）</text>
+
+    <rect x="16" y="160" width="86" height="44" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="59" y="179" text-anchor="middle" font-size="9.5" fill="#1d4ed8">读文件</text>
+    <text x="59" y="194" text-anchor="middle" font-size="8.5" fill="#64748b">textFile</text>
+
+    <rect x="126" y="160" width="86" height="44" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="169" y="179" text-anchor="middle" font-size="9.5" fill="#1d4ed8">flatMap</text>
+    <text x="169" y="194" text-anchor="middle" font-size="8.5" fill="#64748b">窄依赖</text>
+
+    <rect x="236" y="160" width="86" height="44" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="279" y="179" text-anchor="middle" font-size="9.5" fill="#1d4ed8">map</text>
+    <text x="279" y="194" text-anchor="middle" font-size="8.5" fill="#64748b">窄依赖</text>
+
+    <rect x="346" y="160" width="106" height="44" rx="8" fill="#fef3c7" stroke="#fcd34d"/>
+    <text x="399" y="179" text-anchor="middle" font-size="9.5" font-weight="700" fill="#92400e">reduceByKey</text>
+    <text x="399" y="194" text-anchor="middle" font-size="8.5" fill="#b45309">宽依赖 · Shuffle</text>
+
+    <rect x="476" y="160" width="86" height="44" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="519" y="179" text-anchor="middle" font-size="9.5" fill="#1d4ed8">map</text>
+    <text x="519" y="194" text-anchor="middle" font-size="8.5" fill="#64748b">窄依赖</text>
+
+    <rect x="586" y="160" width="78" height="44" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+    <text x="625" y="179" text-anchor="middle" font-size="9.5" font-weight="700" fill="#166534">saveAsText</text>
+    <text x="625" y="194" text-anchor="middle" font-size="8.5" fill="#16a34a">Action</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <line x1="102" y1="182" x2="122" y2="182" marker-end="url(#d1)"/>
+      <line x1="212" y1="182" x2="232" y2="182" marker-end="url(#d1)"/>
+      <line x1="322" y1="182" x2="342" y2="182" marker-end="url(#d1)"/>
+      <line x1="452" y1="182" x2="472" y2="182" marker-end="url(#d1)"/>
+      <line x1="562" y1="182" x2="582" y2="182" marker-end="url(#d1)"/>
+    </g>
+
+    <rect x="16" y="216" width="250" height="30" rx="7" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="141" y="236" text-anchor="middle" font-size="9.5" font-weight="700" fill="#4338ca">Stage 1（窄依赖，可流水线执行）</text>
+    <rect x="440" y="216" width="210" height="30" rx="7" fill="#fff7ed" stroke="#fed7aa"/>
+    <text x="545" y="236" text-anchor="middle" font-size="9.5" font-weight="700" fill="#9a3412">Stage 2（Shuffle 之后）</text>
+
+    <rect x="16" y="262" width="648" height="112" rx="9" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="30" y="282" font-size="10.5" font-weight="700" fill="#334155">四个概念怎么串起来（大题常考）</text>
+    <text x="30" y="300" font-size="9.5" fill="#475569">一个 <tspan font-weight="700">Action</tspan> 触发一个 <tspan font-weight="700">Job</tspan> → DAGScheduler 把 DAG 按宽依赖切成多个 <tspan font-weight="700">Stage</tspan>；</text>
+    <text x="30" y="318" font-size="9.5" fill="#475569">每个 Stage 内按分区数生成若干 <tspan font-weight="700">Task</tspan>，再被调度到 Executor 上执行。</text>
+    <text x="30" y="340" font-size="9.5" fill="#475569">为什么宽依赖代价大：需要把数据按 key 重新分发到不同机器（Shuffle），涉及磁盘写、网络传、再排序。</text>
+    <text x="30" y="362" font-size="9.5" fill="#94a3b8">省事技巧：能用 reduceByKey 就别用 groupByKey——前者会在 map 端先做局部聚合，少传很多数据。</text>
+  </g>
+</svg>`
+  }],
+
+  hc11: [{
+    t: 'Kafka 在流处理链路中的位置（教材 11.2 / 8.4.3 节）',
+    cap: 'Kafka 不是「计算框架」，它是「传送带 + 缓冲池」。采集端拼命往里放，计算端按自己节奏取，中间不会丢、也不会被冲垮。理解这一点，就不会把 Kafka 和 Storm/Flink 搞混。',
+    svg: `<svg viewBox="0 0 680 330" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="e1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="14" y="40" width="118" height="60" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="73" y="62" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1d4ed8">日志采集</text>
+    <text x="73" y="79" text-anchor="middle" font-size="9" fill="#3b82f6">Flume / 埋点</text>
+    <text x="73" y="93" text-anchor="middle" font-size="9" fill="#3b82f6">每秒上万条</text>
+
+    <rect x="164" y="26" width="300" height="176" rx="10" fill="#fef3c7" stroke="#fcd34d"/>
+    <text x="314" y="46" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">Kafka 集群（消息缓冲）</text>
+
+    <rect x="178" y="58" width="272" height="42" rx="7" fill="#fff" stroke="#fde68a"/>
+    <text x="192" y="75" font-size="9" font-weight="700" fill="#92400e">Topic：订单日志</text>
+    <rect x="192" y="82" width="76" height="14" rx="3" fill="#fde68a"/>
+    <text x="230" y="93" text-anchor="middle" font-size="7.5" fill="#78350f">Partition 0</text>
+    <rect x="276" y="82" width="76" height="14" rx="3" fill="#fde68a"/>
+    <text x="314" y="93" text-anchor="middle" font-size="7.5" fill="#78350f">Partition 1</text>
+    <rect x="360" y="82" width="76" height="14" rx="3" fill="#fde68a"/>
+    <text x="398" y="93" text-anchor="middle" font-size="7.5" fill="#78350f">Partition 2</text>
+
+    <rect x="178" y="110" width="272" height="36" rx="7" fill="#fff" stroke="#fde68a"/>
+    <text x="192" y="133" font-size="9" fill="#b45309">每个分区内消息有序，副本 2~3 份，ISR 保持同步</text>
+
+    <rect x="178" y="154" width="272" height="36" rx="7" fill="#fff" stroke="#fde68a"/>
+    <text x="192" y="177" font-size="9" fill="#b45309">消费者用 offset 记「读到哪了」，可重复消费</text>
+
+    <rect x="480" y="40" width="186" height="60" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="573" y="62" text-anchor="middle" font-size="10.5" font-weight="700" fill="#166534">实时计算</text>
+    <text x="573" y="79" text-anchor="middle" font-size="9" fill="#16a34a">Flink / Storm / Spark Streaming</text>
+    <text x="573" y="93" text-anchor="middle" font-size="9" fill="#16a34a">边到边算，秒级出结果</text>
+
+    <rect x="480" y="126" width="186" height="60" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="573" y="148" text-anchor="middle" font-size="10.5" font-weight="700" fill="#5b21b6">结果输出</text>
+    <text x="573" y="165" text-anchor="middle" font-size="9" fill="#7c3aed">MySQL / Redis / 大屏</text>
+    <text x="573" y="179" text-anchor="middle" font-size="9" fill="#7c3aed">供业务实时查询</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <path fill="none" d="M134 70 L160 70" marker-end="url(#e1)"/>
+      <path fill="none" d="M466 70 L476 70" marker-end="url(#e1)"/>
+      <path fill="none" d="M573 102 L573 122" marker-end="url(#e1)"/>
+    </g>
+
+    <rect x="14" y="230" width="652" height="86" rx="9" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="28" y="250" font-size="10.5" font-weight="700" fill="#334155">为什么要在中间加一条 Kafka？（考试爱问）</text>
+    <text x="28" y="270" font-size="9.5" fill="#475569"><tspan font-weight="700">削峰</tspan>：大促瞬间流量暴涨，先堆在 Kafka 里，计算端慢慢消化，不至于被打挂。</text>
+    <text x="28" y="288" font-size="9.5" fill="#475569"><tspan font-weight="700">解耦</tspan>：采集端只管发，计算端只管取；下游重启、换版本都不影响上游。</text>
+    <text x="28" y="306" font-size="9.5" fill="#475569"><tspan font-weight="700">可重放</tspan>：计算逻辑改了要重算，可以从 offset 重头读一遍历史数据（这正是 Kappa 架构的基础）。</text>
+  </g>
+</svg>`
+  }],
+
+  hc12: [{
+    t: 'Watermark 如何解决乱序与迟到（教材 12.6 节）',
+    cap: '这是 Flink 最难的一个点。核心：数据按「事件时间」排，但到达顺序是乱的，所以要靠 Watermark 声明「比 T 早的数据我基本都收到了」，窗口才敢触发计算。',
+    svg: `<svg viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" role="img">
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="16" y="24" font-size="11" font-weight="700" fill="#64748b">事件时间轴（窗口长 10 秒，滚动窗口不重叠）</text>
+
+    <line x1="40" y1="150" x2="650" y2="150" stroke="#cbd5e1" stroke-width="1.5"/>
+    <g stroke="#e2e8f0" stroke-width="1">
+      <line x1="120" y1="120" x2="120" y2="180"/><line x1="300" y1="120" x2="300" y2="180"/>
+      <line x1="480" y1="120" x2="480" y2="180"/><line x1="640" y1="120" x2="640" y2="180"/>
+    </g>
+    <text x="120" y="198" text-anchor="middle" font-size="9" fill="#94a3b8">0s</text>
+    <text x="300" y="198" text-anchor="middle" font-size="9" fill="#94a3b8">10s</text>
+    <text x="480" y="198" text-anchor="middle" font-size="9" fill="#94a3b8">20s</text>
+    <text x="640" y="198" text-anchor="middle" font-size="9" fill="#94a3b8">30s</text>
+
+    <rect x="120" y="118" width="180" height="6" fill="#dbeafe"/>
+    <text x="210" y="112" text-anchor="middle" font-size="9" font-weight="700" fill="#1d4ed8">窗口 1</text>
+    <rect x="300" y="118" width="180" height="6" fill="#dbeafe"/>
+    <text x="390" y="112" text-anchor="middle" font-size="9" font-weight="700" fill="#1d4ed8">窗口 2</text>
+
+    <g fill="#4f6ef7">
+      <circle cx="150" cy="150" r="4"/><circle cx="200" cy="150" r="4"/><circle cx="252" cy="150" r="4"/>
+      <circle cx="330" cy="150" r="4"/><circle cx="392" cy="150" r="4"/><circle cx="440" cy="150" r="4"/>
+    </g>
+    <text x="150" y="138" text-anchor="middle" font-size="7.5" fill="#4f6ef7">e1</text>
+    <text x="200" y="138" text-anchor="middle" font-size="7.5" fill="#4f6ef7">e3</text>
+    <text x="252" y="138" text-anchor="middle" font-size="7.5" fill="#4f6ef7">e2</text>
+
+    <circle cx="252" cy="150" r="9" fill="none" stroke="#f59e0b" stroke-width="1.6"/>
+    <text x="252" y="176" text-anchor="middle" font-size="8" fill="#b45309">乱序到达</text>
+
+    <line x1="280" y1="60" x2="280" y2="240" stroke="#ef4444" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <text x="286" y="74" font-size="9.5" font-weight="700" fill="#dc2626">Watermark = 8s</text>
+    <text x="286" y="90" font-size="8.5" fill="#ef4444">含义：≤ 8s 的数据基本到齐</text>
+
+    <line x1="470" y1="40" x2="470" y2="240" stroke="#ef4444" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <text x="476" y="54" font-size="9.5" font-weight="700" fill="#dc2626">Watermark 推进到 18s</text>
+    <text x="476" y="70" font-size="8.5" fill="#ef4444">→ 窗口 1（0~10s）触发计算并输出</text>
+
+    <rect x="16" y="222" width="316" height="80" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="30" y="242" font-size="10" font-weight="700" fill="#92400e">迟到的数据怎么办？</text>
+    <text x="30" y="261" font-size="9" fill="#a16207">数据的事件时间只有 5s，却在 WM 已到 12s 才到 ——</text>
+    <text x="30" y="278" font-size="9" fill="#a16207">① 设 allowed lateness（允许迟到），窗口先不销毁，补算</text>
+    <text x="30" y="295" font-size="9" fill="#a16207">② 或走侧输出流（side output）单独收集，事后修正</text>
+
+    <rect x="346" y="222" width="318" height="80" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="360" y="242" font-size="10" font-weight="700" fill="#1d4ed8">三种时间语义别混</text>
+    <text x="360" y="261" font-size="9" fill="#3b82f6"><tspan font-weight="700">事件时间</tspan>：数据真正发生的时间 → 算业务指标用它</text>
+    <text x="360" y="278" font-size="9" fill="#3b82f6"><tspan font-weight="700">摄入时间</tspan>：进入 Flink 的时间 → 折中方案</text>
+    <text x="360" y="295" font-size="9" fill="#3b82f6"><tspan font-weight="700">处理时间</tspan>：机器处理的那一刻 → 最简单但不可重现</text>
+  </g>
+</svg>`
+  }],
+
+  hc13: [{
+    t: 'BSP 超步与 Pregel「顶点中心」模型（教材 13.3 节）',
+    cap: '图计算的思路和人传话一样：每个人（顶点）根据听到的消息更新自己，然后告诉邻居；所有人说完这一轮，才一起进入下一轮。这个「一起进入」就是同步屏障，也是 BSP 的灵魂。',
+    svg: `<svg viewBox="0 0 680 330" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="f1" markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto">
+    <path d="M0,0 L6,2.5 L0,5 Z" fill="#818cf8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="16" y="22" font-size="10.5" font-weight="700" fill="#64748b">一个超步里依次做三件事</text>
+
+    <rect x="16" y="34" width="200" height="92" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="116" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">① 计算 Compute</text>
+    <text x="116" y="76" text-anchor="middle" font-size="9" fill="#3b82f6">每个顶点用本轮收到的消息</text>
+    <text x="116" y="92" text-anchor="middle" font-size="9" fill="#3b82f6">更新自己的值</text>
+    <text x="116" y="112" text-anchor="middle" font-size="8.5" fill="#94a3b8">互不干扰，可并行</text>
+
+    <rect x="240" y="34" width="200" height="92" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="340" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#5b21b6">② 通信 Communicate</text>
+    <text x="340" y="76" text-anchor="middle" font-size="9" fill="#7c3aed">沿边把新值发给邻居</text>
+    <text x="340" y="92" text-anchor="middle" font-size="9" fill="#7c3aed">消息异步到达</text>
+    <text x="340" y="112" text-anchor="middle" font-size="8.5" fill="#94a3b8">这一步是网络开销大头</text>
+
+    <rect x="464" y="34" width="200" height="92" rx="9" fill="#fef3c7" stroke="#fcd34d"/>
+    <text x="564" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">③ 同步 Barrier</text>
+    <text x="564" y="76" text-anchor="middle" font-size="9" fill="#b45309">等所有顶点都算完</text>
+    <text x="564" y="92" text-anchor="middle" font-size="9" fill="#b45309">才进入下一个超步</text>
+    <text x="564" y="112" text-anchor="middle" font-size="8.5" fill="#94a3b8">防止有人「偷看」下一轮数据</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <path fill="none" d="M220 80 L236 80" marker-end="url(#f1)"/>
+      <path fill="none" d="M444 80 L460 80" marker-end="url(#f1)"/>
+    </g>
+
+    <text x="16" y="160" font-size="10.5" font-weight="700" fill="#64748b">最短路径（SSSP）逐轮收敛示意：源点 A 距离 0，其余为 ∞</text>
+
+    <g>
+      <circle cx="80" cy="216" r="20" fill="#dbeafe" stroke="#60a5fa"/>
+      <text x="80" y="221" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">A</text>
+      <text x="80" y="252" text-anchor="middle" font-size="9" fill="#1d4ed8">0</text>
+
+      <circle cx="210" cy="186" r="20" fill="#f1f5f9" stroke="#cbd5e1"/>
+      <text x="210" y="191" text-anchor="middle" font-size="11" fill="#475569">B</text>
+      <text x="210" y="222" text-anchor="middle" font-size="9" fill="#64748b">1</text>
+
+      <circle cx="210" cy="246" r="20" fill="#f1f5f9" stroke="#cbd5e1"/>
+      <text x="210" y="251" text-anchor="middle" font-size="11" fill="#475569">C</text>
+      <text x="210" y="282" text-anchor="middle" font-size="9" fill="#64748b">4</text>
+
+      <circle cx="340" cy="216" r="20" fill="#dcfce7" stroke="#86efac"/>
+      <text x="340" y="221" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">D</text>
+      <text x="340" y="252" text-anchor="middle" font-size="9" fill="#16a34a">6</text>
+    </g>
+    <g stroke="#94a3b8" stroke-width="1.2">
+      <line x1="100" y1="212" x2="188" y2="192"/>
+      <line x1="100" y1="222" x2="188" y2="240"/>
+      <line x1="230" y1="192" x2="318" y2="210"/>
+      <line x1="230" y1="242" x2="318" y2="224"/>
+    </g>
+    <text x="145" y="196" font-size="8.5" fill="#94a3b8">1</text>
+    <text x="145" y="236" font-size="8.5" fill="#94a3b8">4</text>
+    <text x="277" y="194" font-size="8.5" fill="#94a3b8">5</text>
+    <text x="277" y="240" font-size="8.5" fill="#94a3b8">2</text>
+
+    <g font-size="8.5" fill="#64748b">
+      <text x="386" y="180">第 1 轮：B 收到 A 的 0，更新为 1</text>
+      <text x="386" y="200">第 2 轮：C 收到 B 的 1+4=5，但 A 直连 4 更短 → 取 4</text>
+      <text x="386" y="220">第 3 轮：D 从 B 得到 1+5=6，从 C 得到 4+2=6 → 取 6</text>
+      <text x="386" y="240">第 4 轮：所有顶点值不再变化、也没有新消息</text>
+      <text x="386" y="260" font-weight="700" fill="#166534">→ 收敛，计算结束</text>
+    </g>
+
+    <rect x="16" y="292" width="648" height="28" rx="7" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="28" y="311" font-size="9.5" fill="#1d4ed8">对比：MapReduce 每轮都要把数据写回 HDFS 再读出来；Pregel 靠内存里的消息传递迭代几十轮，这就是图计算框架存在的理由。</text>
+  </g>
+</svg>`
+  }],
+
+  hc14: [{
+    t: '可视化流程与「选什么图」（教材 14.1 节）',
+    cap: '画图前先问一句：我想让别人看到什么关系？比大小、看趋势、看占比、看分布、看相关，各有对应的图。选错了图，数据再准也传达不出去。',
+    svg: `<svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="g1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="14" y="18" width="118" height="46" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="73" y="39" text-anchor="middle" font-size="10" font-weight="700" fill="#1d4ed8">① 数据采集</text>
+    <text x="73" y="55" text-anchor="middle" font-size="8.5" fill="#3b82f6">拿到原始数据</text>
+
+    <rect x="148" y="18" width="130" height="46" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="213" y="39" text-anchor="middle" font-size="10" font-weight="700" fill="#1d4ed8">② 清洗与变换</text>
+    <text x="213" y="55" text-anchor="middle" font-size="8.5" fill="#3b82f6">去噪、聚合、补缺</text>
+
+    <rect x="294" y="18" width="150" height="46" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="369" y="39" text-anchor="middle" font-size="10" font-weight="700" fill="#1d4ed8">③ 选择视觉编码</text>
+    <text x="369" y="55" text-anchor="middle" font-size="8.5" fill="#3b82f6">哪个字段放哪个通道</text>
+
+    <rect x="460" y="18" width="96" height="46" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="508" y="39" text-anchor="middle" font-size="10" font-weight="700" fill="#1d4ed8">④ 渲染成图</text>
+    <text x="508" y="55" text-anchor="middle" font-size="8.5" fill="#3b82f6">ECharts 等</text>
+
+    <rect x="572" y="18" width="94" height="46" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="619" y="39" text-anchor="middle" font-size="10" font-weight="700" fill="#1d4ed8">⑤ 交互优化</text>
+    <text x="619" y="55" text-anchor="middle" font-size="8.5" fill="#3b82f6">筛选、缩放</text>
+
+    <g stroke="#94a3b8" stroke-width="1.2">
+      <path fill="none" d="M132 41 L144 41" marker-end="url(#g1)"/>
+      <path fill="none" d="M278 41 L290 41" marker-end="url(#g1)"/>
+      <path fill="none" d="M444 41 L456 41" marker-end="url(#g1)"/>
+      <path fill="none" d="M556 41 L568 41" marker-end="url(#g1)"/>
+    </g>
+
+    <text x="16" y="96" font-size="10.5" font-weight="700" fill="#64748b">想表达什么关系 → 用什么图（最实用的一张对照表）</text>
+
+    <g font-size="9">
+      <rect x="14" y="108" width="128" height="40" rx="7" fill="#f8fafc" stroke="#e2e8f0"/>
+      <text x="78" y="124" text-anchor="middle" font-weight="700" fill="#334155">比大小</text>
+      <text x="78" y="140" text-anchor="middle" fill="#64748b">柱状图 / 条形图</text>
+
+      <rect x="152" y="108" width="128" height="40" rx="7" fill="#f8fafc" stroke="#e2e8f0"/>
+      <text x="216" y="124" text-anchor="middle" font-weight="700" fill="#334155">看趋势</text>
+      <text x="216" y="140" text-anchor="middle" fill="#64748b">折线图 / 面积图</text>
+
+      <rect x="290" y="108" width="128" height="40" rx="7" fill="#f8fafc" stroke="#e2e8f0"/>
+      <text x="354" y="124" text-anchor="middle" font-weight="700" fill="#334155">看占比</text>
+      <text x="354" y="140" text-anchor="middle" fill="#64748b">饼图 / 堆叠柱</text>
+
+      <rect x="428" y="108" width="128" height="40" rx="7" fill="#f8fafc" stroke="#e2e8f0"/>
+      <text x="492" y="124" text-anchor="middle" font-weight="700" fill="#334155">看分布</text>
+      <text x="492" y="140" text-anchor="middle" fill="#64748b">直方图 / 箱线图</text>
+
+      <rect x="566" y="108" width="100" height="40" rx="7" fill="#f8fafc" stroke="#e2e8f0"/>
+      <text x="616" y="124" text-anchor="middle" font-weight="700" fill="#334155">看相关</text>
+      <text x="616" y="140" text-anchor="middle" fill="#64748b">散点图</text>
+    </g>
+
+    <rect x="14" y="164" width="330" height="120" rx="9" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="28" y="184" font-size="10" font-weight="700" fill="#92400e">视觉通道：位置最准，颜色最粗</text>
+    <text x="28" y="204" font-size="9" fill="#a16207">精度排序大致是：位置 &gt; 长度 &gt; 角度 &gt; 面积 &gt; 颜色深浅 &gt; 形状</text>
+    <text x="28" y="224" font-size="9" fill="#a16207">所以重要的数值优先用「位置」表示（散点图、条形图），</text>
+    <text x="28" y="242" font-size="9" fill="#a16207">颜色适合表达分类或粗略的大小差异，不适合比精确值。</text>
+    <text x="28" y="266" font-size="9" fill="#b45309">这也是「不要用饼图比较相近的占比」的原因：角度难分辨。</text>
+
+    <rect x="356" y="164" width="310" height="120" rx="9" fill="#fef2f2" stroke="#fecaca"/>
+    <text x="370" y="184" font-size="10" font-weight="700" fill="#b91c1c">四个常见的「骗人」画法</text>
+    <text x="370" y="204" font-size="9" fill="#dc2626">① 纵轴不从 0 开始 —— 微小差异被放大成「暴涨」</text>
+    <text x="370" y="222" font-size="9" fill="#dc2626">② 双轴刻度随意配 —— 两条线强行「相关」</text>
+    <text x="370" y="240" font-size="9" fill="#dc2626">③ 只用一段有利区间的数据 —— 截断历史</text>
+    <text x="370" y="258" font-size="9" fill="#dc2626">④ 用 3D 饼图/面积表示线性增长 —— 视觉夸大</text>
+    <text x="370" y="278" font-size="9" fill="#94a3b8">识别方法：先看坐标轴范围，再看数据是否完整。</text>
+  </g>
+</svg>`
+  }]
+});
+
+/* ================================================================
+   教材各章「必须掌握 / 容易卡住」清单（对齐林子雨第 3 版）
+   ================================================================ */
+const H_POINTS = {
+  hc1: {
+    must: ['大数据的 4V：量大、种类多、速度快、价值密度低', '数据类型三分：结构化 / 半结构化 / 非结构化', '四种计算模式：批处理、流计算、图计算、查询分析'],
+    hard: ['大数据思维的三点转变（全量、混杂、相关）', '云计算三层服务 IaaS / PaaS / SaaS 的边界', '物联网三层结构：感知 → 网络 → 应用'],
+    tip: '这一章是「名词章」，不涉及算法。考试多为选择与匹配题，把 4V 和四种计算模式背熟就够。'
+  },
+  hc2: {
+    must: ['Hadoop 三大核心：HDFS 存、MapReduce 算、YARN 调度', '生态组件职责：Hive / HBase / Pig / Mahout / ZooKeeper / Flume / Sqoop', '三种安装模式：单机、伪分布式、完全分布式'],
+    hard: ['Hadoop 1.0 与 2.0 的本质差异（YARN 的出现）', '伪分布式「单节点但用 HDFS」这一判据'],
+    tip: '记不住十几个组件没关系，先记住「谁存、谁算、谁调度、谁搬数据」，其余用到再查。'
+  },
+  hc3: {
+    must: ['块与副本：默认 128MB、3 副本', 'NameNode 管元数据、DataNode 存数据块', '写文件流程：申请块 → 建流水线 → 传包 → 回 ack'],
+    hard: ['fsimage 与 edits 的关系、为什么要做检查点', 'Secondary NameNode 不是热备（官方已废弃）', 'HA 与联邦解决的是两个不同问题'],
+    tip: '本章最容易混的是「谁存什么」：NameNode 内存里只有元数据，一个字节的真实数据都不存。'
+  },
+  hc4: {
+    must: ['四要素定位单元格：RowKey + 列族 + 列限定符 + 时间戳', 'Region 按 RowKey 范围切分，由 RegionServer 管理', '写入路径：WAL → MemStore → HFile'],
+    hard: ['LSM-Tree 为什么写快、读慢', 'RowKey 设计导致的 Region 热点', '列族为什么建议 2~3 个以内'],
+    tip: '把 HBase 想成「按主键排好序的巨大 Map」，就能理解它为什么只能按 RowKey 查、不能随意 join。'
+  },
+  hc5: {
+    must: ['四大类型与代表产品：键值 Redis、列族 HBase、文档 MongoDB、图 Neo4j', 'CAP 与 BASE 的含义', 'NoSQL 兴起的原因：Web 2.0 的海量与高并发'],
+    hard: ['CAP 不是「三选二」而是「P 必然发生」', '最终一致性与强一致性的区别', '什么场景不该用 NoSQL'],
+    tip: '选型题按「数据形状」判断：键值、宽表、文档、关系网，四选一基本不会错。'
+  },
+  hc6: {
+    must: ['云数据库的特征：弹性、按需付费、免运维、高可用', '三种部署形态：公有云、私有云、混合云', '云数据库是「服务」而不是某种特定数据库'],
+    hard: ['UMP 系统架构与多租户隔离', '存储与计算分离带来的好处', '上云的真实挑战（安全、迁移、成本、锁定）'],
+    tip: '本章考点偏概念，不必纠结产品细节；把「弹性 + 按需 + 免运维」三条说清就能拿分。'
+  },
+  hc7: {
+    must: ['完整流程：InputSplit → map → 缓冲区 → 溢写 → 归并 → reduce → 输出', 'Shuffle 发生在 map 输出之后、reduce 执行之前', 'Combiner 是 map 端的局部 reduce'],
+    hard: ['环形缓冲区为什么是 80% 触发溢写', 'Combiner 的使用限制（不能改变结果）', '各种默认参数（记不住可以跳过）'],
+    tip: '先画一遍流程图再记参数。参数题占分不高，理解「为什么要这样设计」比背数字有用得多。'
+  },
+  hc8: {
+    must: ['HA：Active + Standby + JournalNode + ZKFC 四个角色', '联邦解决命名空间扩展，HA 解决单点故障', 'YARN 四组件：RM、NM、AM、Container'],
+    hard: ['QJM 为什么至少 3 个 JournalNode', 'ZKFC 到底做了什么', 'YARN 相对 MRv1 究竟改进了什么'],
+    tip: '本章是第 2、3 章的「补丁包」，先学过 HDFS 和 Hadoop 基础再看会顺很多。'
+  },
+  hc9: {
+    must: ['内部表与外部表的删表行为差异', '分区是目录、分桶是文件', 'Hive 把 SQL 翻译成 MapReduce/Spark 作业'],
+    hard: ['读时模式与写时模式的区别', 'Metastore 存的是什么', 'Hive 为什么不适合低延迟查询'],
+    tip: '一句话记住 Hive：自己不存数据、不算数据，只负责把 SQL 翻译成作业。'
+  },
+  hc10: {
+    must: ['RDD 特性：只读、分区、血缘、惰性', 'Transformation 与 Action 的区别', '宽依赖触发 Shuffle 并切分 Stage'],
+    hard: ['DAG → Job → Stage → Task 的层层关系', 'cache 与 persist 的存储级别', '为什么迭代计算 Spark 比 MapReduce 快'],
+    tip: '判断宽窄依赖只看一条：要不要按 key 跨机器重新分发。要就是宽依赖。'
+  },
+  hc11: {
+    must: ['流计算与批处理的本质区别：数据有无边界', 'Storm 拓扑由 Spout + Bolt 组成', 'Kafka 结构：Topic → Partition → offset，副本靠 ISR'],
+    hard: ['Lambda 与 Kappa 架构的取舍', '三种窗口：滚动、滑动、会话', 'Kafka 如何保证顺序（同分区内）'],
+    tip: 'Kafka 是「缓冲带」不是「计算引擎」，这个定位分清了，本章一半的题就顺了。'
+  },
+  hc12: {
+    must: ['Flink 理念：流是根本，批是有界流', '三种时间语义：事件时间、摄入时间、处理时间', 'Watermark 的作用：宣告时间进度、触发窗口'],
+    hard: ['Watermark 如何处理乱序与迟到数据', 'Checkpoint 与 Savepoint 的区别', '键控状态与算子状态怎么选'],
+    tip: '本章难点集中在「时间」这一块。建议先看 Watermark 那张图，再看文字定义。'
+  },
+  hc13: {
+    must: ['BSP 模型：计算 → 通信 → 同步屏障', 'Pregel 顶点中心：读消息 → 更新 → 发消息', 'GraphX 用 VertexRDD + EdgeRDD 表示图'],
+    hard: ['同步屏障为什么能避免读到脏数据', '收敛条件：无变化且无消息', '图数据库与图计算框架的区别'],
+    tip: '把顶点想成「人」，边想成「电话线」，超步就是「说完一轮再一起进下一轮」，就不抽象了。'
+  },
+  hc14: {
+    must: ['可视化流程：采集 → 清洗 → 编码 → 渲染 → 交互', '按关系选图：比大小、看趋势、看占比、看分布、看相关', '视觉通道精度：位置 > 长度 > 角度 > 面积 > 颜色'],
+    hard: ['常见误导手法及其识别', '视觉编码与数据类型的匹配'],
+    tip: '这章最好拿分：记住「想表达什么关系就用什么图」，再加四个骗人画法即可。'
+  }
+};
+
 const H_TERMS = [
   /* ---------- 第 1 章 大数据概述 ---------- */
   { ch:'hc1', en:'Volume', cn:'数据量大', note:'大数据的第一个特征：数据从 TB 级起步，现在常说到 PB、EB 级。' },
@@ -14004,7 +15064,11 @@ function viewKnow(){
     <div class="k-lead">${k.lead}</div>
   </div>
 
+  ${pointsHtml(id)}
+
   <div class="card">${secs}</div>
+
+  ${figHtml(id)}
 
   <div class="card">
     <h2 class="card-title">易错点清单</h2>
@@ -14015,6 +15079,39 @@ function viewKnow(){
   </div>`;
 }
 
+
+
+/* ---------------- 本章重点与难点 ---------------- */
+function pointsHtml(id){
+  const P = (typeof H_POINTS !== 'undefined') ? H_POINTS[id] : null;
+  if (!P) return '';
+  const li = arr => (arr || []).map(x => `<li>${esc(x)}</li>`).join('');
+  return `<div class="card">
+    <h2 class="card-title" style="margin:0">本章重点与难点</h2>
+    <p class="card-sub" style="margin:4px 0 10px">按教材划的重点整理：左边是要背下来的，右边是最容易卡住的。</p>
+    <div class="kp-grid">
+      <div class="kp-box must"><div class="kb-t">必须掌握</div><ul>${li(P.must)}</ul></div>
+      <div class="kp-box hard"><div class="kb-t">容易卡住</div><ul>${li(P.hard)}</ul></div>
+    </div>
+    ${P.tip ? `<div class="kp-tip"><b>一句话记忆：</b>${esc(P.tip)}</div>` : ''}
+  </div>`;
+}
+
+/* ---------------- 教材图解 ---------------- */
+function figHtml(id){
+  const D = (typeof H_FIG !== 'undefined') ? H_FIG[id] : null;
+  if (!D || !D.length) return '';
+  const figs = D.map(f => `<figure class="k-fig">
+      <figcaption class="fig-t">${esc(f.t)}</figcaption>
+      <div class="fig-box">${f.svg}</div>
+      <p class="fig-cap">${esc(f.cap)}</p>
+    </figure>`).join('');
+  return `<div class="card">
+    <h2 class="card-title" style="margin:0">教材图解</h2>
+    <p class="card-sub" style="margin:4px 0 12px">照着教材的重点画成流程图，配一句人话解释；存下来当复习卡片看也行。</p>
+    ${figs}
+  </div>`;
+}
 
 /* ---------------- 术语速查（Hadoop 科目） ---------------- */
 function viewTerms(){
