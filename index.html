@@ -721,6 +721,10 @@ body[data-subj="ds"] .bar > i{background:linear-gradient(90deg,#2563eb,#0ea5e9)}
 .kp-tip{margin-top:10px;font-size:12.5px;line-height:1.8;color:#7c5a12;background:#fffbeb;border:1px dashed #fde68a;border-radius:9px;padding:8px 11px}
 @media (max-width:560px){
   .kp-grid{grid-template-columns:1fr}
+  /* 图解是固定 680 宽的 SVG：窄屏不要压成蚂蚁字，改成可横向滑动 */
+  .fig-box{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .fig-box svg{min-width:560px}
+  .fig-box::after{content:'← 左右滑动看图 →';display:block;text-align:center;font-size:11px;color:var(--muted);padding-top:6px}
 }
 /* ============ 考纲对照（数据库原理） ============ */
 .syl-list{display:grid;gap:8px}
@@ -5730,11 +5734,227 @@ const EXT4C_ESSAY = [
   }
 ];
 
+/* ---------- 第 7 章 E-R 建模补强 + 第 13/15 章简答补缺 ---------- */
+const EXT5_CHOICE = [
+  {
+    id:'c115', type:'choice', chapter:'ch3',
+    knowledgePoint:'7.3 概念结构设计', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 7.3 概念结构设计',
+    stem:'概念结构设计区别于逻辑结构设计、物理结构设计的最主要特点是（　）。',
+    options:['独立于具体的机器和 DBMS，只描述现实世界的语义','必须考虑索引与存储结构','必须给出关系模式的码','必须依附于某一种 DBMS 的语法'],
+    answer:0,
+    explain:'概念结构设计的成果是 <b>E-R 图</b>，它站在用户和现实世界的角度描述"有哪些事物、它们之间什么关系"，<b>不涉及任何机器和 DBMS</b>，因此换一种数据库产品，E-R 图仍然成立。一旦开始写 CREATE TABLE、定索引、想存储位置，就已经进入逻辑设计和物理设计了。'
+  },
+  {
+    id:'c116', type:'choice', chapter:'ch3',
+    knowledgePoint:'7.2 需求分析', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.2 需求分析',
+    stem:'数据字典（DD）是（　）阶段的主要成果之一。',
+    options:['需求分析','概念结构设计','逻辑结构设计','数据库实施'],
+    answer:0,
+    explain:'需求分析的成果是"两件套"：<b>数据流图 DFD</b>（系统里数据怎么流、经过哪些加工）和<b>数据字典 DD</b>（对数据项、数据结构、数据流、数据存储、处理过程逐条给出严格定义）。E-R 图是概念设计的成果，关系模式是逻辑设计的成果，别混。'
+  },
+  {
+    id:'c117', type:'choice', chapter:'ch3',
+    knowledgePoint:'7.3.3 视图集成', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 7.3.3 视图集成',
+    stem:'各子系统的 E-R 图合并时，同一个对象在不同子系统里叫法不同（如"教师"与"教员"）属于（　）。',
+    options:['属性冲突','命名冲突','结构冲突','语义冲突'],
+    answer:1,
+    explain:'集成时要消解三类冲突：<b>属性冲突</b>（同一属性的类型、取值范围、度量单位不一致，如年龄用"岁"还是"出生年月"）、<b>命名冲突</b>（同名异义或异名同义，本题即异名同义）、<b>结构冲突</b>（同一对象在不同图里一会儿是实体、一会儿是属性，或联系的类型不同）。'
+  },
+  {
+    id:'c118', type:'choice', chapter:'ch3',
+    knowledgePoint:'7.4 逻辑结构设计 · E-R 图转关系模式', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 7.4.2 E-R 图向关系模型的转换',
+    stem:'把一个 1:1 联系转换为关系模式时，最常用的做法是（　）。',
+    options:['必须单独建一个关系模式','并入任意一端对应的关系模式，不必单独建表','只能并入"1"的那一端','拆成两个关系模式分别存放'],
+    answer:1,
+    explain:'1:1 联系两端都只有一个实例，所以可以把另一端的<b>码</b>和联系的属性直接加进任意一端的关系模式里（通常选"参与度更满"或"查询更常用"的那一端），不必单开一张表。对比记忆：1:N 并入 <b>N 端</b>；M:N <b>必须单独建表</b>，码为两端码的组合。'
+  },
+  {
+    id:'c119', type:'choice', chapter:'ch3',
+    knowledgePoint:'7.4 逻辑结构设计 · E-R 图转关系模式', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.4.2 E-R 图向关系模型的转换',
+    stem:'把一个 M:N 联系转换为关系模式时，正确的做法是（　）。',
+    options:['并入其中任意一端','并入 N 端','单独建一个关系模式，其码由两端实体的码组合而成','M:N 联系不需要转换'],
+    answer:2,
+    explain:'M:N 联系本身带有"多对多"的语义，任何一端都放不下对方的多条记录，只能<b>单开一张表</b>：字段 = 两端的码 + 联系自身的属性（如"选修"表的成绩、"供应"表的数量），主码 = 两端码的组合。这是综合设计题里最常被扣分的一步。'
+  },
+  {
+    id:'c120', type:'choice', chapter:'ch3',
+    knowledgePoint:'7.3.1 E-R 图的基本成分', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.3.1 概念结构设计的方法与步骤',
+    stem:'在 E-R 图中，多值属性（如职工的"电话号码"可以有多个）用（　）表示。',
+    options:['单线椭圆','双线椭圆','虚线椭圆','矩形'],
+    answer:1,
+    explain:'E-R 图的画法约定：实体=矩形、属性=椭圆、联系=菱形；<b>多值属性用双线椭圆</b>，<b>派生属性（可由其他属性算出的，如"年龄"由出生日期算）用虚线椭圆</b>，弱实体用双线矩形。画图题里这些细节常被拿来判分。'
+  },
+  {
+    id:'c121', type:'choice', chapter:'ch3',
+    knowledgePoint:'7.3.1 E-R 图的基本成分', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.3.1 概念结构设计的方法与步骤',
+    stem:'"年龄"可由"出生日期"推算得到，这类属性在 E-R 图中称为派生属性，用（　）表示。',
+    options:['单线椭圆','双线椭圆','虚线椭圆','菱形'],
+    answer:2,
+    explain:'派生属性（derived attribute）不需要单独存储，画图时用<b>虚线椭圆</b>，表示"它是算出来的，不是记下来的"。同理：多值属性用双线椭圆，主码属性在属性名下加下划线。'
+  },
+  {
+    id:'c122', type:'choice', chapter:'ch3',
+    knowledgePoint:'7.5 物理结构设计', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 7.5 数据库的物理设计',
+    stem:'数据库物理设计阶段的主要任务是（　）。',
+    options:['画 E-R 图，确定实体与联系','把 E-R 图转换为关系模式','为关系模式选择存取方法（索引）和存储结构','收集用户的信息需求与处理需求'],
+    answer:2,
+    explain:'四个阶段各管一段：需求分析（收集需求、出 DFD 与数据字典）→ 概念设计（画 E-R 图）→ 逻辑设计（转关系模式、规范化、定义视图与外模式）→ <b>物理设计（选索引、选存储结构与存放位置）</b>。题目问"存取方法与存储结构"，正是物理设计的关键词。'
+  },
+  {
+    id:'c123', type:'choice', chapter:'ch11',
+    knowledgePoint:'13.2 数据库技术发展', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 13.2 数据库技术发展阶段',
+    stem:'分布式数据库中，把全局关系按<b>行（元组）</b>划分到不同站点存放，这种分片方式称为（　）。',
+    options:['水平分片','垂直分片','混合分片','完全复制'],
+    answer:0,
+    explain:'分片（ fragmentation）是分布式数据库实现"数据分布"的手段：<b>水平分片</b>按行切（如把华北的职工放北京站点、华南的放广州站点）；<b>垂直分片</b>按列切（如把职工号、姓名放一个站点，工资、住址放另一个）；两者结合叫混合分片。完全复制是另一种策略，不属于分片。'
+  },
+  {
+    id:'c124', type:'choice', chapter:'ch13',
+    knowledgePoint:'15.3 内存数据库的关键技术', difficulty:'难',
+    source:'王珊《数据库系统概论》(第5版) 15.3 内存数据库的关键技术',
+    stem:'内存数据库中"影子内存（shadow memory）"技术的主要作用是（　）。',
+    options:['增加索引层数以加快查找','更新时先写副本、提交时切换指针，从而保证原子提交','把冷数据换出到磁盘','压缩数据以节省内存'],
+    answer:1,
+    explain:'内存库没有磁盘 I/O 可以"缓冲"未提交的修改，若直接原地改主副本，事务回滚时无法恢复旧值。<b>影子内存</b>的做法是：把修改写到另一份副本上（影子页），事务提交时用一次<b>指针切换</b>让新副本生效——切换是原子的，于是"要么全生效、要么全不生效"；回滚只需丢弃影子页。这属于内存库为"原子性"专门设计的提交机制。'
+  }
+];
+
+const EXT5_FILL = [
+  {
+    id:'f61', type:'fill', chapter:'ch3',
+    knowledgePoint:'7.3.1 E-R 图的基本成分', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.3.1 概念结构设计的方法与步骤',
+    stem:'在 E-R 图中，本身没有足够的码、必须依附于其他实体才能存在的实体称为弱实体，用 <b class="blank">＿＿＿</b>（填图形）表示。',
+    accept:['双矩形','双线矩形','双边框矩形','双矩形框'],
+    answer:'双矩形',
+    explain:'弱实体（如"职工家属"必须依附于"职工"）用<b>双线矩形</b>表示，它与所依附实体的联系用双线菱形，并且这个联系是"标识性联系"。转换成关系模式时，弱实体的码 = 所依附实体的码 + 弱实体自身的部分码。'
+  },
+  {
+    id:'f62', type:'fill', chapter:'ch3',
+    knowledgePoint:'7.4 逻辑结构设计 · E-R 图转关系模式', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 7.4.2 E-R 图向关系模型的转换',
+    stem:'把 M:N 联系转换为关系模式时，该关系模式的码由 <b class="blank">＿＿＿</b> 组合而成。',
+    accept:['两端实体的码','两端实体的码组合','两个实体的码','两端码','两端实体的主码'],
+    answer:'两端实体的码',
+    explain:'例如"选修（学号，课程号，成绩）"，只有（学号，课程号）合起来才能唯一确定一行，所以主码是两端码的组合；成绩是联系的属性，不能当码。这一步答错，后面建表题的 PRIMARY KEY 就跟着错。'
+  }
+];
+
+const EXT5_TERM = [
+  {
+    id:'t51', type:'term', chapter:'ch3',
+    knowledgePoint:'7.2 需求分析', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.2.2 数据字典',
+    abbr:'DD', full:'Data Dictionary', cn:'数据字典', given:'cn',
+    stem:'需求分析阶段产生的、对数据项、数据结构、数据流、数据存储和处理过程逐条给出严格定义的文档。',
+    explain:'数据字典与数据流图（DFD）是一对：DFD 画"数据怎么流动"，DD 定义"每个数据到底是什么"。它是后面 E-R 图与关系模式的直接依据，也是系统维护时查"这个字段什么意思"的地方。'
+  }
+];
+
+const EXT5_ESSAY = [
+  {
+    id:'e34', type:'essay', kind:'theory', chapter:'ch11',
+    title:'数据库技术的发展：三个阶段、三代系统与分布式透明性（教材第 13 章）',
+    source:'王珊《数据库系统概论》(第5版) 第13章 数据库技术发展概述',
+    stem:`请回答：<br>
+(1) 数据管理技术经历了哪三个阶段？各阶段的数据管理特点是什么？<br>
+(2) 数据库技术发展经历了哪三代系统？各自的代表与数据模型是什么？<br>
+(3) 分布式数据库的"分布透明性"包含哪三个层次？`,
+    parts:[
+      { kind:'choice', label:'第一代数据库系统的数据模型是（　）。', options:['层次模型与网状模型','关系模型','面向对象模型','半结构化模型'], answer:0, score:10 },
+      { kind:'choice', label:'用户不必关心数据存在哪个站点、如何分片，这属于（　）。', options:['逻辑透明性','分片透明性','位置透明性','复制透明性'], answer:1, score:10 }
+    ],
+    rubric:[
+      { label:'写出三个发展阶段：人工管理、文件系统、数据库系统', w:12, re:/人工管理|人工阶段/ },
+      { label:'写出各阶段特点：人工阶段无共享冗余大；文件系统阶段有文件但数据冗余与不一致、程序与数据依赖；数据库阶段数据整体结构化、共享性高、冗余低、独立性高', w:12, re:/冗余|不一致|独立性|共享/ },
+      { label:'写出三代：第一代层次与网状（IMS、DBTG），第二代关系（System R、Oracle），第三代面向对象', w:12, re:/层次|网状|IMS|DBTG/ },
+      { label:'解释分布透明性：分片透明、位置透明、局部数据模型（逻辑）透明', w:12, re:/分片透明|位置透明|逻辑透明|局部数据模型/ },
+      { label:'点出发展趋势：分布式、并行、多媒体、空间、Web、大数据与云数据库等', w:12, re:/分布式|并行|多媒体|空间|web|云|大数据/i }
+    ],
+    selfCheck:[
+      { text:'三个阶段能按时间顺序写对，并能各说一条特点', score:10 },
+      { text:'三代系统与代表产品能对上（IMS/DBTG → System R/Oracle → 面向对象数据库）', score:10 }
+    ],
+    answer:`【(1) 三个发展阶段】
+① <b>人工管理阶段</b>（20 世纪 50 年代中期以前）：没有专门的软件，数据由程序自己管理，数据<b>不保存</b>、<b>不共享</b>、<b>冗余度极大</b>，程序与数据完全绑定。
+② <b>文件系统阶段</b>（50 年代末~60 年代中）：操作系统用文件管理数据，数据可以长期保存、以文件为单位共享，但<b>数据冗余大、一致性差</b>，程序与文件的存取方式仍相互依赖（换一种存储结构就要改程序）。
+③ <b>数据库系统阶段</b>（60 年代末以后）：用 DBMS 统一管理，数据<b>整体结构化</b>、共享性高、冗余低、易扩充，<b>数据独立性高</b>，并由 DBMS 统一做安全性、完整性、并发与恢复控制。
+（阶段划分的判据是三件事：数据是否长期保存、是否被多个程序共享、程序与数据是否独立。）
+
+【(2) 三代数据库系统】
+· 第一代：<b>层次模型</b>（代表 IMS）与<b>网状模型</b>（代表 DBTG/CODASYL 系统）。用指针（父子链接）表示记录之间的联系，导航式存取，程序员必须知道数据的具体位置。
+· 第二代：<b>关系模型</b>，1970 年 E. F. Codd 提出。代表 System R、Oracle、DB2 等。用二维表表示数据，非过程化的 SQL 存取，有严格的数学基础，是今天的主流。
+· 第三代：<b>面向对象数据模型</b>（以及对象-关系模型）。把对象、类、继承、封装引入数据库，代表如 ObjectStore、Versant 等，适合 CAD、多媒体等复杂结构数据。
+
+【(3) 分布透明性的三个层次】
+分布式数据库要"让用户感觉不到数据是分布的"，分三层：
+① <b>分片透明</b>：用户不必知道全局关系被切成哪几个片（水平分片/垂直分片）；
+② <b>位置透明</b>：知道有片，但不必知道每个片放在哪个站点；
+③ <b>局部数据模型（逻辑）透明</b>：各站点可以用不同的局部 DBMS 与数据模型，用户只面对统一的全局模式。
+越往上透明性越强、用户越省事，实现也越复杂。
+
+【延伸】发展方向还包括并行数据库、多媒体数据库、空间数据库、Web 数据库，以及近年的大数据管理（NoSQL、NewSQL）与云数据库，这些在第 14 章继续展开。`
+  },
+  {
+    id:'e35', type:'essay', kind:'theory', chapter:'ch13',
+    title:'内存数据库：为什么快、与传统库的本质差异、恢复与并发（教材第 15 章）',
+    source:'王珊《数据库系统概论》(第5版) 第15章 内存数据库系统',
+    stem:`请回答：<br>
+(1) 内存数据库（MMDB）与传统磁盘数据库最本质的区别是什么？为什么它能快一到两个数量级？<br>
+(2) 没有了磁盘 I/O 这个"天然缓冲"，内存数据库的<b>原子性</b>和<b>持久性</b>靠什么保证？<br>
+(3) 内存数据库为什么常用 T 树而不是 B+ 树做索引？`,
+    parts:[
+      { kind:'choice', label:'内存数据库与磁盘数据库最本质的区别在于（　）。', options:['数据的主拷贝常驻内存，磁盘只用于日志与备份','表结构更简单','不支持 SQL','只能单用户使用'], answer:0, score:10 },
+      { kind:'choice', label:'内存数据库的持久性主要依靠（　）。', options:['日志与周期性检查点（或影子内存）','操作系统的页面置换','事务回滚','索引重建'], answer:0, score:10 }
+    ],
+    rubric:[
+      { label:'点明本质差异：主拷贝常驻内存，磁盘退化为日志与备份', w:12, re:/主拷贝|常驻内存|磁盘.*(日志|备份)|日志.*备份/ },
+      { label:'解释快的原因：消除磁盘 I/O，CPU 与内存速度匹配，缓冲区管理、页面置换等开销消失', w:12, re:/i\/o|磁盘访问|缓冲区|页面|cpu/i },
+      { label:'说明原子性：影子内存/影子页，提交时切换指针，回滚丢弃副本', w:12, re:/影子|shadow|指针切换|副本/ },
+      { label:'说明持久性：预写日志 WAL + 周期性检查点（快照），重启后重做', w:12, re:/日志|wal|检查点|快照|重做|redo/i },
+      { label:'T 树：多分叉、层数少、节点大以利用 cache 行，指针跳转少，适合内存随机访问', w:12, re:/t 树|t树|cache|缓存行|层数|分叉/ }
+    ],
+    selfCheck:[
+      { text:'能说出"磁盘只是备份，不再是数据仓库"，并解释 I/O 消失后瓶颈转移到 CPU 与内存带宽', score:10 },
+      { text:'原子性与持久性两条链路（影子内存 / 日志+检查点）能分开讲清', score:10 }
+    ],
+    answer:`【(1) 本质区别：主拷贝在哪里】
+磁盘数据库（DRDB）的数据<b>主拷贝在磁盘</b>，内存里只是缓冲区中的副本，一次查询要经过"缓冲区命中判断 → 缺页 → 磁盘 I/O → 页面置换"这一整套流程；事务提交还要保证日志落盘（WAL）。
+内存数据库（MMDB）反过来：<b>数据的主拷贝常驻内存</b>，磁盘只用来放<b>日志与备份/快照</b>。
+所以它快的根本原因不是"内存比磁盘快"这一句，而是整条 I/O 链路被拆掉了：没有缺页中断、没有页面置换、没有缓冲区管理、没有为了减少 I/O 而设计的复杂索引与锁粒度。数据访问的代价从"毫秒级磁盘寻道"降到"纳秒级内存访问"，量级差一到两个数量级。
+副作用：瓶颈随之转移到 <b>CPU 与内存带宽</b>，以及缓存失效（cache miss），所以内存库的优化方向是"cache-conscious"的数据布局与编译执行。
+
+【(2) 原子性与持久性怎么保证】
+<b>原子性（提交要么全做、要么全不做）</b>：典型手段是<b>影子内存/影子页（shadow memory / shadow paging）</b>——修改不覆盖原数据，而是写到另一份副本，事务提交时用一次<b>指针切换</b>让新版本生效。指针切换本身是不可分割的动作，于是外界永远看不到"改了一半"的状态；回滚只需丢弃影子副本，不必做 UNDO。
+<b>持久性（提交了就不能丢）</b>：靠<b>预写日志（WAL）+ 周期性检查点</b>（checkpoint / 快照）。日志顺序追加写到磁盘（或非易失内存），提交时确保日志落盘；系统定期把内存中的数据库整体做一次快照。重启时：装入最近快照，再<b>重做（REDO）</b>快照之后的已提交事务，未提交的丢弃。
+（有的系统用非易失内存 NVM 直接把日志省掉一部分，思路仍是"提交顺序写、恢复靠重放"。）
+
+【(3) 为什么用 T 树而不用 B+ 树】
+B+ 树是为<b>磁盘</b>设计的：节点大小对齐磁盘页（如 4KB/16KB），一次结点访问就是一次 I/O，所以要"矮胖"以减少 I/O 次数。
+内存里没有 I/O，代价变成<b>比较次数与 cache miss</b>：
+· T 树是<b>多分叉平衡树</b>，节点内放多个键值并保持有序，层数比二叉搜索树少得多，指针跳转少，访问路径短；
+· 节点大小可以按 <b>CPU cache 行</b>来设计，让一次访存尽可能命中缓存行；
+· 在内存随机访问模型下，T 树的平均查找代价优于 B+ 树，也更省指针空间。
+一句话：B+ 树优化"减少磁盘 I/O"，T 树优化"减少比较与缓存失效"。
+
+【延伸】典型系统：SAP HANA、Redis（键值型内存库）、MemSQL/SingleStore、VoltDB 等；工程上还常把"热数据放内存、冷数据放磁盘"做成混合存储。`
+  }
+];
+
 /* 合并：供 DB_BANK 拼接 */
-const EXT_CHOICE = [...EXT1_CHOICE, ...EXT2_CHOICE, ...EXT3_CHOICE, ...EXT3B_CHOICE, ...EXT4_CHOICE, ...EXT4B_CHOICE, ...EXT4C_CHOICE];
-const EXT_FILL   = [...EXT1_FILL, ...EXT2_FILL, ...EXT3_FILL, ...EXT3B_FILL, ...EXT4_FILL, ...EXT4B_FILL, ...EXT4C_FILL];
-const EXT_TERM   = [...EXT1_TERM, ...EXT2_TERM, ...EXT3_TERM, ...EXT3B_TERM, ...EXT4_TERM, ...EXT4B_TERM, ...EXT4C_TERM];
-const EXT_ESSAY  = [...EXT1_ESSAY, ...EXT2_ESSAY, ...EXT3_ESSAY, ...EXT4_ESSAY, ...EXT4C_ESSAY];
+const EXT_CHOICE = [...EXT1_CHOICE, ...EXT2_CHOICE, ...EXT3_CHOICE, ...EXT3B_CHOICE, ...EXT4_CHOICE, ...EXT4B_CHOICE, ...EXT4C_CHOICE, ...EXT5_CHOICE];
+const EXT_FILL   = [...EXT1_FILL, ...EXT2_FILL, ...EXT3_FILL, ...EXT3B_FILL, ...EXT4_FILL, ...EXT4B_FILL, ...EXT4C_FILL, ...EXT5_FILL];
+const EXT_TERM   = [...EXT1_TERM, ...EXT2_TERM, ...EXT3_TERM, ...EXT3B_TERM, ...EXT4_TERM, ...EXT4B_TERM, ...EXT4C_TERM, ...EXT5_TERM];
+const EXT_ESSAY  = [...EXT1_ESSAY, ...EXT2_ESSAY, ...EXT3_ESSAY, ...EXT4_ESSAY, ...EXT4C_ESSAY, ...EXT5_ESSAY];
 
 const DB_BANK = [...CHOICE, ...TERM, ...FILL, ...ESSAY, ...EXT_CHOICE, ...EXT_TERM, ...EXT_FILL, ...EXT_ESSAY];
 const DB_BY_ID = Object.fromEntries(DB_BANK.map(q => [q.id, q]));
@@ -10998,6 +11218,320 @@ const H_FIG1 = {
     <text x="30" y="274" font-size="10" font-weight="700" fill="#92400e">故障切换过程</text>
     <text x="30" y="291" font-size="8.5" fill="#a16207">① ZKFC 发现主节点失联</text>
     <text x="30" y="306" font-size="8.5" fill="#a16207">② 抢到 ZK 锁，备节点升为 Active</text>
+  </g>
+</svg>`
+  }]
+};
+
+/* ================================================================
+   数据库原理 · 教材图解（与 Hadoop 的 H_FIG 同构，按科目切换）
+   ================================================================ */
+const DB_FIG = {
+
+  /* ---------- 第 1 章：三级模式 + 两级映像 ---------- */
+  ch1: [{
+    t: '三级模式与两级映像（教材 1.3.3 节）',
+    cap: '三个「模式」是三种视角：外模式给用户看、模式管全局、内模式管怎么存。两级映像是两道隔离层，正是「数据独立性」的来源。考试问「为什么改存储不用改程序」，答案就是模式/内模式映像。',
+    svg: `<svg viewBox="0 0 680 410" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="dbar1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="340" y="18" text-anchor="middle" font-size="12" fill="#64748b">同一份数据，三个角度看；两个「翻译层」保证互不影响</text>
+
+    <rect x="30" y="30" width="104" height="28" rx="7" fill="#fff" stroke="#cbd5e1"/>
+    <text x="82" y="49" text-anchor="middle" font-size="11.5" fill="#334155">应用 A</text>
+    <rect x="144" y="30" width="104" height="28" rx="7" fill="#fff" stroke="#cbd5e1"/>
+    <text x="196" y="49" text-anchor="middle" font-size="11.5" fill="#334155">应用 B</text>
+    <rect x="258" y="30" width="104" height="28" rx="7" fill="#fff" stroke="#cbd5e1"/>
+    <text x="310" y="49" text-anchor="middle" font-size="11.5" fill="#334155">应用 C</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <line x1="82" y1="60" x2="82" y2="70" marker-end="url(#dbar1)"/>
+      <line x1="196" y1="60" x2="196" y2="70" marker-end="url(#dbar1)"/>
+      <line x1="310" y1="60" x2="310" y2="70" marker-end="url(#dbar1)"/>
+    </g>
+
+    <rect x="30" y="72" width="350" height="46" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="205" y="92" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3730a3">外模式（用户视图）</text>
+    <text x="205" y="109" text-anchor="middle" font-size="10" fill="#6366f1">视图 + 部分基本表，面向具体应用</text>
+
+    <line x1="60" y1="118" x2="60" y2="162" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#dbar1)"/>
+    <text x="74" y="134" font-size="10.5" font-weight="700" fill="#4338ca">外模式／模式映像</text>
+    <text x="74" y="150" font-size="10" fill="#64748b">→ 逻辑独立性</text>
+
+    <rect x="30" y="164" width="350" height="46" rx="10" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="205" y="184" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5b21b6">模式（概念模式）</text>
+    <text x="205" y="201" text-anchor="middle" font-size="10" fill="#7c3aed">全体数据的逻辑结构与完整性约束</text>
+
+    <line x1="60" y1="210" x2="60" y2="254" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#dbar1)"/>
+    <text x="74" y="226" font-size="10.5" font-weight="700" fill="#0f766e">模式／内模式映像</text>
+    <text x="74" y="242" font-size="10" fill="#64748b">→ 物理独立性</text>
+
+    <rect x="30" y="256" width="350" height="46" rx="10" fill="#ecfdf5" stroke="#a7f3d0"/>
+    <text x="205" y="276" text-anchor="middle" font-size="12.5" font-weight="700" fill="#065f46">内模式（存储模式）</text>
+    <text x="205" y="293" text-anchor="middle" font-size="10" fill="#059669">存储结构、索引、存取方式</text>
+
+    <line x1="205" y1="302" x2="205" y2="342" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#dbar1)"/>
+    <rect x="95" y="344" width="220" height="36" rx="9" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="205" y="367" text-anchor="middle" font-size="11.5" fill="#475569">数据库（磁盘上真正存的数据）</text>
+
+    <rect x="424" y="72" width="234" height="230" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="440" y="96" font-size="11" font-weight="700" fill="#0f172a">两道隔离层 = 两级数据独立性</text>
+    <text x="440" y="122" font-size="10.5" font-weight="700" fill="#4338ca">逻辑独立性</text>
+    <text x="440" y="138" font-size="10" fill="#475569">模式改了（加表、加字段、</text>
+    <text x="440" y="154" font-size="10" fill="#475569">拆表），外模式与程序不用改</text>
+    <text x="440" y="182" font-size="10.5" font-weight="700" fill="#0f766e">物理独立性</text>
+    <text x="440" y="198" font-size="10" fill="#475569">换索引、换存储结构、换机器，</text>
+    <text x="440" y="214" font-size="10" fill="#475569">模式和程序都不用改</text>
+    <text x="440" y="244" font-size="10" fill="#b45309">考点：映像一改，上层毫无感觉。</text>
+    <text x="440" y="266" font-size="10" fill="#475569">「外模式」对应的是「视图」，</text>
+    <text x="440" y="282" font-size="10" fill="#475569">所以视图是逻辑独立性的抓手。</text>
+  </g>
+</svg>`
+  }],
+
+  /* ---------- 第 2 章：关系代数运算全景 ---------- */
+  ch2: [{
+    t: '关系代数：5 种基本运算 + 3 种导出运算（教材 2.4 节）',
+    cap: '教材只把 σ、π、∪、−、× 当基本运算，其余（交、连接、除）都能用这五个组合出来。考试常考「σ 和 π 有什么区别」，记住一句话：σ 横着挑行，π 竖着切列。',
+    svg: `<svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" role="img">
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="340" y="18" text-anchor="middle" font-size="12" fill="#64748b">下面五个是「基本运算」，其余都由它们组合出来</text>
+
+    <rect x="20" y="40" width="120" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="80" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#3730a3">σ</text>
+    <text x="80" y="82" text-anchor="middle" font-size="10.5" fill="#6366f1">选择（挑行）</text>
+    <rect x="152" y="40" width="120" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="212" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#3730a3">π</text>
+    <text x="212" y="82" text-anchor="middle" font-size="10.5" fill="#6366f1">投影（切列）</text>
+    <rect x="284" y="40" width="120" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="344" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#3730a3">∪</text>
+    <text x="344" y="82" text-anchor="middle" font-size="10.5" fill="#6366f1">并</text>
+    <rect x="416" y="40" width="120" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="476" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#3730a3">−</text>
+    <text x="476" y="82" text-anchor="middle" font-size="10.5" fill="#6366f1">差</text>
+    <rect x="548" y="40" width="120" height="52" rx="9" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="608" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#3730a3">×</text>
+    <text x="608" y="82" text-anchor="middle" font-size="10.5" fill="#6366f1">笛卡尔积</text>
+
+    <text x="340" y="120" text-anchor="middle" font-size="10.5" fill="#64748b">↓ 用上面五个组合出来 ↓</text>
+
+    <rect x="40" y="136" width="180" height="52" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="130" y="158" text-anchor="middle" font-size="15" font-weight="700" fill="#5b21b6">∩</text>
+    <text x="130" y="178" text-anchor="middle" font-size="10.5" fill="#7c3aed">交 = R − (R − S)</text>
+    <rect x="250" y="136" width="180" height="52" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="340" y="158" text-anchor="middle" font-size="15" font-weight="700" fill="#5b21b6">⋈</text>
+    <text x="340" y="178" text-anchor="middle" font-size="10.5" fill="#7c3aed">连接 = σ + ×</text>
+    <rect x="460" y="136" width="180" height="52" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="550" y="158" text-anchor="middle" font-size="15" font-weight="700" fill="#5b21b6">÷</text>
+    <text x="550" y="178" text-anchor="middle" font-size="10.5" fill="#7c3aed">除（「全部」类查询）</text>
+
+    <rect x="20" y="210" width="644" height="76" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="340" y="232" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309">最容易混的：σ 和 π 到底谁挑行、谁切列</text>
+    <text x="36" y="254" font-size="10.5" fill="#475569">σ（选择）：按条件筛「元组」，列不变 —— 横着切一刀，行变少，列不动</text>
+    <text x="36" y="274" font-size="10.5" fill="#475569">π（投影）：按属性取「列」并去掉重复行 —— 竖着切一刀，列变少，行也可能变少</text>
+  </g>
+</svg>`
+  }],
+
+  /* ---------- 第 7 章：E-R 元素与转换规则 ---------- */
+  ch3: [{
+    t: 'E-R 图的六种画法 + 三种联系的转换规则（教材 7.3、7.4 节）',
+    cap: '画图题先分清形状，设计题再分清联系类型：1:1 并入任一端、1:n 并入 n 端、m:n 必须单独建表。这两件事占综合设计题一半的分。',
+    svg: `<svg viewBox="0 0 680 322" xmlns="http://www.w3.org/2000/svg" role="img">
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="340" y="18" text-anchor="middle" font-size="12" fill="#64748b">先认形状：形状答错，整道画图题就白画了</text>
+
+    <rect x="33" y="44" width="76" height="36" rx="4" fill="#eef2ff" stroke="#6366f1" stroke-width="1.6"/>
+    <ellipse cx="177" cy="62" rx="38" ry="20" fill="#fff7ed" stroke="#ea580c" stroke-width="1.6"/>
+    <polygon points="283,40 321,62 283,84 245,62" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.6"/>
+    <ellipse cx="389" cy="62" rx="40" ry="21" fill="#fdf2f8" stroke="#db2777" stroke-width="1.6"/>
+    <ellipse cx="389" cy="62" rx="32" ry="13" fill="none" stroke="#db2777" stroke-width="1.6"/>
+    <ellipse cx="495" cy="62" rx="38" ry="20" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.6" stroke-dasharray="5 3"/>
+    <rect x="563" y="44" width="76" height="36" rx="4" fill="#fefce8" stroke="#ca8a04" stroke-width="1.6"/>
+    <rect x="568" y="49" width="66" height="26" rx="3" fill="none" stroke="#ca8a04" stroke-width="1.6"/>
+
+    <text x="71" y="110" text-anchor="middle" font-size="10.5" fill="#3730a3">矩形 → 实体</text>
+    <text x="177" y="110" text-anchor="middle" font-size="10.5" fill="#9a3412">椭圆 → 属性</text>
+    <text x="283" y="110" text-anchor="middle" font-size="10.5" fill="#166534">菱形 → 联系</text>
+    <text x="389" y="110" text-anchor="middle" font-size="10.5" fill="#9d174d">双椭圆 → 多值</text>
+    <text x="495" y="110" text-anchor="middle" font-size="10.5" fill="#5b21b6">虚线椭圆 → 派生</text>
+    <text x="601" y="110" text-anchor="middle" font-size="10.5" fill="#854d0e">双矩形 → 弱实体</text>
+
+    <rect x="18" y="128" width="206" height="94" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="121" y="152" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">1 : 1 联系</text>
+    <text x="121" y="174" text-anchor="middle" font-size="10.5" fill="#475569">并入任意一端即可</text>
+    <text x="121" y="192" text-anchor="middle" font-size="10.5" fill="#475569">把另一端的主码 + 联系属性</text>
+    <text x="121" y="210" text-anchor="middle" font-size="10.5" fill="#475569">加进来，不必单独建表</text>
+
+    <rect x="242" y="128" width="206" height="94" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="345" y="152" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">1 : n 联系</text>
+    <text x="345" y="174" text-anchor="middle" font-size="10.5" fill="#475569">并入 n 端</text>
+    <text x="345" y="192" text-anchor="middle" font-size="10.5" fill="#475569">在 n 端加 1 端的主码作外码</text>
+    <text x="345" y="210" text-anchor="middle" font-size="10.5" fill="#475569">（如职工表里加「部门号」）</text>
+
+    <rect x="466" y="128" width="206" height="94" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="569" y="152" text-anchor="middle" font-size="12" font-weight="700" fill="#92400e">m : n 联系</text>
+    <text x="569" y="174" text-anchor="middle" font-size="10.5" fill="#92400e">必须单独建一张表</text>
+    <text x="569" y="192" text-anchor="middle" font-size="10.5" fill="#92400e">主码 = 两端主码的组合</text>
+    <text x="569" y="210" text-anchor="middle" font-size="10.5" fill="#92400e">联系自己的属性放这张表</text>
+
+    <text x="340" y="252" text-anchor="middle" font-size="10.5" fill="#475569">主码属性在椭圆里加下划线；联系的属性（如「选修」的成绩）用椭圆挂在菱形上，不挂在实体上</text>
+    <text x="340" y="276" text-anchor="middle" font-size="10.5" fill="#475569">弱实体转关系模式时，码 = 所依附实体的码 + 自身的部分码</text>
+    <text x="340" y="300" text-anchor="middle" font-size="10.5" fill="#94a3b8">判断联系类型只看一句话：「一个 A 能对几个 B？反过来呢？」</text>
+  </g>
+</svg>`
+  }],
+
+  /* ---------- 第 6 章：范式递进 ---------- */
+  ch5: [{
+    t: '四级范式是层层加码的（教材 6.2 节）',
+    cap: '范式不是四个平行的概念，而是一条链：每往上一级，就在前一级基础上多消除一种「不好的依赖」。判范式时按这个顺序逐级检查，不要跳。',
+    svg: `<svg viewBox="0 0 680 310" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="dbar3" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="340" y="18" text-anchor="middle" font-size="12" fill="#64748b">每往上一级，多消除一种依赖；条件是「在前一级的基础上」</text>
+
+    <rect x="16" y="40" width="140" height="112" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="86" y="64" text-anchor="middle" font-size="14" font-weight="700" fill="#3730a3">1NF</text>
+    <text x="86" y="88" text-anchor="middle" font-size="10.5" fill="#475569">每个分量都不可再分</text>
+    <text x="86" y="108" text-anchor="middle" font-size="10.5" fill="#475569">（不许「表中有表」）</text>
+    <text x="86" y="134" text-anchor="middle" font-size="10" fill="#94a3b8">最底要求</text>
+
+    <line x1="158" y1="96" x2="172" y2="96" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#dbar3)"/>
+
+    <rect x="176" y="40" width="140" height="112" rx="10" fill="#ecfeff" stroke="#a5f3fc"/>
+    <text x="246" y="64" text-anchor="middle" font-size="14" font-weight="700" fill="#155e75">2NF</text>
+    <text x="246" y="86" text-anchor="middle" font-size="10.5" fill="#475569">消除「部分函数依赖」</text>
+    <text x="246" y="102" text-anchor="middle" font-size="10.5" fill="#475569">非主属性要依赖于</text>
+    <text x="246" y="118" text-anchor="middle" font-size="10.5" fill="#475569">「整个码」</text>
+    <text x="246" y="136" text-anchor="middle" font-size="10.5" fill="#475569">不能只依赖码的一部分</text>
+
+    <line x1="318" y1="96" x2="332" y2="96" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#dbar3)"/>
+
+    <rect x="336" y="40" width="140" height="112" rx="10" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="406" y="64" text-anchor="middle" font-size="14" font-weight="700" fill="#5b21b6">3NF</text>
+    <text x="406" y="88" text-anchor="middle" font-size="10.5" fill="#475569">消除「传递函数依赖」</text>
+    <text x="406" y="108" text-anchor="middle" font-size="10.5" fill="#475569">非主属性不能由</text>
+    <text x="406" y="126" text-anchor="middle" font-size="10.5" fill="#475569">别的非主属性推出来</text>
+
+    <line x1="478" y1="96" x2="492" y2="96" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#dbar3)"/>
+
+    <rect x="496" y="40" width="168" height="112" rx="10" fill="#fef2f2" stroke="#fecaca"/>
+    <text x="580" y="64" text-anchor="middle" font-size="14" font-weight="700" fill="#b91c1c">BCNF</text>
+    <text x="580" y="88" text-anchor="middle" font-size="10.5" fill="#475569">每个决定因素都包含码</text>
+    <text x="580" y="108" text-anchor="middle" font-size="10.5" fill="#475569">（主属性之间也不能</text>
+    <text x="580" y="126" text-anchor="middle" font-size="10.5" fill="#475569">互相决定）</text>
+
+    <rect x="16" y="176" width="644" height="116" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="340" y="200" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309">判范式就按这三步走，别跳步</text>
+    <text x="32" y="224" font-size="10.5" fill="#475569">① 先求候选码（会闭包算法更好）→ ② 检查有没有「非主属性对码的部分依赖」</text>
+    <text x="32" y="246" font-size="10.5" fill="#475569">③ 再检查有没有「非主属性对码的传递依赖」</text>
+    <text x="32" y="272" font-size="10.5" fill="#475569">结论：②成立 → 只有 1NF；②不成立但③成立 → 2NF；③也不成立 → 3NF；决定因素都含码 → BCNF</text>
+  </g>
+</svg>`
+  }],
+
+  /* ---------- 第 10~11 章：事务状态 ---------- */
+  ch6: [{
+    t: '事务的状态转换与恢复动作（教材 10.1、10.4 节）',
+    cap: '事务只有两种结局：提交（成功）或中止（回滚）。故障恢复就是按这张图办事：已提交的重做（REDO），没提交的撤销（UNDO），一个都不能漏。',
+    svg: `<svg viewBox="0 0 680 306" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="dbar4" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="340" y="18" text-anchor="middle" font-size="12" fill="#64748b">事务从「活动」开始，只有两条出口：已提交 或 已中止</text>
+
+    <rect x="30" y="46" width="120" height="46" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="90" y="74" text-anchor="middle" font-size="12" font-weight="700" fill="#3730a3">活动状态</text>
+
+    <rect x="210" y="46" width="130" height="46" rx="10" fill="#ecfeff" stroke="#a5f3fc"/>
+    <text x="275" y="74" text-anchor="middle" font-size="12" font-weight="700" fill="#155e75">部分提交</text>
+
+    <rect x="400" y="46" width="120" height="46" rx="10" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="460" y="74" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">已提交</text>
+
+    <rect x="210" y="150" width="130" height="46" rx="10" fill="#fef2f2" stroke="#fecaca"/>
+    <text x="275" y="178" text-anchor="middle" font-size="12" font-weight="700" fill="#b91c1c">失败状态</text>
+
+    <rect x="400" y="150" width="120" height="46" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="460" y="178" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">已中止</text>
+
+    <g stroke="#94a3b8" stroke-width="1.4" fill="none">
+      <line x1="152" y1="69" x2="206" y2="69" marker-end="url(#dbar4)"/>
+      <line x1="342" y1="69" x2="396" y2="69" marker-end="url(#dbar4)"/>
+      <line x1="275" y1="94" x2="275" y2="146" marker-end="url(#dbar4)"/>
+      <polyline points="90,94 90,173 204,173" marker-end="url(#dbar4)"/>
+      <line x1="342" y1="173" x2="396" y2="173" marker-end="url(#dbar4)"/>
+    </g>
+
+    <text x="179" y="62" text-anchor="middle" font-size="10" fill="#64748b">读完写完</text>
+    <text x="369" y="62" text-anchor="middle" font-size="10" fill="#64748b">提交成功</text>
+    <text x="285" y="120" font-size="10" fill="#64748b">写磁盘失败</text>
+    <text x="106" y="166" font-size="10" fill="#64748b">执行出错</text>
+    <text x="369" y="166" text-anchor="middle" font-size="10" fill="#64748b">回滚完成</text>
+
+    <rect x="540" y="46" width="126" height="150" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="603" y="70" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f172a">两种结局</text>
+    <text x="603" y="94" text-anchor="middle" font-size="10" fill="#166534">已提交：</text>
+    <text x="603" y="110" text-anchor="middle" font-size="10" fill="#475569">改动永久生效</text>
+    <text x="603" y="134" text-anchor="middle" font-size="10" fill="#b91c1c">已中止：</text>
+    <text x="603" y="150" text-anchor="middle" font-size="10" fill="#475569">回到事务开始前</text>
+    <text x="603" y="174" text-anchor="middle" font-size="10" fill="#94a3b8">系统里不留痕迹</text>
+
+    <rect x="30" y="222" width="620" height="64" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="340" y="244" text-anchor="middle" font-size="10.5" font-weight="700" fill="#92400e">恢复时按状态分两拨处理</text>
+    <text x="340" y="264" text-anchor="middle" font-size="10.5" fill="#92400e">已提交的事务 → REDO（重做，把日志里的新值再写一遍，保证持久性）</text>
+    <text x="340" y="280" text-anchor="middle" font-size="10.5" fill="#92400e">未提交的事务（活动 / 失败）→ UNDO（撤销，用日志里的旧值回滚，保证原子性）</text>
+  </g>
+</svg>`
+  }],
+
+  /* ---------- 第 9 章：查询处理四阶段 ---------- */
+  ch9: [{
+    t: '查询处理的四个阶段与代数优化（教材 9.1、9.3 节）',
+    cap: '一条 SQL 进数据库先被"翻译"四次才真正执行。优化的核心只有一句话：尽量把选择和投影往下推，让中间结果变小。',
+    svg: `<svg viewBox="0 0 680 306" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="dbar5" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="340" y="18" text-anchor="middle" font-size="12" fill="#64748b">SQL 语句 → 分析 → 检查 → 优化 → 执行，四步缺一不可</text>
+
+    <rect x="16" y="40" width="150" height="66" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="91" y="64" text-anchor="middle" font-size="12" font-weight="700" fill="#3730a3">① 查询分析</text>
+    <text x="91" y="84" text-anchor="middle" font-size="10" fill="#6366f1">词法、语法分析</text>
+    <text x="91" y="99" text-anchor="middle" font-size="10" fill="#94a3b8">→ 语法树</text>
+
+    <rect x="180" y="40" width="150" height="66" rx="10" fill="#ecfeff" stroke="#a5f3fc"/>
+    <text x="255" y="64" text-anchor="middle" font-size="12" font-weight="700" fill="#155e75">② 查询检查</text>
+    <text x="255" y="84" text-anchor="middle" font-size="10" fill="#0891b2">语义、权限、完整性</text>
+    <text x="255" y="99" text-anchor="middle" font-size="10" fill="#94a3b8">视图消解成基本表</text>
+
+    <rect x="344" y="40" width="150" height="66" rx="10" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="419" y="64" text-anchor="middle" font-size="12" font-weight="700" fill="#5b21b6">③ 查询优化</text>
+    <text x="419" y="84" text-anchor="middle" font-size="10" fill="#7c3aed">代数优化 + 物理优化</text>
+    <text x="419" y="99" text-anchor="middle" font-size="10" fill="#94a3b8">→ 执行计划</text>
+
+    <rect x="508" y="40" width="150" height="66" rx="10" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="583" y="64" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">④ 查询执行</text>
+    <text x="583" y="84" text-anchor="middle" font-size="10" fill="#16a34a">生成代码并运行</text>
+    <text x="583" y="99" text-anchor="middle" font-size="10" fill="#94a3b8">→ 结果集</text>
+
+    <g stroke="#94a3b8" stroke-width="1.4">
+      <line x1="168" y1="73" x2="176" y2="73" marker-end="url(#dbar5)"/>
+      <line x1="332" y1="73" x2="340" y2="73" marker-end="url(#dbar5)"/>
+      <line x1="496" y1="73" x2="504" y2="73" marker-end="url(#dbar5)"/>
+    </g>
+
+    <rect x="16" y="124" width="644" height="112" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="340" y="146" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309">代数优化只有一招：把选择和投影尽量「往下推」</text>
+    <text x="32" y="170" font-size="10.5" fill="#475569">优化前：π_姓名（ σ_课程号='C1'（ S ⋈ SC ） ）  ← 先做连接，把两张表全乘一遍</text>
+    <text x="32" y="192" font-size="10.5" fill="#166534">优化后：π_姓名（ S ⋈ σ_课程号='C1'（ SC ） ）  ← 先在 SC 上筛掉大部分行，再连接</text>
+    <text x="32" y="216" font-size="10" fill="#64748b">好处：参与连接的行数从「整表」降到「满足条件的几行」，中间结果小一个数量级，I/O 与 CPU 都省下来</text>
+
+    <text x="340" y="262" text-anchor="middle" font-size="10.5" fill="#475569">物理优化：同一个表达式有多种执行方案（走不走索引、用哪种连接算法），按「代价 = I/O 次数 + CPU 时间」挑最便宜的</text>
+    <text x="340" y="284" text-anchor="middle" font-size="10.5" fill="#94a3b8">教材 9.1.2 的嵌套循环连接代价要会算：块数 × 块数 + 块数，别背错</text>
   </g>
 </svg>`
   }]
@@ -18069,7 +18603,7 @@ function viewHelp(){
     </div>
     <h3>1. 建议的学习路径</h3>
     <ol>
-      <li><b>先看知识点</b>：点顶部「知识点」标签，或点任意章节进入准备页后选「先看知识点总结」。${SUBJECTS.db.chapters.length} 组讲义 + 考前速查表（覆盖教材 16 章），含定义、对比表、SQL 模板、易错点与记忆口诀。</li>
+      <li><b>先看知识点</b>：点顶部「知识点」标签，或点任意章节进入准备页后选「先看知识点总结」。${SUBJECTS.db.chapters.length} 组讲义 + 考前速查表（覆盖教材 16 章），含定义、对比表、SQL 模板、易错点与记忆口诀；重点章（三级模式、关系运算、E-R、范式、事务、查询优化）还配了<b>教材图解</b>，手机上可左右滑动看图。</li>
       <li><b>再做分章节练习</b>：从准备页点「直接开始练习」，做完每道题都能看到「答案详解」（考点定位 / 详细解析 / 逐项辨析 / 易错提醒）。</li>
       <li><b>最后收口</b>：用随机组卷查漏，用模拟考练时间，把错题本刷干净即可。</li>
     </ol>
@@ -18308,7 +18842,11 @@ function pointsHtml(id){
 
 /* ---------------- 教材图解 ---------------- */
 function figHtml(id){
-  const D = (typeof H_FIG !== 'undefined') ? H_FIG[id] : null;
+  /* 按科目取图：数据库用 DB_FIG（ch1~ch14），Hadoop 用 H_FIG（hc1~hc14） */
+  const F = (CUR_SUB === 'db')
+    ? (typeof DB_FIG !== 'undefined' ? DB_FIG : null)
+    : (typeof H_FIG !== 'undefined' ? H_FIG : null);
+  const D = F ? F[id] : null;
   if (!D || !D.length) return '';
   const figs = D.map(f => `<figure class="k-fig">
       <figcaption class="fig-t">${esc(f.t)}</figcaption>
