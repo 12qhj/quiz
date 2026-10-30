@@ -4691,7 +4691,7 @@ DROP TABLE SPJ;
 const EXT1_CHOICE = [
   {
     id:'c65', type:'choice', chapter:'ch8',
-    knowledgePoint:'8.1 嵌入式 SQL', difficulty:'中',
+    knowledgePoint:'嵌入式 SQL', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 8.1.2 嵌入式 SQL 语句与主语言之间的通信',
     stem:'嵌入式 SQL 中，SQL 语句与主语言之间传递数据、交换状态主要依靠（　）。',
     options:['主变量与 SQL 通信区 SQLCA','游标与视图','触发器与存储过程','日志与检查点'],
@@ -4700,7 +4700,7 @@ const EXT1_CHOICE = [
   },
   {
     id:'c66', type:'choice', chapter:'ch8',
-    knowledgePoint:'8.1.4 使用游标的 SQL 语句', difficulty:'易',
+    knowledgePoint:'使用游标的 SQL 语句', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 8.1.4 使用游标的 SQL 语句',
     stem:'用游标逐行处理查询结果时，四个语句的正确执行顺序是（　）。',
     options:['DECLARE → OPEN → FETCH → CLOSE','OPEN → DECLARE → FETCH → CLOSE','DECLARE → FETCH → OPEN → CLOSE','OPEN → FETCH → DECLARE → CLOSE'],
@@ -4709,7 +4709,7 @@ const EXT1_CHOICE = [
   },
   {
     id:'c67', type:'choice', chapter:'ch8',
-    knowledgePoint:'8.1.2 主变量与指示变量', difficulty:'中',
+    knowledgePoint:'主变量与指示变量', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 8.1.2 嵌入式 SQL 语句与主语言之间的通信',
     stem:'嵌入式 SQL 中指示变量（indicator variable）的作用是（　）。',
     options:['指出对应的主变量是否为空值 NULL','指出游标当前停留在第几行','指出 SQL 语句的执行计划','指出主变量的数据类型'],
@@ -4718,7 +4718,7 @@ const EXT1_CHOICE = [
   },
   {
     id:'c68', type:'choice', chapter:'ch8',
-    knowledgePoint:'8.1.3 不用游标的 SQL 语句', difficulty:'易',
+    knowledgePoint:'不用游标的 SQL 语句', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 8.1.3 不用游标的 SQL 语句、8.1.4 使用游标的 SQL 语句',
     stem:'下列嵌入式 SQL 语句中，<b>必须</b>借助游标才能完成的是（　）。',
     options:['查询结果有多行、需要逐行处理的 SELECT 语句','INSERT 语句','UPDATE 语句','CREATE TABLE 语句'],
@@ -4727,8 +4727,8 @@ const EXT1_CHOICE = [
   },
   {
     id:'c69', type:'choice', chapter:'ch8',
-    knowledgePoint:'8.2 存储过程', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 8.2 存储过程',
+    knowledgePoint:'存储过程', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 8.3.1 存储过程',
     stem:'关于存储过程，下列说法中<b>错误</b>的是（　）。',
     options:['存储过程把多条 SQL 打包在服务器端执行，能减少网络传输','存储过程在数据库中预编译，重复调用不必重新编译','存储过程可以带 IN、OUT、INOUT 三种参数','存储过程只能返回一个整型值，不能返回结果集'],
     answer:3,
@@ -4736,8 +4736,8 @@ const EXT1_CHOICE = [
   },
   {
     id:'c70', type:'choice', chapter:'ch8',
-    knowledgePoint:'8.3 ODBC 编程', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 8.3 ODBC 编程',
+    knowledgePoint:'ODBC 编程', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 8.4 ODBC 编程',
     stem:'ODBC 应用程序中，用来标识"环境、连接、语句"这三类资源的是（　）。',
     options:['句柄（handle）','游标（cursor）','主变量（host variable）','数据源名（DSN）'],
     answer:0,
@@ -4745,8 +4745,8 @@ const EXT1_CHOICE = [
   },
   {
     id:'c71', type:'choice', chapter:'ch8',
-    knowledgePoint:'8.4 JDBC 编程', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 8.4 JDBC 编程',
+    knowledgePoint:'JDBC 编程', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 8.6 JDBC 编程',
     stem:'JDBC 中执行带参数的 SQL 语句、并要求防止 SQL 注入时，应优先使用（　）。',
     options:['PreparedStatement','Statement','ResultSet','DriverManager'],
     answer:0,
@@ -4754,8 +4754,8 @@ const EXT1_CHOICE = [
   },
   {
     id:'c72', type:'choice', chapter:'ch8',
-    knowledgePoint:'8.2.1 PL/SQL 的块结构', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 8.2.1 PL/SQL 的块结构',
+    knowledgePoint:'PL/SQL 的块结构', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 8.2.1 过程化 SQL 的块结构',
     stem:'PL/SQL 的块由三部分组成，它们是（　）。',
     options:['说明部分、可执行部分、异常处理部分','定义部分、查询部分、更新部分','主变量、指示变量、SQLCA','BEGIN、COMMIT、ROLLBACK'],
     answer:0,
@@ -4766,7 +4766,7 @@ const EXT1_CHOICE = [
 const EXT1_FILL = [
   {
     id:'f41', type:'fill', chapter:'ch8',
-    knowledgePoint:'8.1.3 不用游标的 SQL 语句', difficulty:'中',
+    knowledgePoint:'不用游标的 SQL 语句', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 8.1.2 嵌入式 SQL 语句与主语言之间的通信',
     stem:'嵌入式 SQL 用游标逐行取数据时，若 <code>FETCH</code> 之后 SQLCA 中的 <b class="blank">＿＿＿</b> 等于 100，表示结果集已经取完。',
     accept:['sqlcode','sql-code'],
@@ -4775,8 +4775,8 @@ const EXT1_FILL = [
   },
   {
     id:'f42', type:'fill', chapter:'ch8',
-    knowledgePoint:'8.2 存储过程', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 8.2 存储过程',
+    knowledgePoint:'存储过程', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 8.3.1 存储过程',
     stem:'存储过程的参数有三种传递方式：输入参数 IN、输出参数 OUT，以及既作输入又作输出的 <b class="blank">＿＿＿</b> 参数。',
     accept:['inout','in out','in-out'],
     answer:'INOUT',
@@ -4784,8 +4784,8 @@ const EXT1_FILL = [
   },
   {
     id:'f43', type:'fill', chapter:'ch8',
-    knowledgePoint:'8.4 JDBC 编程', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 8.4 JDBC 编程',
+    knowledgePoint:'JDBC 编程', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 8.6 JDBC 编程',
     stem:'JDBC 连接数据库的 URL 以 <b class="blank">＿＿＿</b> 开头，例如 jdbc:mysql://localhost:3306/test。',
     accept:['jdbc'],
     answer:'jdbc',
@@ -4796,7 +4796,7 @@ const EXT1_FILL = [
 const EXT1_TERM = [
   {
     id:'t42', type:'term', chapter:'ch8',
-    knowledgePoint:'8.1.4 使用游标的 SQL 语句', difficulty:'易',
+    knowledgePoint:'使用游标的 SQL 语句', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 8.1.4 使用游标的 SQL 语句',
     abbr:'Cursor', full:'Cursor', cn:'游标', given:'cn',
     stem:'嵌入式 SQL 中，为"一次返回多行"的查询结果集设置的位置指针，配合 FETCH 可以逐行取出记录。',
@@ -4804,8 +4804,8 @@ const EXT1_TERM = [
   },
   {
     id:'t43', type:'term', chapter:'ch8',
-    knowledgePoint:'8.2 存储过程', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 8.2 存储过程',
+    knowledgePoint:'存储过程', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 8.3.1 存储过程',
     abbr:'Stored Procedure', full:'Stored Procedure', cn:'存储过程', given:'cn',
     stem:'存放在数据库服务器中、由 SQL 语句与控制语句组成、经预编译后可被应用程序反复调用的一段程序。',
     explain:'存储过程把"多条 SQL + 业务判断"沉到服务器端，客户端只发一个调用请求，因此减少网络往返、复用执行计划、便于集中控制权限。'
@@ -4871,7 +4871,7 @@ SQL 是<b>面向集合</b>的声明式语言，只管"要什么"，不管"怎么
 const EXT2_CHOICE = [
   {
     id:'c73', type:'choice', chapter:'ch9',
-    knowledgePoint:'9.1.1 查询处理步骤', difficulty:'易',
+    knowledgePoint:'查询处理步骤', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 9.1.1 查询处理步骤',
     stem:'关系数据库查询处理的一般步骤是（　）。',
     options:['查询分析 → 查询检查 → 查询优化 → 查询执行','查询优化 → 查询分析 → 查询检查 → 查询执行','查询分析 → 查询优化 → 查询检查 → 查询执行','查询检查 → 查询分析 → 查询执行 → 查询优化'],
@@ -4880,7 +4880,7 @@ const EXT2_CHOICE = [
   },
   {
     id:'c74', type:'choice', chapter:'ch9',
-    knowledgePoint:'9.1.1 查询处理步骤', difficulty:'中',
+    knowledgePoint:'查询处理步骤', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 9.1.1 查询处理步骤',
     stem:'把查询语句中出现的视图展开成对应的基本表定义，这一步发生在（　）。',
     options:['查询检查（语义检查）阶段','查询分析（词法语法分析）阶段','查询执行阶段','物理优化阶段'],
@@ -4889,7 +4889,7 @@ const EXT2_CHOICE = [
   },
   {
     id:'c75', type:'choice', chapter:'ch9',
-    knowledgePoint:'9.3 代数优化', difficulty:'易',
+    knowledgePoint:'代数优化', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 9.3 代数优化',
     stem:'代数优化中最重要的一条启发式规则是（　）。',
     options:['选择运算尽可能先做（下推）','把投影运算推迟到最后','先做笛卡尔积再筛选','尽量使用嵌套循环连接'],
@@ -4898,7 +4898,7 @@ const EXT2_CHOICE = [
   },
   {
     id:'c76', type:'choice', chapter:'ch9',
-    knowledgePoint:'9.1.2 连接操作的实现', difficulty:'难',
+    knowledgePoint:'连接操作的实现', difficulty:'难',
     source:'王珊《数据库系统概论》(第5版) 9.1.2 实现查询操作的算法示例',
     stem:'外关系 R 有 1000 块、内关系 S 有 500 块，内存只能放 3 块，S 上没有索引，采用块嵌套循环连接，其 I/O 代价约为（　）块。',
     options:['500 000','501 000','1 000','1 500'],
@@ -4907,7 +4907,7 @@ const EXT2_CHOICE = [
   },
   {
     id:'c77', type:'choice', chapter:'ch9',
-    knowledgePoint:'9.1.2 连接操作的实现', difficulty:'中',
+    knowledgePoint:'连接操作的实现', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 9.1.2 实现查询操作的算法示例',
     stem:'排序-合并连接（sort-merge join）效率最高的前提是（　）。',
     options:['两个关系都已按连接属性有序，或能利用已有索引顺序扫描','内关系足够小，可以整体装入内存','连接属性上没有任何索引','两个关系都只有一个块'],
@@ -4916,7 +4916,7 @@ const EXT2_CHOICE = [
   },
   {
     id:'c78', type:'choice', chapter:'ch9',
-    knowledgePoint:'9.4 物理优化', difficulty:'中',
+    knowledgePoint:'物理优化', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 9.1.2 实现查询操作的算法示例',
     stem:'实现选择运算最常用的两种方法是（　）。',
     options:['全表扫描与索引扫描','嵌套循环与排序合并','投影与连接','日志扫描与缓冲区扫描'],
@@ -4925,7 +4925,7 @@ const EXT2_CHOICE = [
   },
   {
     id:'c79', type:'choice', chapter:'ch9',
-    knowledgePoint:'9.4 物理优化', difficulty:'中',
+    knowledgePoint:'物理优化', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 9.4 物理优化',
     stem:'物理优化在选择存取路径时，主要依据（　）。',
     options:['代价估算（I/O 次数、CPU 时间等统计信息）','关系模式达到了第几范式','用户书写 SQL 的先后顺序','数据库使用的字符集'],
@@ -4934,7 +4934,7 @@ const EXT2_CHOICE = [
   },
   {
     id:'c80', type:'choice', chapter:'ch9',
-    knowledgePoint:'9.4.2 基于代价估算的优化', difficulty:'中',
+    knowledgePoint:'基于代价估算的优化', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 9.4.2 基于代价估算的优化',
     stem:'某表共有 10000 个元组，满足条件 C 的有 200 个，则条件 C 的选择率是（　）。',
     options:['0.02','0.98','0.2','2'],
@@ -4943,7 +4943,7 @@ const EXT2_CHOICE = [
   },
   {
     id:'c81', type:'choice', chapter:'ch9',
-    knowledgePoint:'9.2 查询优化概述', difficulty:'中',
+    knowledgePoint:'查询优化概述', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 9.2 关系数据库系统的查询优化',
     stem:'查询优化通常由 DBMS 的（　）完成。',
     options:['查询编译器（语言处理层）','数据存取层','缓冲区管理器','日志管理器'],
@@ -4955,7 +4955,7 @@ const EXT2_CHOICE = [
 const EXT2_FILL = [
   {
     id:'f44', type:'fill', chapter:'ch9',
-    knowledgePoint:'9.1.1 查询处理步骤', difficulty:'易',
+    knowledgePoint:'查询处理步骤', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 9.1.1 查询处理步骤',
     stem:'查询处理中，对语句做语义检查、视图消解、权限与完整性检查的阶段称为 <b class="blank">＿＿＿</b>。',
     accept:['查询检查','查询检查阶段'],
@@ -4964,7 +4964,7 @@ const EXT2_FILL = [
   },
   {
     id:'f45', type:'fill', chapter:'ch9',
-    knowledgePoint:'9.3 代数优化', difficulty:'易',
+    knowledgePoint:'代数优化', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 9.3 代数优化',
     stem:'代数优化中"把选择运算尽量移到查询树的叶端"这条规则，通常称为选择运算的 <b class="blank">＿＿＿</b>。',
     accept:['下推','下移','下推规则'],
@@ -4973,7 +4973,7 @@ const EXT2_FILL = [
   },
   {
     id:'f46', type:'fill', chapter:'ch9',
-    knowledgePoint:'9.1.2 连接操作的实现', difficulty:'难',
+    knowledgePoint:'连接操作的实现', difficulty:'难',
     source:'王珊《数据库系统概论》(第5版) 9.1.2 实现查询操作的算法示例',
     stem:'外关系 R 有 10 块、内关系 S 有 20 块，采用块嵌套循环连接（S 无索引），其 I/O 次数约为 <b class="blank">＿＿＿</b> 块。',
     accept:['210'],
@@ -4982,7 +4982,7 @@ const EXT2_FILL = [
   },
   {
     id:'f47', type:'fill', chapter:'ch9',
-    knowledgePoint:'9.3 代数优化', difficulty:'中',
+    knowledgePoint:'代数优化', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 9.3 代数优化',
     stem:'代数优化常把"笛卡尔积 + 选择"这一对运算合并成一个 <b class="blank">＿＿＿</b> 运算。',
     accept:['连接','join'],
@@ -4994,7 +4994,7 @@ const EXT2_FILL = [
 const EXT2_TERM = [
   {
     id:'t44', type:'term', chapter:'ch9',
-    knowledgePoint:'9.2 查询优化概述', difficulty:'中',
+    knowledgePoint:'查询优化概述', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 9.2 关系数据库系统的查询优化',
     abbr:'Query Optimization', full:'Query Optimization', cn:'查询优化', given:'cn',
     stem:'在保证查询结果正确的前提下，为查询选择高效执行策略（运算顺序与存取路径）的处理过程。',
@@ -5002,7 +5002,7 @@ const EXT2_TERM = [
   },
   {
     id:'t45', type:'term', chapter:'ch9',
-    knowledgePoint:'9.4.2 基于代价估算的优化', difficulty:'中',
+    knowledgePoint:'基于代价估算的优化', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 9.4.2 基于代价估算的优化',
     abbr:'Selectivity', full:'Selectivity', cn:'选择率', given:'cn',
     stem:'满足给定条件的元组数占关系总元组数的比例，是估算中间结果大小与选择代价的关键参数。',
@@ -5070,7 +5070,7 @@ const EXT2_ESSAY = [
 const EXT3_CHOICE = [
   {
     id:'c82', type:'choice', chapter:'ch10',
-    knowledgePoint:'12.1 DBMS 的基本功能', difficulty:'易',
+    knowledgePoint:'DBMS 的基本功能', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 12.1 数据库管理系统的基本功能',
     stem:'下列哪一项<b>不属于</b> DBMS 的主要功能？（　）',
     options:['数据定义','数据操纵','数据库的建立与维护','编译用户编写的 C 语言源程序'],
@@ -5079,7 +5079,7 @@ const EXT3_CHOICE = [
   },
   {
     id:'c83', type:'choice', chapter:'ch10',
-    knowledgePoint:'12.2 DBMS 的系统结构', difficulty:'中',
+    knowledgePoint:'DBMS 的系统结构', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 12.2 数据库管理系统的系统结构',
     stem:'从程序模块的角度看，DBMS 通常由哪三部分组成？（　）',
     options:['语言处理层、数据存取层、事务管理层','外模式、模式、内模式','客户端、中间件、服务器','分析器、设计器、生成器'],
@@ -5088,7 +5088,7 @@ const EXT3_CHOICE = [
   },
   {
     id:'c84', type:'choice', chapter:'ch10',
-    knowledgePoint:'12.3 语言处理层', difficulty:'中',
+    knowledgePoint:'语言处理层', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 12.3 语言处理层',
     stem:'把 SQL 语句转换成内部表示并完成查询优化的，是 DBMS 的（　）。',
     options:['语言处理层','数据存取层','缓冲区管理器','事务管理器'],
@@ -5097,7 +5097,7 @@ const EXT3_CHOICE = [
   },
   {
     id:'c85', type:'choice', chapter:'ch10',
-    knowledgePoint:'12.5 缓冲区管理', difficulty:'中',
+    knowledgePoint:'缓冲区管理', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 12.5 缓冲区管理',
     stem:'DBMS 缓冲区管理中最常用的页面淘汰策略是（　）。',
     options:['LRU（最近最少使用）','FIFO（先进先出）','随机淘汰','优先淘汰最大的页'],
@@ -5106,7 +5106,7 @@ const EXT3_CHOICE = [
   },
   {
     id:'c86', type:'choice', chapter:'ch10',
-    knowledgePoint:'12.5 缓冲区管理', difficulty:'易',
+    knowledgePoint:'缓冲区管理', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 12.5 缓冲区管理',
     stem:'缓冲区命中率指的是（　）。',
     options:['请求的数据页已在缓冲区、无需读磁盘的比例','缓冲区中空闲页所占的比例','索引块占缓冲区的比例','日志文件占缓冲区的比例'],
@@ -5115,7 +5115,7 @@ const EXT3_CHOICE = [
   },
   {
     id:'c87', type:'choice', chapter:'ch10',
-    knowledgePoint:'12.6 数据库的物理组织', difficulty:'易',
+    knowledgePoint:'数据库的物理组织', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 12.6 数据库的物理组织',
     stem:'记录按到达先后顺序存放、插入最快但查找往往要全表扫描的文件组织方式是（　）。',
     options:['堆文件（无序文件）','顺序文件','散列文件','B+ 树索引文件'],
@@ -5124,7 +5124,7 @@ const EXT3_CHOICE = [
   },
   {
     id:'c88', type:'choice', chapter:'ch10',
-    knowledgePoint:'12.6 数据库的物理组织', difficulty:'中',
+    knowledgePoint:'数据库的物理组织', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 12.6 数据库的物理组织',
     stem:'按记录主码的散列函数值决定其存放位置的文件组织是（　）。',
     options:['散列文件','堆文件','顺序文件','聚簇文件'],
@@ -5136,7 +5136,7 @@ const EXT3_CHOICE = [
 const EXT3_FILL = [
   {
     id:'f48', type:'fill', chapter:'ch10',
-    knowledgePoint:'12.2 DBMS 的系统结构', difficulty:'中',
+    knowledgePoint:'DBMS 的系统结构', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 12.2 数据库管理系统的系统结构',
     stem:'DBMS 的事务管理层负责并发控制与 <b class="blank">＿＿＿</b>，保证故障后数据库能回到一致状态。',
     accept:['恢复','数据库恢复','故障恢复'],
@@ -5145,7 +5145,7 @@ const EXT3_FILL = [
   },
   {
     id:'f49', type:'fill', chapter:'ch10',
-    knowledgePoint:'12.5 缓冲区管理', difficulty:'易',
+    knowledgePoint:'缓冲区管理', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 12.5 缓冲区管理',
     stem:'某次运行中缓冲区共收到 1000 次读页请求，其中 950 次在缓冲区中直接命中，则命中率为 <b class="blank">＿＿＿</b>%。',
     accept:['95'],
@@ -5154,7 +5154,7 @@ const EXT3_FILL = [
   },
   {
     id:'f50', type:'fill', chapter:'ch10',
-    knowledgePoint:'12.6 数据库的物理组织', difficulty:'中',
+    knowledgePoint:'数据库的物理组织', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 12.6 数据库的物理组织',
     stem:'顺序文件中的记录按 <b class="blank">＿＿＿</b> 的值有序存放，因此按该字段查询可用二分查找或索引快速定位。',
     accept:['搜索码','查找键','排序键','主码','主键'],
@@ -5166,7 +5166,7 @@ const EXT3_FILL = [
 const EXT3_TERM = [
   {
     id:'t46', type:'term', chapter:'ch10',
-    knowledgePoint:'12.5 缓冲区管理', difficulty:'易',
+    knowledgePoint:'缓冲区管理', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 12.5 缓冲区管理',
     abbr:'Buffer', full:'Database Buffer', cn:'缓冲区', given:'cn',
     stem:'DBMS 在内存中开辟的一块区域，用来暂存从磁盘读入的数据页，使后续访问不必再读磁盘。',
@@ -5230,8 +5230,8 @@ const EXT3_ESSAY = [
 const EXT3B_CHOICE = [
   {
     id:'c89', type:'choice', chapter:'ch11',
-    knowledgePoint:'13.1 数据库技术发展历史', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 13.1 数据库技术发展概述',
+    knowledgePoint:'数据库技术发展历史', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 13.1 数据库技术发展历史回顾',
     stem:'第一代数据库系统以（　）为代表。',
     options:['层次模型与网状模型','关系模型','面向对象模型','键值存储模型'],
     answer:0,
@@ -5239,8 +5239,8 @@ const EXT3B_CHOICE = [
   },
   {
     id:'c90', type:'choice', chapter:'ch11',
-    knowledgePoint:'13.1 数据库技术发展历史', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 13.1 数据库技术发展概述',
+    knowledgePoint:'数据库技术发展历史', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 13.1 数据库技术发展历史回顾',
     stem:'1970 年提出关系模型、奠定关系数据库理论基础的学者是（　）。',
     options:['E. F. Codd','C. J. Date','James Gray','Michael Stonebraker'],
     answer:0,
@@ -5248,8 +5248,8 @@ const EXT3B_CHOICE = [
   },
   {
     id:'c91', type:'choice', chapter:'ch11',
-    knowledgePoint:'13.2 数据库技术与其他学科结合', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 13.2 数据库技术与其他学科的结合',
+    knowledgePoint:'数据库技术与其他学科结合', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 13.3.2 数据库技术与相关技术相结合',
     stem:'分布式数据库的"分布透明性"是指（　）。',
     options:['用户不必关心数据如何分片、副本存在哪个站点','数据必须完整复制到每个站点','所有查询都在一个站点集中执行','只能使用一种数据模型'],
     answer:0,
@@ -5257,8 +5257,8 @@ const EXT3B_CHOICE = [
   },
   {
     id:'c92', type:'choice', chapter:'ch11',
-    knowledgePoint:'13.2 数据库技术与其他学科结合', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 13.2 数据库技术与其他学科的结合',
+    knowledgePoint:'数据库技术与其他学科结合', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 13.3.2 数据库技术与相关技术相结合',
     stem:'并行数据库系统的主要目的是（　）。',
     options:['用多处理机并行执行来提高查询处理速度与吞吐量','把数据分散到互联网的任意节点','替代数据仓库','给数据加密'],
     answer:0,
@@ -5266,8 +5266,8 @@ const EXT3B_CHOICE = [
   },
   {
     id:'c93', type:'choice', chapter:'ch11',
-    knowledgePoint:'13.3 数据库应用领域的扩展', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 13.3 数据库应用领域的扩展',
+    knowledgePoint:'数据库应用领域的扩展', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 13.3.3 面向应用领域的数据库新技术',
     stem:'下列哪类应用最需要专门的<b>空间数据库</b>？（　）',
     options:['地理信息系统（GIS）','工资发放系统','图书借阅系统','设备台账管理'],
     answer:0,
@@ -5275,8 +5275,8 @@ const EXT3B_CHOICE = [
   },
   {
     id:'c94', type:'choice', chapter:'ch11',
-    knowledgePoint:'13.3 数据库应用领域的扩展', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 13.3 数据库应用领域的扩展',
+    knowledgePoint:'数据库应用领域的扩展', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 13.3.3 面向应用领域的数据库新技术',
     stem:'Web 数据库技术要解决的核心问题是（　）。',
     options:['让浏览器通过 Web 服务器访问后台数据库','把数据库整个导出成 HTML 文件','用电子表格代替数据库','把数据全部保存在客户端'],
     answer:0,
@@ -5287,8 +5287,8 @@ const EXT3B_CHOICE = [
 const EXT3B_FILL = [
   {
     id:'f51', type:'fill', chapter:'ch11',
-    knowledgePoint:'13.1 数据库技术发展历史', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 13.1 数据库技术发展概述',
+    knowledgePoint:'数据库技术发展历史', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 13.1 数据库技术发展历史回顾',
     stem:'数据库技术发展经历了三代：第一代层次与网状数据库、第二代 <b class="blank">＿＿＿</b> 数据库、第三代面向对象数据库。',
     accept:['关系','关系模型'],
     answer:'关系',
@@ -5296,8 +5296,8 @@ const EXT3B_FILL = [
   },
   {
     id:'f52', type:'fill', chapter:'ch11',
-    knowledgePoint:'13.1 数据库技术发展历史', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 13.1 数据库技术发展概述',
+    knowledgePoint:'数据库技术发展历史', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 13.1 数据库技术发展历史回顾',
     stem:'数据管理技术的发展经历了三个阶段：人工管理阶段、文件系统阶段和 <b class="blank">＿＿＿</b> 阶段。',
     accept:['数据库系统','数据库'],
     answer:'数据库系统',
@@ -5308,8 +5308,8 @@ const EXT3B_FILL = [
 const EXT3B_TERM = [
   {
     id:'t47', type:'term', chapter:'ch11',
-    knowledgePoint:'13.2 数据库技术与其他学科结合', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 13.2 数据库技术与其他学科的结合',
+    knowledgePoint:'数据库技术与其他学科结合', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 13.3.2 数据库技术与相关技术相结合',
     abbr:'Distributed Database', full:'Distributed Database', cn:'分布式数据库', given:'cn',
     stem:'数据在物理上分布在计算机网络的不同站点、但在逻辑上属于同一个系统的数据库。',
     explain:'两个关键词：<b>物理分布</b>（数据放在不同机器上）与<b>逻辑统一</b>（用户看到的是一个库）。由此带来分片透明、副本透明、位置透明等一组"分布透明性"。'
@@ -5323,7 +5323,7 @@ const EXT3B_TERM = [
 const EXT4_CHOICE = [
   {
     id:'c95', type:'choice', chapter:'ch12',
-    knowledgePoint:'14.1 大数据的概念', difficulty:'易',
+    knowledgePoint:'大数据的概念', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 14.1 大数据概述',
     stem:'大数据的"4V"特征不包括（　）。',
     options:['Volume：数据体量大','Velocity：产生与处理速度快','Variety：数据类型多样','Normalization：规范化程度高'],
@@ -5332,8 +5332,8 @@ const EXT4_CHOICE = [
   },
   {
     id:'c96', type:'choice', chapter:'ch12',
-    knowledgePoint:'14.2 CAP 与 BASE', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 14.2 大数据管理技术',
+    knowledgePoint:'CAP 与 BASE', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 14.3.1 NoSQL 数据管理系统',
     stem:'CAP 理论指出，分布式系统在（　）三者中最多只能同时满足两个。',
     options:['一致性、可用性、分区容错性','完整性、原子性、持久性','并发性、隔离性、一致性','安全性、完整性、可恢复性'],
     answer:0,
@@ -5341,8 +5341,8 @@ const EXT4_CHOICE = [
   },
   {
     id:'c97', type:'choice', chapter:'ch12',
-    knowledgePoint:'14.2 CAP 与 BASE', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 14.2 大数据管理技术',
+    knowledgePoint:'CAP 与 BASE', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 14.3.1 NoSQL 数据管理系统',
     stem:'BASE 原则中的 E 指的是（　）。',
     options:['最终一致性（Eventually consistent）','实体完整性（Entity integrity）','可扩展性（Extensibility）','加密（Encryption）'],
     answer:0,
@@ -5350,8 +5350,8 @@ const EXT4_CHOICE = [
   },
   {
     id:'c98', type:'choice', chapter:'ch12',
-    knowledgePoint:'14.2 NoSQL 的分类', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 14.2 大数据管理技术',
+    knowledgePoint:'NoSQL 的分类', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 14.3.1 NoSQL 数据管理系统',
     stem:'HBase 属于下列哪一类 NoSQL 数据库？（　）',
     options:['列族（宽列）存储','键值存储','文档存储','图存储'],
     answer:0,
@@ -5359,8 +5359,8 @@ const EXT4_CHOICE = [
   },
   {
     id:'c99', type:'choice', chapter:'ch12',
-    knowledgePoint:'14.2 NoSQL 的分类', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 14.2 大数据管理技术',
+    knowledgePoint:'NoSQL 的分类', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 14.3.1 NoSQL 数据管理系统',
     stem:'以 JSON/BSON 文档为基本存储单位、模式灵活的数据库是（　）。',
     options:['MongoDB','Redis','Neo4j','HBase'],
     answer:0,
@@ -5368,8 +5368,8 @@ const EXT4_CHOICE = [
   },
   {
     id:'c100', type:'choice', chapter:'ch12',
-    knowledgePoint:'14.3 NewSQL 与云数据库', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 14.3 大数据管理技术的新发展',
+    knowledgePoint:'NewSQL 与云数据库', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 14.3.2 NewSQL 数据库系统',
     stem:'NewSQL 的核心目标是（　）。',
     options:['在保持 SQL 与事务（ACID）能力的同时获得 NoSQL 的横向扩展性','彻底放弃 SQL 与事务','只提供键值查询','只能单机部署'],
     answer:0,
@@ -5377,8 +5377,8 @@ const EXT4_CHOICE = [
   },
   {
     id:'c101', type:'choice', chapter:'ch12',
-    knowledgePoint:'14.3 NewSQL 与云数据库', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 14.3 大数据管理技术的新发展',
+    knowledgePoint:'NewSQL 与云数据库', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 14.3.2 NewSQL 数据库系统',
     stem:'云数据库（DBaaS）最突出的特点是（　）。',
     options:['数据库以服务形式提供，按需申请、按量付费，安装运维由云厂商负责','数据库必须部署在本地机房','只能存储非结构化数据','不再支持 SQL'],
     answer:0,
@@ -5389,7 +5389,7 @@ const EXT4_CHOICE = [
 const EXT4_FILL = [
   {
     id:'f53', type:'fill', chapter:'ch12',
-    knowledgePoint:'14.1 大数据的概念', difficulty:'易',
+    knowledgePoint:'大数据的概念', difficulty:'易',
     source:'王珊《数据库系统概论》(第5版) 14.1 大数据概述',
     stem:'大数据的 4V 中，Value 指数据的价值密度 <b class="blank">＿＿＿</b>，需要从海量数据中挖掘出有用信息。',
     accept:['低'],
@@ -5398,8 +5398,8 @@ const EXT4_FILL = [
   },
   {
     id:'f54', type:'fill', chapter:'ch12',
-    knowledgePoint:'14.2 CAP 与 BASE', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 14.2 大数据管理技术',
+    knowledgePoint:'CAP 与 BASE', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 14.3.1 NoSQL 数据管理系统',
     stem:'CAP 理论中的 P 指 <b class="blank">＿＿＿</b>，即系统在节点间网络通信中断时仍能继续工作。',
     accept:['分区容错性','分区容忍性','partition tolerance'],
     answer:'分区容错性',
@@ -5407,8 +5407,8 @@ const EXT4_FILL = [
   },
   {
     id:'f55', type:'fill', chapter:'ch12',
-    knowledgePoint:'14.2 CAP 与 BASE', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 14.2 大数据管理技术',
+    knowledgePoint:'CAP 与 BASE', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 14.3.1 NoSQL 数据管理系统',
     stem:'BASE 中的 E 表示 <b class="blank">＿＿＿</b> 一致性，即允许短时间内数据不一致，但最终会达到一致。',
     accept:['最终'],
     answer:'最终',
@@ -5419,8 +5419,8 @@ const EXT4_FILL = [
 const EXT4_TERM = [
   {
     id:'t48', type:'term', chapter:'ch12',
-    knowledgePoint:'14.2 NoSQL', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 14.2 大数据管理技术',
+    knowledgePoint:'NoSQL', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 14.3.1 NoSQL 数据管理系统',
     abbr:'NoSQL', full:'Not Only SQL', cn:'非关系型数据库', given:'cn',
     stem:'不依赖固定表结构、放松强事务与一致性、面向海量数据与高并发访问的一类数据库系统的统称。',
     explain:'NoSQL = Not Only SQL，不是"不要 SQL"。四大类：键值（Redis）、列族（HBase）、文档（MongoDB）、图（Neo4j）。理论依据是 CAP 与 BASE。'
@@ -5483,8 +5483,8 @@ BASE = <b>B</b>asically Available（基本可用，允许损失部分功能或�
 const EXT4B_CHOICE = [
   {
     id:'c102', type:'choice', chapter:'ch13',
-    knowledgePoint:'15.1 内存数据库的概念', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 15.1 内存数据库概述',
+    knowledgePoint:'内存数据库的概念', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 15.1 概述',
     stem:'内存数据库（MMDB）与磁盘数据库最本质的区别是（　）。',
     options:['数据的主拷贝常驻内存，磁盘只用于备份与持久化','不需要索引','不支持事务','只能存数值型数据'],
     answer:0,
@@ -5492,8 +5492,8 @@ const EXT4B_CHOICE = [
   },
   {
     id:'c103', type:'choice', chapter:'ch13',
-    knowledgePoint:'15.2 内存数据库的关键技术', difficulty:'难',
-    source:'王珊《数据库系统概论》(第5版) 15.2 内存数据库的关键技术',
+    knowledgePoint:'内存数据库的关键技术', difficulty:'难',
+    source:'王珊《数据库系统概论》(第5版) 15.4.1 数据存储',
     stem:'内存数据库中更常用的索引结构是（　）。',
     options:['T 树、哈希索引','以 B+ 树为主','倒排表','R 树'],
     answer:0,
@@ -5501,8 +5501,8 @@ const EXT4B_CHOICE = [
   },
   {
     id:'c104', type:'choice', chapter:'ch13',
-    knowledgePoint:'15.3 内存数据库的恢复', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 15.3 内存数据库的恢复技术',
+    knowledgePoint:'内存数据库的恢复', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 15.4.3 并发与恢复',
     stem:'内存数据库的恢复主要依靠（　）。',
     options:['日志与周期性检查点（把内存快照写入磁盘）','只靠磁盘转储','不需要任何恢复机制','依靠操作系统的文件缓存'],
     answer:0,
@@ -5510,8 +5510,8 @@ const EXT4B_CHOICE = [
   },
   {
     id:'c105', type:'choice', chapter:'ch13',
-    knowledgePoint:'15.1 内存数据库的概念', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 15.1 内存数据库概述',
+    knowledgePoint:'内存数据库的概念', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 15.1 概述',
     stem:'内存数据库消除了磁盘 I/O 瓶颈之后，系统性能瓶颈通常转移到（　）。',
     options:['CPU 处理与内存访问（cache miss）','磁盘随机读','磁带顺序写','网络交换机'],
     answer:0,
@@ -5519,8 +5519,8 @@ const EXT4B_CHOICE = [
   },
   {
     id:'c106', type:'choice', chapter:'ch13',
-    knowledgePoint:'15.4 典型内存数据库', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 15.4 内存数据库系统',
+    knowledgePoint:'典型内存数据库', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 15.2 内存数据库的发展历程',
     stem:'SAP HANA 属于（　）。',
     options:['内存数据库，且采用列式存储','磁盘数据库，行式存储','文档数据库','图数据库'],
     answer:0,
@@ -5528,8 +5528,8 @@ const EXT4B_CHOICE = [
   },
   {
     id:'c107', type:'choice', chapter:'ch13',
-    knowledgePoint:'15.2 内存数据库的关键技术', difficulty:'难',
-    source:'王珊《数据库系统概论》(第5版) 15.2 内存数据库的关键技术',
+    knowledgePoint:'内存数据库的关键技术', difficulty:'难',
+    source:'王珊《数据库系统概论》(第5版) 15.4.1 数据存储',
     stem:'下列哪一项<b>不是</b>内存数据库常用的并发控制手段？（　）',
     options:['以磁盘页为单位加锁','分区（分段）加锁','乐观并发控制','时间戳排序'],
     answer:0,
@@ -5540,8 +5540,8 @@ const EXT4B_CHOICE = [
 const EXT4B_FILL = [
   {
     id:'f56', type:'fill', chapter:'ch13',
-    knowledgePoint:'15.2 内存数据库的关键技术', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 15.2 内存数据库的关键技术',
+    knowledgePoint:'内存数据库的关键技术', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 15.4.1 数据存储',
     stem:'内存数据库常用 <b class="blank">＿＿＿</b> 树（首字母）代替磁盘数据库的 B+ 树作为索引，以减少层数与指针跳转。',
     accept:['t'],
     answer:'T',
@@ -5549,8 +5549,8 @@ const EXT4B_FILL = [
   },
   {
     id:'f57', type:'fill', chapter:'ch13',
-    knowledgePoint:'15.3 内存数据库的恢复', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 15.3 内存数据库的恢复技术',
+    knowledgePoint:'内存数据库的恢复', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 15.4.3 并发与恢复',
     stem:'内存数据库周期性地把内存中的数据库快照写入磁盘，这一机制称为 <b class="blank">＿＿＿</b>。',
     accept:['检查点','checkpoint'],
     answer:'检查点',
@@ -5561,8 +5561,8 @@ const EXT4B_FILL = [
 const EXT4B_TERM = [
   {
     id:'t49', type:'term', chapter:'ch13',
-    knowledgePoint:'15.1 内存数据库的概念', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 15.1 内存数据库概述',
+    knowledgePoint:'内存数据库的概念', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 15.1 概述',
     abbr:'MMDB', full:'Main Memory Database', cn:'内存数据库', given:'cn',
     stem:'数据的主拷贝常驻内存、磁盘仅用于日志与备份的一类数据库系统。',
     explain:'核心思路是"把磁盘从访问路径上拿掉"，用内存的高带宽换取低延迟；代价是要用日志 + 检查点解决易失性问题，且容量受内存大小限制。'
@@ -5573,8 +5573,8 @@ const EXT4B_TERM = [
 const EXT4C_CHOICE = [
   {
     id:'c108', type:'choice', chapter:'ch14',
-    knowledgePoint:'16.1 数据仓库的特征', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 16.1 数据仓库的概念',
+    knowledgePoint:'数据仓库的特征', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 16.1 数据仓库技术',
     stem:'数据仓库的四个基本特征不包括（　）。',
     options:['面向主题','集成的','相对稳定（不可更新）','面向事务、频繁实时更新'],
     answer:3,
@@ -5582,8 +5582,8 @@ const EXT4C_CHOICE = [
   },
   {
     id:'c109', type:'choice', chapter:'ch14',
-    knowledgePoint:'16.2 OLTP 与 OLAP', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 16.2 数据仓库与 OLAP',
+    knowledgePoint:'OLTP 与 OLAP', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 16.2 联机分析处理技术',
     stem:'与联机事务处理（OLTP）相比，联机分析处理（OLAP）的特点是（　）。',
     options:['面向分析决策、处理历史数据、以复杂查询为主','面向日常事务、处理当前数据、更新频繁','只做插入不做查询','只存储文本数据'],
     answer:0,
@@ -5591,8 +5591,8 @@ const EXT4C_CHOICE = [
   },
   {
     id:'c110', type:'choice', chapter:'ch14',
-    knowledgePoint:'16.3 多维数据模型', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 16.3 数据仓库的数据组织',
+    knowledgePoint:'多维数据模型', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 16.1 数据仓库技术',
     stem:'星型模型中处于中心位置的是（　）。',
     options:['事实表','维度表','索引表','日志表'],
     answer:0,
@@ -5600,8 +5600,8 @@ const EXT4C_CHOICE = [
   },
   {
     id:'c111', type:'choice', chapter:'ch14',
-    knowledgePoint:'16.3 多维数据模型', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 16.3 数据仓库的数据组织',
+    knowledgePoint:'多维数据模型', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 16.1 数据仓库技术',
     stem:'数据仓库中用来描述"按什么角度分析"（如时间、地区、产品）的表叫（　）。',
     options:['维度表','事实表','明细表','汇总表'],
     answer:0,
@@ -5609,8 +5609,8 @@ const EXT4C_CHOICE = [
   },
   {
     id:'c112', type:'choice', chapter:'ch14',
-    knowledgePoint:'16.4 OLAP 的操作', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 16.4 OLAP 的操作',
+    knowledgePoint:'OLAP 的操作', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 16.2 联机分析处理技术',
     stem:'把"按月销售"汇总成"按年销售"，这种 OLAP 操作叫（　）。',
     options:['上卷（roll-up）','下钻（drill-down）','切片（slice）','旋转（pivot）'],
     answer:0,
@@ -5618,8 +5618,8 @@ const EXT4C_CHOICE = [
   },
   {
     id:'c113', type:'choice', chapter:'ch14',
-    knowledgePoint:'16.4 OLAP 的操作', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 16.4 OLAP 的操作',
+    knowledgePoint:'OLAP 的操作', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 16.2 联机分析处理技术',
     stem:'只看"2024 年"这一个时间点、其余维度照常统计，这种 OLAP 操作叫（　）。',
     options:['切片（slice）','切块（dice）','旋转（pivot）','上卷（roll-up）'],
     answer:0,
@@ -5627,8 +5627,8 @@ const EXT4C_CHOICE = [
   },
   {
     id:'c114', type:'choice', chapter:'ch14',
-    knowledgePoint:'16.1 数据仓库的特征', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 16.1 数据仓库的概念',
+    knowledgePoint:'数据仓库的特征', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 16.1 数据仓库技术',
     stem:'数据集市（data mart）通常指（　）。',
     options:['面向某个部门或某个主题的小型数据仓库','临时存放原始数据的缓冲区','数据库的日志区','备份服务器'],
     answer:0,
@@ -5639,8 +5639,8 @@ const EXT4C_CHOICE = [
 const EXT4C_FILL = [
   {
     id:'f58', type:'fill', chapter:'ch14',
-    knowledgePoint:'16.1 数据仓库的构建', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 16.1 数据仓库的概念',
+    knowledgePoint:'数据仓库的构建', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 16.1 数据仓库技术',
     stem:'把数据从各个源系统抽取、清洗转换后装入数据仓库的过程，通常用三个字母缩写表示为 <b class="blank">＿＿＿</b>。',
     accept:['etl'],
     answer:'ETL',
@@ -5648,8 +5648,8 @@ const EXT4C_FILL = [
   },
   {
     id:'f59', type:'fill', chapter:'ch14',
-    knowledgePoint:'16.3 多维数据模型', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 16.3 数据仓库的数据组织',
+    knowledgePoint:'多维数据模型', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 16.1 数据仓库技术',
     stem:'多维模型中存放度量值（销售额、数量等）和各维外键的表称为 <b class="blank">＿＿＿</b>。',
     accept:['事实表'],
     answer:'事实表',
@@ -5657,8 +5657,8 @@ const EXT4C_FILL = [
   },
   {
     id:'f60', type:'fill', chapter:'ch14',
-    knowledgePoint:'16.3 多维数据模型', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 16.3 数据仓库的数据组织',
+    knowledgePoint:'多维数据模型', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 16.1 数据仓库技术',
     stem:'多维数据模型把数据组织成 <b class="blank">＿＿＿</b>（data cube），可以按任意维度组合进行汇总查看。',
     accept:['数据立方体','立方体','cube','data cube'],
     answer:'数据立方体',
@@ -5669,8 +5669,8 @@ const EXT4C_FILL = [
 const EXT4C_TERM = [
   {
     id:'t50', type:'term', chapter:'ch14',
-    knowledgePoint:'16.2 OLAP', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 16.4 OLAP 的操作',
+    knowledgePoint:'OLAP', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 16.2 联机分析处理技术',
     abbr:'OLAP', full:'On-Line Analytical Processing', cn:'联机分析处理', given:'cn',
     stem:'面向分析决策，对数据仓库中的多维数据进行上卷、下钻、切片、切块、旋转等操作的技术。',
     explain:'OLAP 与 OLTP 相对：OLTP 是"办业务"，OLAP 是"看数据"。它的数据基础是数据仓库/数据集市，核心是多维数据模型与数据立方体。'
@@ -5738,7 +5738,7 @@ const EXT4C_ESSAY = [
 const EXT5_CHOICE = [
   {
     id:'c115', type:'choice', chapter:'ch3',
-    knowledgePoint:'7.3 概念结构设计', difficulty:'中',
+    knowledgePoint:'概念结构设计', difficulty:'中',
     source:'王珊《数据库系统概论》(第5版) 7.3 概念结构设计',
     stem:'概念结构设计区别于逻辑结构设计、物理结构设计的最主要特点是（　）。',
     options:['独立于具体的机器和 DBMS，只描述现实世界的语义','必须考虑索引与存储结构','必须给出关系模式的码','必须依附于某一种 DBMS 的语法'],
@@ -5747,8 +5747,8 @@ const EXT5_CHOICE = [
   },
   {
     id:'c116', type:'choice', chapter:'ch3',
-    knowledgePoint:'7.2 需求分析', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 7.2 需求分析',
+    knowledgePoint:'需求分析', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.2.3 数据字典',
     stem:'数据字典（DD）是（　）阶段的主要成果之一。',
     options:['需求分析','概念结构设计','逻辑结构设计','数据库实施'],
     answer:0,
@@ -5756,8 +5756,8 @@ const EXT5_CHOICE = [
   },
   {
     id:'c117', type:'choice', chapter:'ch3',
-    knowledgePoint:'7.3.3 视图集成', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 7.3.3 视图集成',
+    knowledgePoint:'视图集成', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 7.3.5 概念结构设计',
     stem:'各子系统的 E-R 图合并时，同一个对象在不同子系统里叫法不同（如"教师"与"教员"）属于（　）。',
     options:['属性冲突','命名冲突','结构冲突','语义冲突'],
     answer:1,
@@ -5765,8 +5765,8 @@ const EXT5_CHOICE = [
   },
   {
     id:'c118', type:'choice', chapter:'ch3',
-    knowledgePoint:'7.4 逻辑结构设计 · E-R 图转关系模式', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 7.4.2 E-R 图向关系模型的转换',
+    knowledgePoint:'逻辑结构设计 · E-R 图转关系模式', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 7.4.1 E-R 图向关系模型的转换',
     stem:'把一个 1:1 联系转换为关系模式时，最常用的做法是（　）。',
     options:['必须单独建一个关系模式','并入任意一端对应的关系模式，不必单独建表','只能并入"1"的那一端','拆成两个关系模式分别存放'],
     answer:1,
@@ -5774,8 +5774,8 @@ const EXT5_CHOICE = [
   },
   {
     id:'c119', type:'choice', chapter:'ch3',
-    knowledgePoint:'7.4 逻辑结构设计 · E-R 图转关系模式', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 7.4.2 E-R 图向关系模型的转换',
+    knowledgePoint:'逻辑结构设计 · E-R 图转关系模式', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.4.1 E-R 图向关系模型的转换',
     stem:'把一个 M:N 联系转换为关系模式时，正确的做法是（　）。',
     options:['并入其中任意一端','并入 N 端','单独建一个关系模式，其码由两端实体的码组合而成','M:N 联系不需要转换'],
     answer:2,
@@ -5783,8 +5783,8 @@ const EXT5_CHOICE = [
   },
   {
     id:'c120', type:'choice', chapter:'ch3',
-    knowledgePoint:'7.3.1 E-R 图的基本成分', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 7.3.1 概念结构设计的方法与步骤',
+    knowledgePoint:'E-R 图的基本成分', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.3.2 E-R 模型',
     stem:'在 E-R 图中，多值属性（如职工的"电话号码"可以有多个）用（　）表示。',
     options:['单线椭圆','双线椭圆','虚线椭圆','矩形'],
     answer:1,
@@ -5792,8 +5792,8 @@ const EXT5_CHOICE = [
   },
   {
     id:'c121', type:'choice', chapter:'ch3',
-    knowledgePoint:'7.3.1 E-R 图的基本成分', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 7.3.1 概念结构设计的方法与步骤',
+    knowledgePoint:'E-R 图的基本成分', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.3.2 E-R 模型',
     stem:'"年龄"可由"出生日期"推算得到，这类属性在 E-R 图中称为派生属性，用（　）表示。',
     options:['单线椭圆','双线椭圆','虚线椭圆','菱形'],
     answer:2,
@@ -5801,8 +5801,8 @@ const EXT5_CHOICE = [
   },
   {
     id:'c122', type:'choice', chapter:'ch3',
-    knowledgePoint:'7.5 物理结构设计', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 7.5 数据库的物理设计',
+    knowledgePoint:'物理结构设计', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 7.5 物理结构设计',
     stem:'数据库物理设计阶段的主要任务是（　）。',
     options:['画 E-R 图，确定实体与联系','把 E-R 图转换为关系模式','为关系模式选择存取方法（索引）和存储结构','收集用户的信息需求与处理需求'],
     answer:2,
@@ -5810,8 +5810,8 @@ const EXT5_CHOICE = [
   },
   {
     id:'c123', type:'choice', chapter:'ch11',
-    knowledgePoint:'13.2 数据库技术发展', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 13.2 数据库技术发展阶段',
+    knowledgePoint:'数据库技术发展', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 13.3.2 数据库技术与相关技术相结合',
     stem:'分布式数据库中，把全局关系按<b>行（元组）</b>划分到不同站点存放，这种分片方式称为（　）。',
     options:['水平分片','垂直分片','混合分片','完全复制'],
     answer:0,
@@ -5819,8 +5819,8 @@ const EXT5_CHOICE = [
   },
   {
     id:'c124', type:'choice', chapter:'ch13',
-    knowledgePoint:'15.3 内存数据库的关键技术', difficulty:'难',
-    source:'王珊《数据库系统概论》(第5版) 15.3 内存数据库的关键技术',
+    knowledgePoint:'内存数据库的关键技术', difficulty:'难',
+    source:'王珊《数据库系统概论》(第5版) 15.4.3 并发与恢复',
     stem:'内存数据库中"影子内存（shadow memory）"技术的主要作用是（　）。',
     options:['增加索引层数以加快查找','更新时先写副本、提交时切换指针，从而保证原子提交','把冷数据换出到磁盘','压缩数据以节省内存'],
     answer:1,
@@ -5831,8 +5831,8 @@ const EXT5_CHOICE = [
 const EXT5_FILL = [
   {
     id:'f61', type:'fill', chapter:'ch3',
-    knowledgePoint:'7.3.1 E-R 图的基本成分', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 7.3.1 概念结构设计的方法与步骤',
+    knowledgePoint:'E-R 图的基本成分', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.3.2 E-R 模型',
     stem:'在 E-R 图中，本身没有足够的码、必须依附于其他实体才能存在的实体称为弱实体，用 <b class="blank">＿＿＿</b>（填图形）表示。',
     accept:['双矩形','双线矩形','双边框矩形','双矩形框'],
     answer:'双矩形',
@@ -5840,8 +5840,8 @@ const EXT5_FILL = [
   },
   {
     id:'f62', type:'fill', chapter:'ch3',
-    knowledgePoint:'7.4 逻辑结构设计 · E-R 图转关系模式', difficulty:'中',
-    source:'王珊《数据库系统概论》(第5版) 7.4.2 E-R 图向关系模型的转换',
+    knowledgePoint:'逻辑结构设计 · E-R 图转关系模式', difficulty:'中',
+    source:'王珊《数据库系统概论》(第5版) 7.4.1 E-R 图向关系模型的转换',
     stem:'把 M:N 联系转换为关系模式时，该关系模式的码由 <b class="blank">＿＿＿</b> 组合而成。',
     accept:['两端实体的码','两端实体的码组合','两个实体的码','两端码','两端实体的主码'],
     answer:'两端实体的码',
@@ -5852,8 +5852,8 @@ const EXT5_FILL = [
 const EXT5_TERM = [
   {
     id:'t51', type:'term', chapter:'ch3',
-    knowledgePoint:'7.2 需求分析', difficulty:'易',
-    source:'王珊《数据库系统概论》(第5版) 7.2.2 数据字典',
+    knowledgePoint:'需求分析', difficulty:'易',
+    source:'王珊《数据库系统概论》(第5版) 7.2.3 数据字典',
     abbr:'DD', full:'Data Dictionary', cn:'数据字典', given:'cn',
     stem:'需求分析阶段产生的、对数据项、数据结构、数据流、数据存储和处理过程逐条给出严格定义的文档。',
     explain:'数据字典与数据流图（DFD）是一对：DFD 画"数据怎么流动"，DD 定义"每个数据到底是什么"。它是后面 E-R 图与关系模式的直接依据，也是系统维护时查"这个字段什么意思"的地方。'
