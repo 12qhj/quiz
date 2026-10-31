@@ -68,6 +68,11 @@ code,kbd,.mono{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono
 }
 .tab:hover{background:#eef1f7;color:var(--ink)}
 .tab.active{background:var(--primary-soft);color:var(--primary)}
+.tab-n{
+  display:inline-grid;place-items:center;min-width:18px;height:18px;margin-left:5px;padding:0 5px;
+  font-size:11px;font-weight:700;border-radius:999px;background:var(--warn-soft);color:var(--warn);
+}
+.tab.active .tab-n{background:#fff;color:var(--warn)}
 
 /* ============================================================
    2. 布局 / 卡片 / 按钮
@@ -340,6 +345,39 @@ pre.sch{
 .wi-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
 .wi-stem{font-size:14px;line-height:1.6;color:var(--ink-2)}
 .wi-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+/* 收藏：题头星标 + 列表侧星标 + 章节分布条 */
+.fav-btn{
+  display:inline-flex;align-items:center;gap:4px;margin-left:8px;
+  font-size:12px;font-weight:600;line-height:1.5;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 10px;
+  cursor:pointer;transition:.15s;white-space:nowrap;
+}
+.fav-btn:hover{border-color:#fcd34d;color:var(--warn);background:var(--warn-soft)}
+.fav-btn .fav-ico{font-size:13px;line-height:1}
+.fav-btn.on{color:var(--warn);background:var(--warn-soft);border-color:#fcd34d}
+.fav-btn.on .fav-ico{color:#f59e0b}
+.fav-star{
+  margin-left:auto;display:inline-flex;align-items:center;gap:4px;
+  border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;
+  font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:.15s;white-space:nowrap;
+}
+.fav-star:hover{border-color:#fcd34d;color:var(--warn);background:var(--warn-soft)}
+.fav-star.on{color:var(--warn);background:var(--warn-soft);border-color:#fcd34d}
+.fav-dist{display:grid;gap:10px}
+.fav-dist-row{
+  display:grid;grid-template-columns:120px 1fr 128px;gap:10px;align-items:center;
+  width:100%;border:none;background:transparent;padding:3px 0;font-family:inherit;
+  text-align:left;cursor:pointer;border-radius:8px;
+}
+.fav-dist-row:hover .fd-name{color:var(--primary)}
+.fav-dist-row .fd-name{font-size:13.5px;font-weight:600;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fav-dist-row .bar > i{background:linear-gradient(90deg,#f59e0b,#f97316)}
+.fav-dist-row .fd-num{font-size:12px;color:var(--muted);text-align:right;white-space:nowrap}
+@media (max-width:560px){
+  .fav-dist-row{grid-template-columns:96px 1fr;}
+  .fav-dist-row .fd-num{grid-column:1 / -1;text-align:left}
+}
 
 .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
 .empty .e-ico{font-size:34px;margin-bottom:8px}
@@ -794,6 +832,7 @@ body[data-subj="ds"] .bar > i{background:linear-gradient(90deg,#2563eb,#0ea5e9)}
     <button class="tab" data-act="goto" data-view="syl">考纲对照</button>
     <button class="tab" data-act="goto" data-view="search">搜索</button>
     <button class="tab" data-act="goto" data-view="wrong">错题本</button>
+    <button class="tab" data-act="goto" data-view="fav">收藏夹<span class="tab-n" id="tabFavN" hidden></span></button>
     <button class="tab" data-act="goto" data-view="stats">统计</button>
     <button class="tab" data-act="goto" data-view="terms">术语表</button>
     <button class="tab" data-act="goto" data-view="help">使用说明</button>
@@ -17447,12 +17486,12 @@ function gradeEssay(q, raw, pv){
      · Safari 无痕 / 某些 file:// 环境会直接抛异常，所有读写都必须 try-catch；
      · 读写失败不阻塞刷题，只在顶部固定提示「无法保存进度」。
    ================================================================ */
-const EMPTY_STATE = { records:{}, wrong:{}, sessions:[] };
+const EMPTY_STATE = { records:{}, wrong:{}, fav:{}, sessions:[] };
 let S = null;
 let STORE_OK = true;      // 本地存储是否可用（false 时页面仍可正常刷题）
 
 function emptyState(){
-  return { records:{}, wrong:{}, sessions:[] };
+  return { records:{}, wrong:{}, fav:{}, sessions:[] };
 }
 function storeKey(){
   return subj().storeKey;
@@ -17490,6 +17529,7 @@ function loadState(){
   }
   S.records  = S.records  || {};
   S.wrong    = S.wrong    || {};
+  S.fav      = S.fav      || {};      // 老版本存档没有 fav，补空对象即可，不影响已有进度
   S.sessions = S.sessions || [];
 }
 
@@ -17500,6 +17540,36 @@ function saveState(){
   } catch (e) {
     showStoreWarn();
   }
+}
+
+/* ---------------- 收藏（手工标记「我还不熟」的题） ----------------
+   与错题本的区别：
+     · 错题本 = 判分自动收录，答对就移除；
+     · 收藏   = 自己按判断加星，不会因为答对而消失，用来堆一份「考前必看」清单。
+   每科独立存于该科目 storeKey 的 fav 字段，值与错题本一样存时间戳（用于排序）。 */
+function isFav(id){ return !!(S && S.fav && S.fav[id]); }
+/** 收藏题 id，最近的在前；时间戳相同时按加入顺序倒序，保证顺序稳定 */
+function favIds(){
+  const keys = Object.keys((S && S.fav) || {});
+  const pos = {};
+  keys.forEach((k, i) => { pos[k] = i; });
+  return keys.sort((a, b) => (S.fav[b] - S.fav[a]) || (pos[b] - pos[a]));
+}
+function favQs(){
+  return favIds().map(id => byId()[id]).filter(Boolean);
+}
+/** 切换收藏，返回切换后的状态（true=已收藏） */
+function toggleFav(id){
+  if (!id || !byId()[id]) return false;
+  if (S.fav[id]) delete S.fav[id];
+  else S.fav[id] = Date.now();
+  saveState();
+  return !!S.fav[id];
+}
+function removeFav(id){
+  if (!S.fav[id]) return;
+  delete S.fav[id];
+  saveState();
 }
 
 /**
@@ -17526,6 +17596,7 @@ function statsOfSubject(sid){
     total, touched, seen, right,
     acc: seen ? Math.round(right / seen * 100) : 0,
     wrong: Object.keys(st.wrong || {}).length,
+    fav: Object.keys(st.fav || {}).length,
     cover: total ? Math.round(touched / total * 100) : 0
   };
 }
@@ -17598,7 +17669,8 @@ function overallStats(){
     seen,
     right,
     acc: seen ? Math.round(right / seen * 100) : 0,
-    wrongCount: Object.keys(S.wrong).length
+    wrongCount: Object.keys(S.wrong).length,
+    favCount: Object.keys(S.fav || {}).length
   };
 }
 function chapterStats(chId){
@@ -17790,6 +17862,37 @@ function startWrongBook(){
   if (!qs.length) { alert('错题本是空的，先去练习吧～'); return; }
   startSession('wrong', '错题重做 · ' + qs.length + ' 题', shuffle(qs));
 }
+/** 收藏夹组卷：全部 / 单章 */
+function startFav(){
+  const qs = favQs();
+  if (!qs.length) { alert('收藏夹是空的，做题时点一下题头的 ☆ 就能收藏～'); return; }
+  startSession('fav', '收藏题重做 · ' + qs.length + ' 题', shuffle(qs));
+}
+function startFavCh(chId){
+  const qs = favQs().filter(q => q.chapter === chId);
+  if (!qs.length) { alert('这一章还没有收藏的题'); return; }
+  startSession('fav', '收藏题 · ' + chName(chId) + ' · ' + qs.length + ' 题', shuffle(qs));
+}
+/** 从任意列表里收藏/取消收藏：不整页重绘，只改当前按钮，避免打断正在输入的内容 */
+function refreshFavButtons(id, on){
+  document.querySelectorAll(`[data-act="toggle-fav"][data-id="${id}"]`).forEach(btn => {
+    btn.classList.toggle('on', on);
+    const ico = btn.querySelector('.fav-ico');
+    const txt = btn.querySelector('.fav-txt');
+    if (ico) ico.textContent = on ? '★' : '☆';
+    if (txt) txt.textContent = on ? '已收藏' : '收藏';
+    btn.title = on ? '已收藏，点击取消' : '收藏这道题：标记「我还不熟」，考前集中看';
+  });
+  syncFavBadge();
+}
+/** 顶部标签上的收藏数量角标，0 时隐藏 */
+function syncFavBadge(){
+  const el = document.getElementById('tabFavN');
+  if (!el) return;
+  const n = Object.keys((S && S.fav) || {}).length;
+  el.textContent = n ? String(n) : '';
+  el.hidden = !n;
+}
 function startOne(qid){
   const q = byId()[qid];
   if (!q) return;
@@ -17824,10 +17927,13 @@ function render(){
     if (v === 'terms') b.style.display = (CUR_SUB === 'hadoop') ? '' : 'none';
     if (v === 'syl')   b.style.display = (CUR_SUB === 'db') ? '' : 'none';
   });
+  /* 收藏数量角标：0 时隐藏，不干扰视线 */
+  syncFavBadge();
   if (view === 'subjects')             app.innerHTML = viewSubjects();
   else if (view === 'quiz' && session) app.innerHTML = viewQuiz();
   else if (view === 'result')          app.innerHTML = viewResult();
   else if (view === 'wrong')           app.innerHTML = viewWrong();
+  else if (view === 'fav')             app.innerHTML = viewFav();
   else if (view === 'stats')           app.innerHTML = viewStats();
   else if (view === 'help')            app.innerHTML = viewHelp();
   else if (view === 'know')            app.innerHTML = viewKnow();
@@ -17902,6 +18008,7 @@ function viewSubjects(){
         <span class="tag">已练 ${st.touched} 题</span>
         <span class="tag">正确率 ${st.seen ? st.acc + '%' : '--'}</span>
         <span class="tag">错题 ${st.wrong}</span>
+        <span class="tag">收藏 ${st.fav}</span>
       </span>
       <span class="bar"><i style="width:${st.cover}%"></i></span>
       <span class="m-meta">进入科目 · 覆盖率 ${st.cover}% →</span>
@@ -17971,7 +18078,8 @@ function viewHome(){
     book: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 5.5v15"/><path d="M9 7.5h6M9 11h4"/></svg>',
     grid: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>',
     award: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M8.5 14.5L7 22l5-3 5 3-1.5-7.5"/></svg>',
-    search: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
+    search: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+    star: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.9.9-4.3 4.2 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.8l5.9-.9z"/></svg>'
   };
 
   const tags = subjTypes().map(t =>
@@ -18045,6 +18153,12 @@ function viewHome(){
       <span class="m-desc">自动收集答错的题目，按知识点分组，答对后自动移出错题本。</span>
       <span class="m-meta">当前错题 ${st.wrongCount} 题 →</span>
     </button>
+    <button class="mode-card" data-act="goto" data-view="fav">
+      <span class="m-ico">${ICON.star}</span>
+      <span class="m-title">收藏夹</span>
+      <span class="m-desc">做题时点题头的 ☆ 收进来的题，答对也不会自动消失。按章节看分布，就知道自己最虚的是哪一块。</span>
+      <span class="m-meta">当前收藏 ${st.favCount} 题 →</span>
+    </button>
     <button class="mode-card" data-act="goto" data-view="search">
       <span class="m-ico">${ICON.search}</span>
       <span class="m-title">搜索题目</span>
@@ -18067,6 +18181,7 @@ function viewHome(){
       <div class="kpi"><div class="k-l">已练题目</div><div class="k-v">${st.touched}<small>题</small></div></div>
       <div class="kpi"><div class="k-l">累计作答</div><div class="k-v">${st.seen}<small>次</small></div></div>
       <div class="kpi"><div class="k-l">总正确率</div><div class="k-v">${st.seen ? st.acc : '--'}<small>%</small></div></div>
+      <div class="kpi"><div class="k-l">收藏题</div><div class="k-v">${st.favCount}<small>题</small></div></div>
     </div>
   </div>
 
@@ -18375,6 +18490,10 @@ function renderQuestion(q, r){
       ${q.knowledgePoint ? `<span class="badge kp" title="${esc(q.knowledgePoint)}">${esc(q.knowledgePoint)}</span>` : ''}
       ${q.difficulty ? `<span class="diff ${diffCls}" title="难度">${esc(q.difficulty)}</span>` : ''}
       ${q.title ? `<span class="badge gray b-title">${esc(q.title)}</span>` : ''}
+      <button class="fav-btn${isFav(q.id) ? ' on' : ''}" data-act="toggle-fav" data-id="${q.id}"
+        title="${isFav(q.id) ? '已收藏，点击取消' : '收藏这道题：标记「我还不熟」，考前集中看'}">
+        <span class="fav-ico">${isFav(q.id) ? '★' : '☆'}</span><span class="fav-txt">${isFav(q.id) ? '已收藏' : '收藏'}</span>
+      </button>
       <span class="pts">满分 100</span>
     </div>
     <div class="q-src">出处 · ${esc(srcOf(q))}${
@@ -18709,6 +18828,7 @@ function viewWrong(){
         ${q.knowledgePoint ? `<span class="badge kp">${esc(q.knowledgePoint)}</span>` : ''}
         ${q.difficulty ? `<span class="diff ${q.difficulty === '易' ? 'e' : q.difficulty === '难' ? 'h' : 'm'}">${esc(q.difficulty)}</span>` : ''}
         <span class="hint">答错 ${rec.wrong || 0} 次 · 上次 ${rec.lastPct == null ? '--' : rec.lastPct + '%'}</span>
+        <button class="fav-star${isFav(id) ? ' on' : ''}" data-act="toggle-fav" data-id="${id}" title="${isFav(id) ? '已收藏，点击取消' : '加入收藏，考前再看一遍'}">${isFav(id) ? '★ 已收藏' : '☆ 收藏'}</button>
       </div>
       <div class="wi-stem">${esc(txt.slice(0, 130))}${txt.length > 130 ? '…' : ''}</div>
       <div class="wi-actions">
@@ -18737,6 +18857,103 @@ function viewWrong(){
   <div class="card">
     ${ids.length ? items : '<div class="empty">错题本是空的，继续保持！</div>'}
   </div>`;
+}
+
+/* ---------------- 6.4.1 收藏夹（手工标记「我还不熟」的题） ---------------- */
+function viewFav(){
+  const ids = favIds();
+  const qs = favQs();
+
+  /* 章节分布：收藏集中在哪一章，就说明该回去补哪一章 */
+  const byCh = new Map();
+  qs.forEach(q => byCh.set(q.chapter, (byCh.get(q.chapter) || 0) + 1));
+  const maxN = Math.max(1, ...Array.from(byCh.values()));
+  const distRows = chs().filter(c => byCh.has(c.id)).map(c => {
+    const n = byCh.get(c.id);
+    const tot = chapterQuestions(c.id).length;
+    return `<button class="fav-dist-row" data-act="start-fav-ch" data-ch="${c.id}" title="练这一章的收藏题">
+      <span class="fd-name">${esc(c.name)}</span>
+      <span class="bar"><i style="width:${Math.round(n / maxN * 100)}%"></i></span>
+      <span class="fd-num">${n} 题 · 占本章 ${tot ? Math.round(n / tot * 100) : 0}%</span>
+    </button>`;
+  }).join('');
+
+  const items = qs.map(q => {
+    const rec = S.records[q.id] || {};
+    const kp = kpKeyOf(q);
+    const txt = plainStem(q);
+    return `<div class="wrong-item">
+      <div class="wi-head">
+        <span class="badge">${TYPE_NAME[q.type]}</span>
+        <span class="badge gray">${esc(chName(q.chapter))}</span>
+        ${q.knowledgePoint ? `<span class="badge kp">${esc(q.knowledgePoint)}</span>` : ''}
+        ${q.difficulty ? `<span class="diff ${q.difficulty === '易' ? 'e' : q.difficulty === '难' ? 'h' : 'm'}">${esc(q.difficulty)}</span>` : ''}
+        <button class="fav-star on" data-act="toggle-fav" data-id="${q.id}" title="点击取消收藏">★ 已收藏</button>
+      </div>
+      <div class="wi-stem">${esc(txt.slice(0, 130))}${txt.length > 130 ? '…' : ''}</div>
+      <div class="wi-actions">
+        <button class="btn sm primary" data-act="practice-one" data-id="${q.id}">重做此题</button>
+        <button class="btn sm ghost" data-act="start-kp" data-kp="${esc(kp)}">练这个知识点</button>
+        <span class="hint" style="align-self:center">已答 ${rec.seen || 0} 次 · 答错 ${rec.wrong || 0} 次 · 上次 ${rec.lastPct == null ? '--' : rec.lastPct + '%'}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  /* 「你可能漏标的题」：答错 ≥2 次却还没收藏，按错次排序取前 6 */
+  const suggest = allBank()
+    .filter(q => !isFav(q.id) && (S.records[q.id] || {}).wrong >= 2)
+    .sort((a, b) => (S.records[b.id] || {}).wrong - (S.records[a.id] || {}).wrong)
+    .slice(0, 6);
+  const sugRows = suggest.map(q => {
+    const rec = S.records[q.id] || {};
+    const txt = plainStem(q);
+    return `<div class="wrong-item">
+      <div class="wi-head">
+        <span class="badge">${TYPE_NAME[q.type]}</span>
+        <span class="badge gray">${esc(chName(q.chapter))}</span>
+        <span class="hint">答错 ${rec.wrong} 次 · 上次 ${rec.lastPct == null ? '--' : rec.lastPct + '%'}</span>
+        <button class="fav-star" data-act="toggle-fav" data-id="${q.id}" title="加入收藏">☆ 收藏</button>
+      </div>
+      <div class="wi-stem">${esc(txt.slice(0, 110))}${txt.length > 110 ? '…' : ''}</div>
+    </div>`;
+  }).join('');
+
+  const head = `
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <h2 class="card-title">收藏夹 · ${esc(subj().name)}</h2>
+        <p class="card-sub" style="margin:0">共 <b>${ids.length}</b> 题，按科目独立保存。${
+          ids.length
+            ? '答对不会自动消失——这里放的是你自己认定「还不熟、考前要再看一遍」的题。'
+            : '答题时点题头右上角的 <b>☆ 收藏</b> 就能把题收进来。'
+        }</p>
+      </div>
+      ${ids.length ? `<button class="btn primary" data-act="start-fav">全部重做</button>
+      <button class="btn sm ghost" data-act="clear-fav">清空收藏</button>` : ''}
+    </div>
+  </div>`;
+
+  const distCard = ids.length ? `
+  <div class="card">
+    <h2 class="card-title">收藏分布 · 哪一章最该回去补</h2>
+    <p class="card-sub">按教材章节统计收藏题数量与占该章比例。点任意一行直接练这一章的收藏题。</p>
+    <div class="fav-dist">${distRows}</div>
+  </div>` : '';
+
+  const listCard = `
+  <div class="card">
+    ${ids.length ? items : `<div class="empty"><div class="e-ico">☆</div>还没有收藏的题。做题时看到「这题我老是记不住」，就点一下题头的收藏。</div>`}
+  </div>`;
+
+  const sugCard = sugRows ? `
+  <div class="card">
+    <h2 class="card-title">你可能漏标的题</h2>
+    <p class="card-sub">这些题你答错过 2 次以上，但还没收藏。错得多说明确实不熟，可以顺手收进来。</p>
+    ${sugRows}
+  </div>` : '';
+
+  return head + distCard + listCard + sugCard;
 }
 
 /* ---------------- 6.5 统计（章节 + 知识点掌握度） ---------------- */
@@ -18791,6 +19008,7 @@ function viewStats(){
       <div class="kpi"><div class="k-l">总正确率</div><div class="k-v">${st.seen ? st.acc : '--'}<small>%</small></div></div>
       <div class="kpi"><div class="k-l">已覆盖题目</div><div class="k-v">${st.touched}<small>/${st.totalQuestions}</small></div></div>
       <div class="kpi"><div class="k-l">错题数</div><div class="k-v">${st.wrongCount}<small>题</small></div></div>
+      <div class="kpi"><div class="k-l">收藏数</div><div class="k-v">${st.favCount}<small>题</small></div></div>
     </div>
   </div>
 
@@ -18890,6 +19108,14 @@ function viewHelp(){
       <li><b>逐项</b>：选择题的四个选项<b>逐个</b>说明对在哪里、错在哪里；选错的那一项会标红，正确项标绿。</li>
       <li><b>易错</b>：本题最常见的错法，以及如何避免。</li>
       <li><b>看本章知识点总结</b>：一键跳到对应章节的讲义，看完还能「返回练习」继续作答。</li>
+    </ul>
+    <h3>4.5 收藏夹（标记「我还不熟」的题）</h3>
+    <ul>
+      <li><b>怎么收藏</b>：答题页题头右侧有一个 <b>☆ 收藏</b> 按钮，点一下变 <b>★ 已收藏</b>。三个科目都能用，错题本列表与收藏夹里也能直接点星标。</li>
+      <li><b>和错题本的区别</b>：错题本是<b>判分自动收录</b>，答对就移出；收藏是<b>你自己加星</b>，答对了也不会消失——用来堆一份「考前必看」清单。</li>
+      <li><b>看分布</b>：收藏夹页按教材章节统计收藏题数量与占该章题量的比例，<b>占比高的那一章就是最该回去补的</b>；点任意一行直接练这一章的收藏题。</li>
+      <li><b>漏标提醒</b>：「你可能漏标的题」会自动列出<b>答错 2 次以上却还没收藏</b>的题，顺手就能补进清单。</li>
+      <li><b>存储</b>：每科独立保存在自己的 localStorage 里（与错题、进度同一个键），互不影响；点「清空收藏」只清收藏，错题本与练习记录不动。</li>
     </ul>
     <h3>5. 题库来源</h3>
     <p>题目按 <b>王珊、萨师煊《数据库系统概论》（第 5 版，高等教育出版社）</b> 的章节体系与术语规范组织，
@@ -19953,6 +20179,25 @@ document.addEventListener('click', e => {
       saveState();
       render();
       break;
+    /* --- 收藏 --- */
+    case 'toggle-fav': {
+      const id = t.dataset.id;
+      const on = toggleFav(id);
+      /* 答题页：只改按钮本身，避免重绘把输入框里正在写的答案冲掉；
+         列表页（收藏夹 / 建议卡）：重绘一次，让条目与章节分布跟着变 */
+      if (t.querySelector('.fav-ico')) refreshFavButtons(id, on);
+      else render();
+      break;
+    }
+    case 'start-fav':    startFav(); break;
+    case 'start-fav-ch': startFavCh(t.dataset.ch); break;
+    case 'clear-fav':
+      if (!Object.keys(S.fav).length) break;
+      if (!confirm('确定清空「' + subj().name + '」的全部收藏吗？错题本与练习进度不受影响。')) break;
+      S.fav = {};
+      saveState();
+      render();
+      break;
 
     /* --- 答题 --- */
     case 'pick': {
@@ -20045,7 +20290,7 @@ document.addEventListener('click', e => {
 
     /* --- 统计页 --- */
     case 'reset-all':
-      if (confirm('确定清空「' + subj().name + '」的练习数据（错题本 / 得分 / 章节进度）吗？其他科目不受影响，此操作不可恢复。')) {
+      if (confirm('确定清空「' + subj().name + '」的练习数据（错题本 / 收藏 / 得分 / 章节进度）吗？其他科目不受影响，此操作不可恢复。')) {
         S = emptyState();
         saveState();
         render();
