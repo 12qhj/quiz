@@ -6408,7 +6408,7 @@ const H_CHAPTERS = [
   { id:'hc3', name:'第3章 HDFS', desc:'NameNode / DataNode / 副本放置 / 安全模式 / HA 与联邦 / 命令与读写' },
   { id:'hc4', name:'第4章 HBase', desc:'四元组数据模型、WAL / MemStore / HFile、RowKey 设计与热点' },
   { id:'hc5', name:'第5章 NoSQL', desc:'CAP 与 BASE、四大类型与代表产品、最终一致性、场景选型' },
-  { id:'hc6', name:'第6章 云数据库', desc:'服务化交付、三种部署形态、存算分离、多租户、Serverless' },
+  { id:'hc6', name:'第6章 云数据库', desc:'服务化交付、七特性、存算分离、多租户、UMP 七角色四组件七功能' },
   { id:'hc7', name:'第7章 MapReduce', desc:'Split→Map→Spill→Shuffle→Reduce、Combiner、编程接口与官方默认参数' },
   { id:'hc8', name:'第8章 Hadoop 再探讨', desc:'HDFS HA（QJM / ZKFC）、Federation、生态组件、Secondary NameNode 废弃' },
   { id:'hc9', name:'第9章 Hive', desc:'内外部表、分区与分桶、HiveQL、Metastore / 架构 / 读时模式' },
@@ -9390,6 +9390,482 @@ const V4_CH6 = [
 ];
 
 /* ================================================================
+   第 6 章 云数据库 · UMP 专项补强（28 题）
+   教材依据：林子雨《大数据技术原理与应用》第 3 版
+   6.1.2 云数据库的概念 / 6.1.3 云数据库的特性 / 6.1.5 云数据库与其他数据库的关系
+   6.3.1 UMP 系统概述 / 6.3.2 UMP 系统架构 / 6.3.3 UMP 系统功能
+   ================================================================ */
+const H_UMP6 = [
+  {
+    id:'u6-01', type:'choice', chapter:'hc6',
+    knowledgePoint:'UMP 概述与设计原则',
+    tags:['云数据库','UMP','概述'],
+    difficulty:'易',
+    plain:'UMP 不是数据库本身，而是「管一堆 MySQL 的平台」。它由阿里核心系统数据库团队开发，关键模块用 Erlang 写，目标是把 MySQL 做成便宜又高性能的云服务。',
+    stem:'教材中把 UMP（Unified MySQL Platform）描述为下列哪种方案？（　）',
+    options:[
+      '一种构建在 HDFS 之上的分布式文件系统',
+      '一种低成本、高性能的 MySQL 云数据库方案，关键模块用 Erlang 实现',
+      'HBase 使用的一种列族存储格式',
+      'Spark 的内存计算引擎',
+      '一种专门用于图计算的分布式框架'
+    ],
+    answer:1,
+    explanation:'UMP 是<b>低成本、高性能的 MySQL 云数据库方案</b>，由阿里巴巴核心系统数据库团队开发，关键模块采用 <b>Erlang</b> 语言实现。开发者通过网络从平台申请 MySQL 实例资源，再通过平台提供的<b>单一入口</b>访问数据。它把服务器资源划分为资源池，以资源池为单位分配给 MySQL 实例，从而对用户透明地提供主从热备、备份、迁移、容灾、读写分离、分库分表等服务。它与 HDFS、HBase、Spark 没有从属关系。',
+    source:'教材 6.3.1 UMP系统概述｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-02', type:'choice', chapter:'hc6',
+    knowledgePoint:'UMP 概述与设计原则',
+    tags:['云数据库','UMP','设计原则'],
+    difficulty:'中',
+    plain:'四条原则：一个入口一个资源池、没有单点、能伸缩、资源隔离。凡是说「让用户独占物理机、不许共享」的选项，一定错——UMP 的便宜正是靠共享换来的。',
+    stem:'下列哪一项<b>不是</b> UMP 系统架构设计遵循的原则？（　）',
+    options:[
+      '保持单一的系统对外入口，并为系统内部维护单一的资源池',
+      '消除单点故障，保证服务的高可用性',
+      '每个用户独占一台物理机，禁止任何形式的资源共享',
+      '保证系统可伸缩，能动态增加、删减计算与存储节点',
+      '保证分配给用户的资源弹性可伸缩且相互隔离，确保应用与数据安全'
+    ],
+    answer:2,
+    explanation:'教材列出的四条原则是：① 单一对外入口 + 单一资源池；② 消除单点故障，保证高可用；③ 系统可伸缩，能动态增减计算与存储节点；④ 分配给用户的资源弹性可伸缩、相互隔离。第 3 项与 UMP 的实际做法相反——UMP 靠三种共享把成本降下来：<b>多个小规模用户共享一个 MySQL 实例</b>、中等规模用户独占实例、需要分库分表的用户多个实例<b>共享同一台物理机</b>。',
+    source:'教材 6.3.1 UMP系统概述｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-03', type:'choice', chapter:'hc6',
+    knowledgePoint:'UMP 的开源组件',
+    tags:['云数据库','UMP','ZooKeeper'],
+    difficulty:'中',
+    plain:'ZooKeeper 在 UMP 里干三件事：当全局配置中心、用分布式锁选出 Controller 的「总管」、盯着所有 MySQL 实例的死活。它不存业务数据。',
+    stem:'在 UMP 中，ZooKeeper 承担的作用<b>不</b>包括下列哪一项？（　）',
+    options:[
+      '作为全局的配置服务器，配置变更可被监听并同步到其他服务器',
+      '提供分布式锁，从多台 Controller 服务器中选出一个「总管」',
+      '监控所有 MySQL 实例，一旦发现故障及时通知 Controller',
+      '直接持久化存储用户的业务数据'
+    ],
+    answer:3,
+    explanation:'教材明确列出 ZooKeeper 在 UMP 中的三个作用：<b>全局配置服务器</b>、<b>提供分布式锁（选出集群的「总管」）</b>、<b>监控所有 MySQL 实例</b>。用户的业务数据始终存放在 MySQL 实例中；元数据与路由表存放在 Controller 的 Mnesia 里。ZooKeeper 只做协调，不做存储。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-04', type:'choice', chapter:'hc6',
+    knowledgePoint:'UMP 的角色分工',
+    tags:['云数据库','UMP','容灾'],
+    difficulty:'中',
+    plain:'主库挂了，第一个动的是 Controller：它改路由表，把用户名指向新的主库。Proxy 只是执行者，Agent 管本机实例，LVS 只做转发。',
+    stem:'主库发生故障时，UMP 中负责修改路由表（用户名到后端 MySQL 实例地址的映射）的是？（　）',
+    options:['Proxy 服务器','Controller 服务器','Agent 服务器','LVS 调度器','Web 控制台'],
+    answer:1,
+    explanation:'主从切换由 <b>Controller 服务器</b> 发起：它修改路由表，把原主库标记为不可用，把用户名映射到新的主库地址。路由表存在 Controller 上的 Mnesia 中，是整个集群「谁的数据在哪」的唯一权威。Proxy 只是根据路由表转发，本身不改表；Agent 负责本机实例的运维操作；LVS 只做入口负载均衡。',
+    source:'教材 6.3.3 UMP系统功能｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-05', type:'choice', chapter:'hc6',
+    knowledgePoint:'UMP 的开源组件',
+    tags:['云数据库','UMP','RabbitMQ'],
+    difficulty:'中',
+    plain:'Controller 改完表，得让所有 Proxy 都知道。UMP 用 RabbitMQ 广播这个消息——不是挨个连过去通知，而是往队列里写，谁订阅谁收到。',
+    stem:'Controller 修改完路由表后，通过哪个组件通知所有 Proxy 服务器更新映射关系？（　）',
+    options:['ZooKeeper 的 watcher 机制','RabbitMQ 消息队列','LVS 调度器','Web 控制台','Mnesia 的两阶段锁'],
+    answer:1,
+    explanation:'教材的切换流程写明：Controller 修改路由表、把主库标记为不可用之后，<b>借助消息中间件 RabbitMQ 通知所有 Proxy 服务器</b>修改「用户名到后端 MySQL 实例地址」的映射关系。UMP 集群中节点之间不建立专门的连接，通信都靠读写队列消息完成，这样既解耦又可靠。',
+    source:'教材 6.3.3 UMP系统功能｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-06', type:'choice', chapter:'hc6',
+    knowledgePoint:'UMP 的角色分工',
+    tags:['云数据库','UMP','Proxy'],
+    difficulty:'中',
+    plain:'Proxy 是「门卫 + 调度员」：认证、限流、看 SQL 是读还是写、分库分表拆语句、合并结果，都它干。但在机器上创建、删除实例、做备份，是 Agent 的活。',
+    stem:'下列哪项工作<b>不</b>由 UMP 的 Proxy 服务器完成？（　）',
+    options:[
+      '完整实现 MySQL 协议，接受客户端连接并做认证与配额检查',
+      '解析 SQL：写操作发主库，读操作在主从之间均衡',
+      '分库分表时重写 SQL、分发子语句并合并各实例的执行结果',
+      '在物理机上创建、删除 MySQL 实例并执行备份',
+      '记录用户访问日志并按配额限制 QPS'
+    ],
+    answer:3,
+    explanation:'Proxy 面向用户提供访问 MySQL 的服务：它实现了完整的 MySQL 协议，用户用现成的客户端就能连；凭用户名取到认证信息、资源配额（QPS、IOPS、最大连接数）和后台实例地址，再转发 SQL；此外还负责屏蔽故障、读写分离、分库分表、资源隔离与访问日志。<b>在物理机上创建、删除实例、备份、迁移、主从切换，是 Agent 服务器的职责</b>——Agent 部署在运行 MySQL 进程的机器上。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-07', type:'choice', chapter:'hc6',
+    knowledgePoint:'UMP 的角色分工',
+    tags:['云数据库','UMP','Agent'],
+    difficulty:'易',
+    plain:'哪台机器跑 MySQL，Agent 就装在哪台机器上——它是「驻场管理员」，负责本机实例的增删备份切换，顺手收集慢查询日志和 bin-log。',
+    stem:'UMP 中 Agent 服务器的部署位置与职责是？（　）',
+    options:[
+      '部署在客户端侧，负责与用户建立 SSL 连接',
+      '部署在运行 MySQL 进程的机器上，管理本机实例并收集统计信息、慢查询日志与 bin-log',
+      '部署在独立机房，负责全局的负载均衡与请求分发',
+      '部署在 ZooKeeper 集群内，负责选出 Controller 总管'
+    ],
+    answer:1,
+    explanation:'Agent 服务器<b>部署在运行 MySQL 进程的机器上</b>，用来管理每台物理机上的 MySQL 实例，执行主从切换、创建、删除、备份、迁移等操作；同时负责收集和分析 MySQL 进程的统计信息、慢查询日志（Slow Query Log）和 bin-log。全局负载均衡是 LVS 的职责，选总管是 ZooKeeper 的职责。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-08', type:'choice', chapter:'hc6',
+    knowledgePoint:'UMP 的开源组件',
+    tags:['云数据库','UMP','Mnesia'],
+    difficulty:'中',
+    plain:'Mnesia 是 Controller 的「小本子」，记的是集群成员、配置状态和路由表，不存业务数据。它能撑住元数据，是因为支持事务、透明分片，还能动态改 schema。',
+    stem:'UMP 引入 Mnesia 的主要目的是？（　）',
+    options:[
+      '作为业务数据的最终存储引擎，替代 MySQL',
+      '作为分布式数据库管理系统，存放集群成员、用户配置状态与路由表等元数据',
+      '作为消息队列在节点之间传递消息',
+      '作为负载均衡器分发客户端请求'
+    ],
+    answer:1,
+    explanation:'Controller 服务器上运行了一组 <b>Mnesia</b> 分布式数据库服务，存放各类系统元数据：集群成员、用户的配置与状态信息，以及「用户名 → 后端 MySQL 实例地址」的映射（路由表）。Mnesia 支持事务、支持透明的数据分片、用两阶段锁实现分布式事务，可线性扩展到至少 50 个节点，且 schema 能在运行时动态重配置，因此适合承载这类元数据。业务数据仍存放在 MySQL 中。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-09', type:'choice', chapter:'hc6',
+    knowledgePoint:'愚公系统与不停机迁移',
+    tags:['云数据库','UMP','愚公系统'],
+    difficulty:'中',
+    plain:'愚公系统解决「搬家不能停业」：先全量复制一份，再跟着 bin-log 追增量，追平了再切，所以扩容、缩容、迁移都不用停机。',
+    stem:'UMP 中的愚公系统主要解决什么问题？（　）',
+    options:[
+      '冷数据的归档与清理',
+      '通过全量复制结合 bin-log 增量分析，实现不停机的扩容、缩容与迁移',
+      '对用户 SQL 做语法检查与改写',
+      '统计集群的 QPS 与连接数'
+    ],
+    answer:1,
+    explanation:'愚公系统是一个<b>全量复制结合 bin-log 分析进行增量复制</b>的工具，可以在不停机的情况下动态扩容、缩容和迁移。思路是：先做一次全量复制把存量数据搬过去，再持续消费 bin-log 追增量，等追平后切换，因此不需要停机窗口。统计 QPS 与连接数是信息统计服务器的职责。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-10', type:'choice', chapter:'hc6',
+    knowledgePoint:'资源管理、调度与隔离',
+    tags:['云数据库','UMP','资源隔离'],
+    difficulty:'难',
+    plain:'两套办法对应两种共享：多个实例挤在一台物理机上，用 Cgroup 卡住每个进程的 CPU、内存、IO；多个用户挤在一个实例里，就在 Proxy 上给他们加延迟、限 QPS。',
+    stem:'UMP 用两种方式做资源隔离：Cgroup 限制 MySQL 进程资源、Proxy 端限制 QPS。下列对应关系正确的是？（　）',
+    options:[
+      'Cgroup 用于多个用户共享同一实例；Proxy 限 QPS 用于多实例共享同一物理机',
+      'Cgroup 用于多个 MySQL 实例共享同一台物理机；Proxy 限 QPS 用于多个用户共享同一个 MySQL 实例',
+      '两种方式都只用于需要分库分表的用户',
+      '两种方式都由 ZooKeeper 负责执行'
+    ],
+    answer:1,
+    explanation:'教材表 6-4 给出两种隔离方式：① <b>用 Cgroup 限制 MySQL 进程资源</b>，适用于<b>多个 MySQL 实例共享同一台物理机</b>的情况，可限制用户 MySQL 进程的最大 CPU 使用率、内存和 IOPS；② <b>在 Proxy 服务器端限制 QPS</b>，适用于<b>多个用户共享同一个 MySQL 实例</b>的情况，由 Controller 监测实例资源消耗，明显超出配额时通知 Proxy 通过<b>增加延迟</b>的办法限制该用户的 QPS。',
+    source:'教材 6.3.3 UMP系统功能｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-11', type:'choice', chapter:'hc6',
+    knowledgePoint:'资源管理、调度与隔离',
+    tags:['云数据库','UMP','资源调度'],
+    difficulty:'中',
+    plain:'用户分三档：小用户拼桌（共享一个实例），中等用户包间（独占实例），要分库分表的用户占好几个包间（多个实例，可同机）。拼桌是 UMP 便宜的关键。',
+    stem:'按 UMP 的资源调度策略，数据量和流量都比较小的用户会得到怎样的资源？（　）',
+    options:[
+      '独占一台物理机的全部资源',
+      '与多个同等规模的用户共享同一个 MySQL 实例',
+      '独占一个 MySQL 实例，并额外分配一个从库',
+      '必须使用分库分表才能接入'
+    ],
+    answer:1,
+    explanation:'UMP 把用户分成三种规格：① 数据量和流量比较小的用户，<b>多个用户共享同一个 MySQL 实例</b>；② 中等规模用户，<b>每个用户独占一个 MySQL 实例</b>；③ 需要分库分表的用户，占有多个独立的 MySQL 实例（这些实例可以共享同一台物理机）。前一种共享与后一种同机部署，共同实现了资源虚拟化，降低了整体成本。',
+    source:'教材 6.3.3 UMP系统功能｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-12', type:'choice', chapter:'hc6',
+    knowledgePoint:'云数据库的概念与特性',
+    tags:['云数据库','概念'],
+    difficulty:'易',
+    plain:'云数据库不是「新数据库」，是「数据库换个卖法」。数据模型还是原来那套，关系型、键值型都能上云。',
+    stem:'教材对云数据库的定位，下列说法最准确的是？（　）',
+    options:[
+      '云数据库是一种全新的数据模型，将取代关系模型',
+      '云数据库是部署和虚拟化在云计算环境中的数据库，以服务方式提供数据库功能',
+      '云数据库只能在公有云上运行，且必须是关系型数据库',
+      '云数据库是一种不需要网络即可访问的本地数据库'
+    ],
+    answer:1,
+    explanation:'教材的定义是：云数据库是<b>部署和虚拟化在云计算环境中的数据库</b>，是云计算背景下发展起来的一种共享基础架构的方法，它增强了数据库的存储能力，消除了人员、硬件、软件的重复配置。同时教材明确指出：从数据模型角度看，云数据库<b>并非一种全新的数据库技术</b>，只是以服务的方式提供数据库功能——它既可以是关系模型（SQL Azure、阿里云 RDS），也可以是键值等非关系模型（Amazon Dynamo）。',
+    source:'教材 6.1.2 云数据库的概念｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-13', type:'multi', chapter:'hc6',
+    knowledgePoint:'UMP 的开源组件',
+    tags:['云数据库','UMP','开源组件','多选'],
+    difficulty:'易',
+    plain:'四个开源组件：Mnesia（存元数据）、LVS（做负载均衡）、RabbitMQ（传消息）、ZooKeeper（做协调）。记住「一库一均衡一队列一协调」。',
+    stem:'UMP 系统依赖的开源组件包括下列哪些？（多选，全对才得满分）',
+    options:['Mnesia','LVS','RabbitMQ','ZooKeeper','HDFS','Flume'],
+    answer:[0,1,2,3],
+    explanation:'教材列出 UMP 依赖的四个开源组件：<b>Mnesia</b>（分布式数据库管理系统，承载元数据）、<b>LVS</b>（Linux 虚拟服务器，做集群内部负载均衡）、<b>RabbitMQ</b>（工业级消息队列，节点间异步通信）、<b>ZooKeeper</b>（配置服务、分布式锁、监控实例）。HDFS 与 Flume 属于 Hadoop 生态，与 UMP 无关——这一项最容易被「都是大数据组件」的直觉带错。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-14', type:'multi', chapter:'hc6',
+    knowledgePoint:'UMP 的七项功能与数据安全',
+    tags:['云数据库','UMP','功能','多选'],
+    difficulty:'中',
+    plain:'七项功能背成一句话：「容灾、读写分离、分库分表、资源管理、资源调度、资源隔离、数据安全」。凡是出现「自动设计表结构」「生成报表」这类，都不是它的事。',
+    stem:'教材列出的 UMP 系统功能包括下列哪些？（多选，全对才得满分）',
+    options:[
+      '容灾：主从切换对用户透明',
+      '读写分离与分库分表',
+      '资源管理、资源调度与资源隔离',
+      '数据安全：SSL、IP 白名单、操作日志、SQL 拦截',
+      '自动生成 E-R 图并优化数据库逻辑结构'
+    ],
+    answer:[0,1,2,3],
+    explanation:'教材 6.3.3 列出的七项功能是：<b>容灾、读写分离、分库分表、资源管理、资源调度、资源隔离、数据安全</b>。UMP 是运行期的云数据库平台，负责把已有 MySQL 实例池化、调度、隔离与保护；数据库设计与 E-R 图属于数据库设计阶段的工作，不是 UMP 的功能。',
+    source:'教材 6.3.3 UMP系统功能｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-15', type:'multi', chapter:'hc6',
+    knowledgePoint:'UMP 的七项功能与数据安全',
+    tags:['云数据库','UMP','数据安全','多选'],
+    difficulty:'中',
+    plain:'四道防线：连接加密（SSL）、进门查名单（IP 白名单）、全程留痕（操作日志）、危险动作拦下来（SQL 拦截）。',
+    stem:'UMP 保护用户数据安全采用了下列哪些机制？（多选，全对才得满分）',
+    options:[
+      'SSL 数据库连接，在传输层对网络连接加密',
+      '数据访问 IP 白名单，非白名单地址一律拒绝',
+      '记录用户操作日志，供日志分析服务器检查',
+      'SQL 拦截，例如拦截全表扫描语句',
+      '禁止一切远程访问，只允许在数据库本机登录'
+    ],
+    answer:[0,1,2,3],
+    explanation:'教材列出四种机制：<b>SSL 数据库连接</b>（Proxy 实现了完整的 MySQL 客户端/服务器协议，可与客户端建立 SSL 连接）、<b>数据访问 IP 白名单</b>（只有白名单内的 IP 能访问）、<b>记录用户操作日志</b>（写入日志分析服务器，用于发现隐藏的安全漏洞）、<b>SQL 拦截</b>（Proxy 可按要求拦截多种 SQL，例如 select * 这类全表扫描）。第 5 项与云数据库「通过网络提供单一入口」的前提矛盾。',
+    source:'教材 6.3.3 UMP系统功能｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-16', type:'judge', chapter:'hc6',
+    knowledgePoint:'UMP 的开源组件',
+    tags:['云数据库','UMP','Mnesia','判断'],
+    difficulty:'易',
+    plain:'错。UMP 没自己写存储引擎，业务数据还在 MySQL 里；Mnesia 只管元数据和路由表这些「账本」。',
+    stem:'判断：UMP 自己实现了一套存储引擎，用户的业务数据直接存放在 Mnesia 中。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。UMP 的定位是<b>把大量 MySQL 实例池化管理的平台</b>，业务数据仍然存放在 MySQL 实例里；Mnesia 只承载集群成员、用户配置状态、路由表等元数据。也正因为复用了成熟的 MySQL，UMP 才能做到「低成本、高性能」——它写的是管理与调度，不是存储引擎。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-17', type:'judge', chapter:'hc6',
+    knowledgePoint:'容灾、读写分离与分库分表',
+    tags:['云数据库','UMP','分库分表','判断'],
+    difficulty:'中',
+    plain:'对。SQL 的拆分和结果的拼装都在 Proxy 里做，MySQL 只负责执行自己那一小段，用户完全感觉不到被拆过。',
+    stem:'判断：分库分表时，SQL 的解析、重写、分发与结果合并都由 Proxy 服务器完成，对用户透明。（　）',
+    options:['正确','错误'],
+    answer:0,
+    explanation:'正确。教材给出的三步是：① Proxy 解析用户 SQL，提取重写与分发所需的信息；② 对 SQL 重写，得到多个针对相应 MySQL 实例的子语句，分发到对应实例执行；③ 接收各实例的执行结果并合并成最终结果。整个过程用户无感知，因此称为「对用户透明的分库分表（shard / horizontal partition）」。',
+    source:'教材 6.3.3 UMP系统功能｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-18', type:'judge', chapter:'hc6',
+    knowledgePoint:'容灾、读写分离与分库分表',
+    tags:['云数据库','UMP','读写分离','判断'],
+    difficulty:'易',
+    plain:'对。写必须去主库（只有主库能写），读则主从一起分担。注意读也有一部分落在主库上，不是「全给从库」。',
+    stem:'判断：开启读写分离后，写操作被直接发送到主库，读操作被均衡地发送到主库和从库上执行。（　）',
+    options:['正确','错误'],
+    answer:0,
+    explanation:'正确。教材的表述是：Proxy 对用户发起的 SQL 语句进行解析，<b>如果属于写操作，就直接发送到主库</b>；<b>如果是读操作，就会被均衡地发送到主库和从库上执行</b>。注意读操作并非全部压给从库，而是主从一起分担，这样既能分摊压力，也避免从库延迟导致读到的数据过旧。',
+    source:'教材 6.3.3 UMP系统功能｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-19', type:'judge', chapter:'hc6',
+    knowledgePoint:'UMP 的角色分工',
+    tags:['云数据库','UMP','Controller','判断'],
+    difficulty:'中',
+    plain:'对。Controller 是大脑，只能有一个「总管」在干活，所以部署多台做备份，用 ZooKeeper 的分布式锁选谁当家——挂了再选一个。',
+    stem:'判断：UMP 部署多台 Controller 服务器，并由 ZooKeeper 的分布式锁选出一个「总管」，目的是避免单点故障。（　）',
+    options:['正确','错误'],
+    answer:0,
+    explanation:'正确。Controller 承担集群成员管理、元数据存储、实例管理、故障恢复等核心职责，一旦唯一就会成为单点。因此 UMP 部署<b>多台 Controller</b>，再<b>由 ZooKeeper 的分布式锁功能选出一个「总管」</b>，负责各种系统任务的调度和监控；总管失效时重新选主。这正是四条设计原则中「消除单点故障」的落地方式。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-20', type:'judge', chapter:'hc6',
+    knowledgePoint:'云数据库的概念与特性',
+    tags:['云数据库','数据模型','判断'],
+    difficulty:'易',
+    plain:'错。云数据库不挑模型：关系型能上云，键值型也能上云。变的只是交付方式，不是数据模型。',
+    stem:'判断：云数据库必须使用全新的数据模型，因此无法承载关系模型的数据。（　）',
+    options:['正确','错误'],
+    answer:1,
+    explanation:'错误。教材明确指出：云数据库<b>并没有专属于自己的数据模型</b>，它采用的数据模型可以是关系模型（SQL Azure、阿里云 RDS），也可以是非关系模型（Amazon Dynamo 采用键值存储）。许多厂商在开发云数据库时，后端直接使用现有的关系数据库或 NoSQL 产品。云数据库改变的是<b>交付与运维方式</b>，而不是数据模型。',
+    source:'教材 6.1.5 云数据库与其他数据库的关系｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-21', type:'fill', chapter:'hc6',
+    knowledgePoint:'UMP 概述与设计原则',
+    tags:['云数据库','UMP','填空'],
+    difficulty:'易',
+    plain:'Erlang。这个语言天生擅长高并发和软实时，所以消息队列 RabbitMQ 也是用它写的。',
+    stem:'UMP 系统的关键模块采用 <b class="blank">＿＿＿</b> 语言实现。',
+    accept:['erlang','Erlang','ERLANG'],
+    answer:'Erlang',
+    explanation:'教材原文：UMP 系统是低成本和高性能的 MySQL 云数据库方案，<b>关键模块采用 Erlang 实现</b>。Erlang 的轻量级进程与消息传递模型适合编写高并发、可热更新的分布式服务（RabbitMQ 同样用 Erlang 编写）。',
+    source:'教材 6.3.1 UMP系统概述｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-22', type:'fill', chapter:'hc6',
+    knowledgePoint:'UMP 的角色分工',
+    tags:['云数据库','UMP','路由表','填空'],
+    difficulty:'中',
+    plain:'路由表就是「用户名 → 该去哪个 MySQL 实例」的对照表，存在 Controller 的 Mnesia 里。主从切换改的就是它。',
+    stem:'UMP 中把「用户名到后端 MySQL 实例地址的映射关系」称为 <b class="blank">＿＿＿</b>。',
+    accept:['路由表','路由','routingtable','routing table'],
+    answer:'路由表',
+    explanation:'教材原文：Controller 服务器上运行的 Mnesia 存储了各种系统元数据，主要包括集群成员、用户的配置和状态信息，以及<b>用户名到后端 MySQL 实例地址的映射关系（或称为「路由表」）</b>。主从切换的核心动作就是修改这张表；Proxy 依据它决定把 SQL 发往哪个实例。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-23', type:'fill', chapter:'hc6',
+    knowledgePoint:'资源管理、调度与隔离',
+    tags:['云数据库','UMP','资源隔离','填空'],
+    difficulty:'中',
+    plain:'Cgroup 是 Linux 内核的功能，能卡住一个进程组能用多少 CPU、内存、IO。UMP 用它防止「同一台机器上的邻居」互相抢资源。',
+    stem:'多个 MySQL 实例共享同一台物理机时，UMP 用 <b class="blank">＿＿＿</b> 限制每个 MySQL 进程可使用的 CPU 使用率、内存与 IOPS。',
+    accept:['cgroup','cgroups','Cgroup','CGroup'],
+    answer:'Cgroup',
+    explanation:'教材表 6-4：<b>用 Cgroup 限制 MySQL 进程资源</b>，适用于多个 MySQL 实例共享同一台物理机的情况，可对用户 MySQL 进程最大可用的 CPU 使用率、内存和 IOPS 进行限制。另一种情况（多个用户共享同一个 MySQL 实例）则在 Proxy 服务器端通过增加延迟来限制 QPS。',
+    source:'教材 6.3.3 UMP系统功能｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-24', type:'fill', chapter:'hc6',
+    knowledgePoint:'愚公系统与不停机迁移',
+    tags:['云数据库','UMP','愚公系统','填空'],
+    difficulty:'中',
+    plain:'全量搬一次，再跟着 bin-log 一直追增量，追平了才切——这是所有「不停机迁移」的通用套路。',
+    stem:'愚公系统通过「全量复制 + <b class="blank">＿＿＿</b> 增量分析」实现不停机的数据迁移。',
+    accept:['bin-log','binlog','bin log','二进制日志'],
+    answer:'bin-log',
+    explanation:'教材原文：愚公系统是一个<b>全量复制结合 bin-log 分析进行增量复制</b>的工具，可以实现在不停机的情况下动态扩容、缩容和迁移。bin-log 是 MySQL 的二进制日志，记录了所有变更操作，因此可以持续重放来追平增量。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-25', type:'term', chapter:'hc6',
+    abbr:'UMP', full:'Unified MySQL Platform', cn:'统一 MySQL 平台', given:null,
+    knowledgePoint:'UMP 概述与设计原则',
+    tags:['云数据库','UMP','术语'],
+    difficulty:'易',
+    plain:'UMP = Unified MySQL Platform，统一 MySQL 平台。记住它「统一」的是管理入口，不是把多个 MySQL 合成一个。',
+    stem:'教材第 6 章用来讲解云数据库体系架构的典型案例，是阿里巴巴核心系统数据库团队开发的 MySQL 云数据库方案。请补全它的英文缩写、英文全称与中文名称。',
+    explain:'UMP（Unified MySQL Platform）是低成本、高性能的 MySQL 云数据库方案，关键模块用 Erlang 实现。它把服务器资源划分为资源池，以资源池为单位分配给 MySQL 实例，通过单一入口对外提供主从热备、备份、迁移、容灾、读写分离、分库分表等服务。',
+    source:'教材 6.3.1 UMP系统概述｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-26', type:'match', chapter:'hc6',
+    knowledgePoint:'UMP 的角色分工',
+    tags:['云数据库','UMP','组件','配对'],
+    difficulty:'中',
+    plain:'这题考「谁干什么」：Controller 管全局、Proxy 管转发、Agent 管本机实例、Mnesia 管元数据、LVS 管均衡、RabbitMQ 管消息、ZooKeeper 管协调、愚公管搬家。',
+    stem:'把 UMP 的组件与它的主要职责配对（每项选择一个字母）。',
+    left:['Controller 服务器','Proxy 服务器','Agent 服务器','Mnesia','LVS','RabbitMQ','ZooKeeper','愚公系统'],
+    right:[
+      '解析 SQL、转发请求，实现读写分离与分库分表',
+      '集群内部负载均衡，是集群对外的唯一入口',
+      '元数据存储、实例管理、故障恢复、备份与扩容',
+      '全量复制 + bin-log 增量，支持不停机迁移',
+      '管理本机 MySQL 实例：创建、删除、备份、主从切换',
+      '分布式协调：全局配置、分布式锁、监控实例',
+      '节点之间的异步消息传递，广播路由变更',
+      '分布式数据库管理系统，提供事务与透明分片'
+    ],
+    answer:[2,0,4,7,1,6,5,3],
+    explanation:'对照关系：<b>Controller</b>——元数据存储、集群成员与实例管理、故障恢复、备份迁移扩容（对应 2）；<b>Proxy</b>——实现 MySQL 协议、解析与转发、读写分离、分库分表、限流（对应 0）；<b>Agent</b>——部署在跑 MySQL 的机器上管理本机实例（对应 4）；<b>Mnesia</b>——分布式数据库管理系统，用来存元数据（对应 7）；<b>LVS</b>——集群内部负载均衡、唯一入口（对应 1）；<b>RabbitMQ</b>——节点间异步消息，负责广播路由变更（对应 6）；<b>ZooKeeper</b>——配置服务、分布式锁、监控实例（对应 5）；<b>愚公系统</b>——全量 + 增量复制的不停机迁移工具（对应 3）。',
+    source:'教材 6.3.2 UMP系统架构｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-27', type:'text', chapter:'hc6',
+    knowledgePoint:'UMP 架构与功能综合',
+    tags:['云数据库','UMP','简答'],
+    difficulty:'难',
+    plain:'这题按「一条原则 + 七个角色 + 四个组件 + 七项功能」四段答。角色和组件不要混着写，功能按「容灾、读写分离、分库分表、三管、一安全」的顺序列。',
+    stem:'简述 UMP 系统的架构组成与主要功能。',
+    points:[
+      '定位与原则：低成本高性能的 MySQL 云数据库方案，Erlang 实现；单一入口单一资源池、消除单点、可伸缩、资源隔离',
+      '七个角色：Controller、Proxy、Agent、Web 控制台、日志分析服务器、信息统计服务器、愚公系统',
+      '四个开源组件：Mnesia、LVS、RabbitMQ、ZooKeeper 及各自作用',
+      '七项功能：容灾、读写分离、分库分表、资源管理、资源调度、资源隔离、数据安全'
+    ],
+    keys:[
+      { label:'单一入口 / 单一资源池（设计原则）', any:['单一入口','统一入口','资源池','单一'] },
+      { label:'Controller 与路由表 / Mnesia', any:['controller','路由表','mnesia','元数据'] },
+      { label:'Proxy 负责解析转发', any:['proxy','代理','解析','转发'] },
+      { label:'Agent 管理本机实例', any:['agent','代理服务器','实例','备份'] },
+      { label:'LVS / RabbitMQ / ZooKeeper 三个组件', any:['lvs','rabbitmq','zookeeper','负载均衡','消息队列'] },
+      { label:'功能：容灾 / 读写分离 / 分库分表', any:['容灾','读写分离','分库分表','主从'] },
+      { label:'功能：资源管理 / 调度 / 隔离 / 数据安全', any:['资源管理','调度','隔离','安全','白名单'] }
+    ],
+    answer:'一、定位与设计原则\nUMP（Unified MySQL Platform）是低成本、高性能的 MySQL 云数据库方案，关键模块用 Erlang 实现。设计遵循四条原则：保持单一对外入口并维护单一资源池；消除单点故障；系统可伸缩；分配给用户的资源弹性可伸缩且相互隔离。\n\n二、七个角色\n① Controller 服务器：集群成员管理、元数据存储、实例管理、故障恢复、备份、迁移、扩容，内部运行 Mnesia 保存路由表；② Proxy 服务器：完整实现 MySQL 协议，负责认证、配额检查、SQL 转发、读写分离、分库分表、限流与日志；③ Agent 服务器：部署在跑 MySQL 的机器上，管理本机实例并收集慢查询日志与 bin-log；④ Web 控制台：系统管理界面；⑤ 日志分析服务器：分析访问日志与慢日志；⑥ 信息统计服务器：采集连接数、QPS 与进程状态；⑦ 愚公系统：不停机的数据迁移工具。\n\n三、四个开源组件\nMnesia 提供分布式数据库服务（存元数据、支持事务与透明分片）；LVS 提供集群内部负载均衡；RabbitMQ 提供节点间异步消息传递；ZooKeeper 承担全局配置服务、分布式锁（选 Controller 总管）与实例监控。\n\n四、七项功能\n容灾（一主一从，故障自动切换，对用户透明）、读写分离（写发主库、读在主从间均衡）、分库分表（Proxy 解析、重写、分发、合并）、资源管理（资源池统一分配 CPU/内存/磁盘）、资源调度（三类用户分别共享、独占、多实例）、资源隔离（Cgroup 限进程 + Proxy 限 QPS）、数据安全（SSL、IP 白名单、操作日志、SQL 拦截）。',
+    explanation:'答题框架建议按「原则 → 角色 → 组件 → 功能」四层写，每层点到名字即可。最容易漏的是「日志分析服务器」和「信息统计服务器」这两个角色，以及「七项功能」里的资源管理、调度、隔离这三兄弟——它们名字相近，但分别对应资源池分配、用户规格分配和隔离手段，不要混写。',
+    source:'教材 6.3.1 UMP系统概述｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  },
+  {
+    id:'u6-28', type:'text', chapter:'hc6',
+    knowledgePoint:'UMP 主从切换流程',
+    tags:['云数据库','UMP','容灾','简答'],
+    difficulty:'难',
+    plain:'按「谁发现 → 谁改表 → 谁通知 → 谁执行」四步写，最后补一句「用户无感」的原因：改的是路由表，客户端连的还是 LVS 和 Proxy。',
+    stem:'以主库宕机为例，说明 UMP 系统的主从切换过程，并解释为什么整个过程对用户是透明的。',
+    points:[
+      '前提：每个用户有一主一从两个实例，主从状态由 ZooKeeper 维护',
+      '① ZooKeeper 探测到主库故障，通知 Controller',
+      '② Controller 修改路由表，把主库标记为不可用',
+      '③ 通过 RabbitMQ 通知所有 Proxy 更新用户名到实例地址的映射',
+      '④ 写操作改投新主库；恢复时先追平、再切回、最后把从库改为可写',
+      '透明的原因：用户只连 LVS 与 Proxy，后端地址变化由平台内部完成'
+    ],
+    keys:[
+      { label:'ZooKeeper 探测故障并通知 Controller', any:['zookeeper','探测','发现','通知'] },
+      { label:'Controller 修改路由表 / 标记不可用', any:['路由表','不可用','标记','controller'] },
+      { label:'RabbitMQ 通知所有 Proxy', any:['rabbitmq','消息','通知','proxy','代理'] },
+      { label:'写操作切到新主库', any:['主库','写','切换','新主'] },
+      { label:'恢复：追平后切回、从库改为可写', any:['恢复','一致','追平','可写','切回'] },
+      { label:'透明原因：用户只连统一入口', any:['透明','无感','入口','不必重连','感知'] }
+    ],
+    answer:'一、前提\n为了实现容灾，UMP 为每个用户创建两个 MySQL 实例：一个主库、一个从库；主库与从库的状态由 ZooKeeper 负责维护。\n\n二、切换过程\n① ZooKeeper 探测到主库故障，通知 Controller 服务器；\n② Controller 启动主从切换，修改路由表（用户名到后端 MySQL 实例地址的映射），并把原主库标记为不可用；\n③ 借助消息中间件 RabbitMQ 通知所有 Proxy 服务器，更新各自持有的映射关系；\n④ 此后写操作被转发到新的主库，业务继续执行。\n\n三、主库恢复后切回\n主库恢复时先把从库上的更新复制回自己；当状态快要追平时，Controller 命令从库停止更新、进入不可写状态，禁止用户写入；等到完全一致，Controller 再发起一次切换，在路由表中把主库标记为可用，通知 Proxy 把写操作切回主库，最后把从库改回可写状态。\n\n四、为什么对用户透明\n用户始终只连接 LVS 与 Proxy 提供的统一入口，从不直连具体 MySQL 实例。后端地址的变化只发生在 Controller 的路由表里，并由 RabbitMQ 推送到各个 Proxy，客户端既不需要改配置，也不需要重连。',
+    explanation:'这题的关键不是背句子，而是讲清「改的是表、传的是消息、执行在代理」这条因果链。只写「主库挂了自动切到从库」拿不到分，阅卷要看的是四步动作与参与组件。恢复流程容易被忽略，建议单独记一句：先追平、再禁写、后切回。',
+    source:'教材 6.3.3 UMP系统功能｜林子雨《大数据技术原理与应用》第3版',
+    referenceUrl:HU.dyTec
+  }
+];
+
+/* ================================================================
    第 7 章 MapReduce · 新增 3 题
    ================================================================ */
 const V4_CH7 = [
@@ -10940,12 +11416,12 @@ const H_EXAM_CHOICE = [
     knowledgePoint:'UMP 云数据库系统',
     tags:['云数据库','UMP'],
     difficulty:'中',
-    plain:'UMP 是阿里开源的云数据库系统，核心思路是「一个控制中心 + 一组代理」统一管理成百上千个 MySQL 实例，实现资源池化、读写分离和故障切换。',
+    plain:'UMP 是阿里巴巴的 MySQL 云数据库方案，核心思路是「一个控制中心 + 一组代理」统一管理成百上千个 MySQL 实例，实现资源池化、读写分离和故障切换。',
     stem:'关于 UMP 系统，下列说法正确的是？（　）',
-    options:['它是 Hadoop 生态中的资源调度框架', '它是阿里开源的云数据库系统，用代理统一管理大量 MySQL 实例', '它是 HBase 的底层存储格式', '它是 Flink 的状态后端'],
+    options:['它是 Hadoop 生态中的资源调度框架', '它是阿里巴巴开发的 MySQL 云数据库方案，用代理统一管理大量 MySQL 实例', '它是 HBase 的底层存储格式', '它是 Flink 的状态后端'],
     answer:1,
-    explanation:'UMP（Unified MySQL Platform）是阿里开源的云数据库系统，采用「Controller Server + RabbitMQ + Agent + Proxy + LVS」的架构，把大量 MySQL 实例池化管理，对外提供统一访问入口，实现读写分离、分库分表、故障自动切换与资源调度。',
-    source:'教材 6.3 云数据库系统架构（UMP）｜林子雨《大数据技术原理与应用》第3版',
+    explanation:'UMP（Unified MySQL Platform）是阿里巴巴核心系统数据库团队开发的 MySQL 云数据库方案，采用「Controller + Proxy + Agent + Web 控制台 + 日志分析 + 信息统计 + 愚公系统」的角色分工，依赖 Mnesia、LVS、RabbitMQ、ZooKeeper 四个开源组件，把大量 MySQL 实例池化管理，对外提供统一访问入口，实现读写分离、分库分表、故障自动切换与资源调度。',
+    source:'教材 6.3.1 UMP系统概述｜林子雨《大数据技术原理与应用》第3版',
     referenceUrl:HU.dyTec
   },
   {
@@ -11059,7 +11535,7 @@ const H_BANK = [
   ...H_HBASE, ...H_ZK, ...H_FLUME, ...H_KAFKA, ...H_SPARK, ...H_OLD,
   ...V4_CH1, ...V4_CH2, ...V4_CH3, ...V4_CH4, ...V4_CH5, ...V4_CH6, ...V4_CH7,
   ...V4_CH8, ...V4_CH9, ...V4_CH10, ...V4_CH11, ...V4_CH12, ...V4_CH13, ...V4_CH14,
-  ...H_EXAM_TEXT, ...H_EXAM_JUDGE, ...H_EXAM_CHOICE
+  ...H_UMP6, ...H_EXAM_TEXT, ...H_EXAM_JUDGE, ...H_EXAM_CHOICE
 ];
 const H_BY_ID = Object.fromEntries(H_BANK.map(q => [q.id, q]));
 const H_CH_MAP = Object.fromEntries(H_CHAPTERS.map(c => [c.id, c]));
@@ -11350,6 +11826,125 @@ const H_FIG1 = {
     <text x="364" y="257" font-size="9" fill="#7c3aed">一套系统同时服务很多客户，靠隔离保证互不干扰：</text>
     <text x="364" y="274" font-size="9" fill="#7c3aed">资源隔离（限流、配额）、数据隔离（加密、权限）、</text>
     <text x="364" y="291" font-size="9" fill="#7c3aed">故障隔离（一个租户出问题不拖垮别人）。</text>
+  </g>
+</svg>`
+  }, {
+    t: 'UMP 系统架构：数据面 + 控制面（教材 6.3.2）',
+    cap: '左边是用户 SQL 走的路：客户端 → LVS → Proxy → MySQL 实例。右边是管理这些实例的人和工具。看懂这张图就明白：UMP 没有自己写数据库，它写的是「怎么管一堆 MySQL」——而所有管理动作最后都落在 Controller 的那张路由表上。',
+    svg: `<svg viewBox="0 0 680 412" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="umpA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <rect x="8" y="28" width="296" height="340" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="20" y="46" font-size="10" font-weight="700" fill="#475569">数据面：一条 SQL 的路径</text>
+
+    <rect x="24" y="58" width="264" height="38" rx="6" fill="#fff" stroke="#e2e8f0"/>
+    <text x="36" y="76" font-size="9.5" font-weight="700" fill="#334155">客户端</text>
+    <text x="36" y="89" font-size="8.5" fill="#64748b">用现成的 MySQL 客户端即可，协议完全兼容</text>
+
+    <rect x="24" y="112" width="264" height="38" rx="6" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="36" y="130" font-size="9.5" font-weight="700" fill="#1d4ed8">LVS 负载均衡</text>
+    <text x="36" y="143" font-size="8.5" fill="#3b82f6">集群唯一入口，自动屏蔽故障节点</text>
+
+    <rect x="24" y="166" width="264" height="68" rx="6" fill="#e0f2fe" stroke="#7dd3fc"/>
+    <text x="36" y="184" font-size="9.5" font-weight="700" fill="#0369a1">Proxy 服务器</text>
+    <text x="36" y="199" font-size="8.5" fill="#0369a1">解析 SQL：写 → 主库，读 → 主从均衡</text>
+    <text x="36" y="212" font-size="8.5" fill="#0369a1">分库分表：重写 → 分发 → 合并结果</text>
+    <text x="36" y="225" font-size="8.5" fill="#0369a1">限流：QPS / IOPS / 最大连接数</text>
+
+    <rect x="24" y="250" width="264" height="104" rx="6" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="36" y="267" font-size="9.5" font-weight="700" fill="#15803d">资源池（物理机集群）</text>
+    <rect x="36" y="274" width="116" height="34" rx="5" fill="#fff" stroke="#bbf7d0"/>
+    <text x="52" y="295" font-size="8.5" fill="#15803d">MySQL 主库</text>
+    <rect x="160" y="274" width="116" height="34" rx="5" fill="#fff" stroke="#bbf7d0"/>
+    <text x="176" y="295" font-size="8.5" fill="#15803d">MySQL 从库</text>
+    <text x="36" y="325" font-size="8" fill="#4d7c0f">每个用户一对主从，主从状态由 ZooKeeper 维护</text>
+    <text x="36" y="341" font-size="8" fill="#4d7c0f">Agent 就部署在这些跑 MySQL 的机器上</text>
+
+    <g stroke="#94a3b8" stroke-width="1.3">
+      <path fill="none" d="M156 96 L156 108" marker-end="url(#umpA)"/>
+      <path fill="none" d="M156 150 L156 162" marker-end="url(#umpA)"/>
+      <path fill="none" d="M156 234 L156 246" marker-end="url(#umpA)"/>
+    </g>
+
+    <rect x="320" y="28" width="352" height="340" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="332" y="46" font-size="10" font-weight="700" fill="#92400e">控制面：谁在管这些 MySQL</text>
+
+    <rect x="336" y="52" width="320" height="72" rx="6" fill="#fff" stroke="#fde68a"/>
+    <text x="348" y="70" font-size="9.5" font-weight="700" fill="#92400e">Controller 服务器 + Mnesia</text>
+    <text x="348" y="86" font-size="8.5" fill="#a16207">元数据：集群成员 / 用户配置 / 状态</text>
+    <text x="348" y="100" font-size="8.5" fill="#a16207">路由表：用户名 → 后端 MySQL 地址</text>
+    <text x="348" y="114" font-size="8.5" fill="#a16207">多台部署，由 ZooKeeper 选出「总管」</text>
+
+    <rect x="336" y="132" width="320" height="62" rx="6" fill="#fff" stroke="#fde68a"/>
+    <text x="348" y="150" font-size="9.5" font-weight="700" fill="#92400e">ZooKeeper</text>
+    <text x="348" y="165" font-size="8.5" fill="#a16207">全局配置服务器</text>
+    <text x="348" y="179" font-size="8.5" fill="#a16207">分布式锁：选出 Controller 总管 · 监控所有实例</text>
+
+    <rect x="336" y="204" width="320" height="56" rx="6" fill="#fff" stroke="#fde68a"/>
+    <text x="348" y="222" font-size="9.5" font-weight="700" fill="#92400e">RabbitMQ（消息队列）</text>
+    <text x="348" y="237" font-size="8.5" fill="#a16207">节点间不建专门连接，读写队列异步通信</text>
+    <text x="348" y="251" font-size="8.5" fill="#a16207">负责把路由变更通知到每一个 Proxy</text>
+
+    <rect x="336" y="268" width="320" height="52" rx="6" fill="#fff" stroke="#fde68a"/>
+    <text x="348" y="286" font-size="9.5" font-weight="700" fill="#92400e">Agent 服务器</text>
+    <text x="348" y="301" font-size="8.5" fill="#a16207">管理本机实例：创建 / 删除 / 备份 / 迁移 / 主从切换</text>
+    <text x="348" y="314" font-size="8.5" fill="#a16207">收集进程统计、慢查询日志、bin-log</text>
+
+    <rect x="336" y="328" width="320" height="32" rx="6" fill="#fef3c7" stroke="#fde68a"/>
+    <text x="348" y="348" font-size="8.5" fill="#92400e">Web 控制台 · 日志分析 · 信息统计 · 愚公系统</text>
+
+    <rect x="8" y="380" width="664" height="26" rx="6" fill="#ecfdf5" stroke="#bbf7d0"/>
+    <text x="20" y="397" font-size="8.8" fill="#15803d">一句话：改的是 Controller 里的路由表，通知靠 RabbitMQ，执行在 Proxy —— 所以用户全程无感。</text>
+  </g>
+</svg>`
+  }, {
+    t: '主库宕机后，一次主从切换的四步（教材 6.3.3）',
+    cap: '这段是本章最容易被做成简答题的地方。记住四步的顺序：谁先发现 → 谁改表 → 谁通知 → 谁执行。答大题时按这条链写，比背句子稳。',
+    svg: `<svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" role="img">
+  <defs><marker markerUnits="userSpaceOnUse" id="umpB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+  <g font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="8" y="20" font-size="10.5" font-weight="700" fill="#64748b">主库宕机 → 自动切换：四步，用户全程无感</text>
+
+    <rect x="8" y="36" width="154" height="118" rx="9" fill="#fef2f2" stroke="#fecaca"/>
+    <text x="20" y="56" font-size="10" font-weight="700" fill="#b91c1c">① 发现</text>
+    <text x="20" y="78" font-size="8.5" fill="#991b1b">ZooKeeper 探测</text>
+    <text x="20" y="93" font-size="8.5" fill="#991b1b">到主库故障</text>
+    <text x="20" y="108" font-size="8.5" fill="#991b1b">通知 Controller</text>
+    <text x="20" y="123" font-size="8.5" fill="#991b1b">服务器</text>
+
+    <rect x="174" y="36" width="154" height="118" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="186" y="56" font-size="10" font-weight="700" fill="#1d4ed8">② 改表</text>
+    <text x="186" y="78" font-size="8.5" fill="#1e40af">Controller 修改</text>
+    <text x="186" y="93" font-size="8.5" fill="#1e40af">路由表：用户名</text>
+    <text x="186" y="108" font-size="8.5" fill="#1e40af">→ 新主库地址</text>
+    <text x="186" y="123" font-size="8.5" fill="#1e40af">原主库标记不可用</text>
+
+    <rect x="340" y="36" width="154" height="118" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="352" y="56" font-size="10" font-weight="700" fill="#5b21b6">③ 通知</text>
+    <text x="352" y="78" font-size="8.5" fill="#6d28d9">经 RabbitMQ</text>
+    <text x="352" y="93" font-size="8.5" fill="#6d28d9">广播给所有</text>
+    <text x="352" y="108" font-size="8.5" fill="#6d28d9">Proxy 服务器</text>
+    <text x="352" y="123" font-size="8.5" fill="#6d28d9">更新实例映射</text>
+
+    <rect x="506" y="36" width="154" height="118" rx="9" fill="#ecfdf5" stroke="#bbf7d0"/>
+    <text x="518" y="56" font-size="10" font-weight="700" fill="#15803d">④ 继续服务</text>
+    <text x="518" y="78" font-size="8.5" fill="#166534">写操作改投新主库</text>
+    <text x="518" y="93" font-size="8.5" fill="#166534">SQL 照常执行</text>
+    <text x="518" y="108" font-size="8.5" fill="#166534">用户不用重连</text>
+    <text x="518" y="123" font-size="8.5" fill="#166534">全程无感知</text>
+
+    <g stroke="#94a3b8" stroke-width="1.4">
+      <path fill="none" d="M162 95 L170 95" marker-end="url(#umpB)"/>
+      <path fill="none" d="M328 95 L336 95" marker-end="url(#umpB)"/>
+      <path fill="none" d="M494 95 L502 95" marker-end="url(#umpB)"/>
+    </g>
+
+    <rect x="8" y="170" width="652" height="64" rx="9" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="20" y="188" font-size="9.5" font-weight="700" fill="#475569">主库修好之后，怎么切回来</text>
+    <text x="20" y="205" font-size="8.5" fill="#64748b">① 先让主库把从库上的更新复制回自己　② 快追平时 Controller 命令从库停止更新、进入不可写状态</text>
+    <text x="20" y="221" font-size="8.5" fill="#64748b">③ 完全一致后 Controller 再发一次切换，把主库标记为可用　④ 通知 Proxy 把写操作切回主库</text>
   </g>
 </svg>`
   }],
@@ -12375,9 +12970,9 @@ const H_POINTS = {
     tip: '选型题按「数据形状」判断：键值、宽表、文档、关系网，四选一基本不会错。'
   },
   hc6: {
-    must: ['云数据库的特征：弹性、按需付费、免运维、高可用', '三种部署形态：公有云、私有云、混合云', '云数据库是「服务」而不是某种特定数据库'],
-    hard: ['UMP 系统架构与多租户隔离', '存储与计算分离带来的好处', '上云的真实挑战（安全、迁移、成本、锁定）'],
-    tip: '本章考点偏概念，不必纠结产品细节；把「弹性 + 按需 + 免运维」三条说清就能拿分。'
+    must: ['云数据库的七个特性：动态可扩展、高可用、较低代价、易用、高性能、免维护、安全', '云数据库不是新的数据库技术，只是「以服务方式提供数据库功能」', 'UMP 七个角色：Controller、Proxy、Agent、Web 控制台、日志分析、信息统计、愚公系统', 'UMP 四个开源组件：Mnesia（元数据）、LVS（负载均衡）、RabbitMQ（消息）、ZooKeeper（协调）', 'UMP 七项功能：容灾、读写分离、分库分表、资源管理、资源调度、资源隔离、数据安全'],
+    hard: ['主从切换为什么对用户透明（改路由表 → RabbitMQ 通知 Proxy）', 'ZooKeeper 的三个作用与「选总管」机制', 'Cgroup 限进程 与 Proxy 限 QPS 分别用在什么场合', '愚公系统为什么能不停机迁移（全量 + bin-log 增量）'],
+    tip: '先记「单一入口 + 单一资源池」这条总纲，再往下拆 7 个角色、4 个组件、7 项功能；做大题时按「谁改了什么、通知了谁」把切换流程讲成一条链。'
   },
   hc7: {
     must: ['完整流程：InputSplit → map → 缓冲区 → 溢写 → 归并 → reduce → 输出', 'Shuffle 发生在 map 输出之后、reduce 执行之前', 'Combiner 是 map 端的局部 reduce'],
@@ -12508,9 +13103,15 @@ const H_TERMS = [
   { ch:'hc5', en:'Neo4j', cn:'图数据库', note:'专门存"点和边"，擅长多跳关系查询，比如好友的好友。' },
 
   /* ---------- 第 6 章 云数据库 ---------- */
-  { ch:'hc6', en:'UMP', cn:'统一 MySQL 平台', note:'阿里开源的云数据库系统，用一台代理统一管理成百上千个 MySQL 实例。' },
+  { ch:'hc6', en:'UMP', cn:'统一 MySQL 平台', note:'阿里巴巴核心系统数据库团队开发的 MySQL 云数据库方案，把大量 MySQL 实例池化，对外只留一个入口。' },
   { ch:'hc6', en:'SLA', cn:'服务等级协议', note:'厂商承诺的可用性指标，比如 99.99% 意味着一年停机不超过约 53 分钟。' },
   { ch:'hc6', en:'Serverless', cn:'无服务器', note:'不用预先买容量，按实际用量计费，没请求就缩到零。' },
+  { ch:'hc6', en:'Mnesia', cn:'分布式数据库管理系统', note:'UMP 用它存放元数据与路由表：支持事务、透明分片，可线性扩展到至少 50 个节点。' },
+  { ch:'hc6', en:'LVS', cn:'Linux 虚拟服务器', note:'UMP 靠它做集群内部负载均衡，调度器是集群唯一入口，能自动屏蔽故障节点。' },
+  { ch:'hc6', en:'RabbitMQ', cn:'消息队列', note:'UMP 节点之间不建专门连接，靠读写队列异步通信；主从切换时用它广播路由变更。' },
+  { ch:'hc6', en:'Routing Table', cn:'路由表', note:'用户名到后端 MySQL 实例地址的映射，存在 Controller 的 Mnesia 里，主从切换改的就是它。' },
+  { ch:'hc6', en:'Cgroup', cn:'控制组', note:'Linux 内核功能，限制进程能用的 CPU、内存、IO；UMP 用它隔离同一台机器上的多个 MySQL 实例。' },
+  { ch:'hc6', en:'Yugong', cn:'愚公系统', note:'UMP 的数据迁移工具：全量复制 + bin-log 增量分析，做到不停机扩容、缩容、迁移。' },
   { ch:'hc6', en:'Multi-tenant', cn:'多租户', note:'一套系统同时服务很多客户，关键是让彼此的数据和性能互不干扰。' },
 
   /* ---------- 第 7 章 MapReduce ---------- */
@@ -12796,35 +13397,105 @@ const H_KNOW = {
   },
   hc6: {
     name:'云数据库',
-    intro:'自己买服务器装数据库，要操心机器、备份、扩容、故障，很累。云数据库就是「把数据库当水电用」：要用就开，按量付费，坏了厂商修。本章考概念和架构，不考具体操作，记住「弹性、按需、免运维、多租户」这几个关键词即可。',
-    lead:'云数据库 = <b>数据库 + 云化交付</b>：把部署、备份、扩容、监控交给平台，用户按需申请；核心考点是形态、存算分离、多租户与上云挑战。',
+    intro:'这一章在教材里其实是三件事：前半讲云数据库到底是什么，中间列各家产品，后半用阿里巴巴的 UMP 系统讲「一个云数据库到底怎么造出来」。考试的重心几乎全压在 UMP 上——七个角色、四个开源组件、七项功能。很多人只背了「弹性、按需、免运维」六个字，一考 UMP 就空着，这一章的分基本丢在这儿。',
+    lead:'云数据库 = <b>数据库 + 云化交付</b>，它<b>没有属于自己的新数据模型</b>，只是以服务的方式提供数据库功能；教材用 UMP（Unified MySQL Platform）示范了怎么把成百上千个 MySQL 实例池化，做成一个对用户透明的云服务。',
     sections:[
-      { h:'定义与特征', kv:[
-        ['本质','部署在云计算环境中、以服务形式交付的数据库'],
-        ['交付价值','免安装部署、弹性伸缩、按量付费、自动备份与容灾能力'],
-        ['覆盖类型','关系型（RDS / PolarDB）与 NoSQL（云 HBase、云 Redis、DynamoDB）'],
-        ['责任边界','平台负责基础设施，备份策略与容灾等级仍需用户配置']
+      { h:'一、云数据库是什么（教材 6.1.2 / 6.1.5）',
+        p:'教材的定义：云数据库是部署和虚拟化在云计算环境中的数据库，是云计算背景下发展起来的一种共享基础架构的方法。它增强了数据库的存储能力，消除了人员、硬件、软件的重复配置，让软硬件升级变得更容易。',
+        kv:[
+        ['一句话','部署并虚拟化在云环境中的数据库，以服务方式交付'],
+        ['最容易考的一句','云数据库不是一种新的数据库技术，只是以服务的方式提供数据库功能'],
+        ['数据模型','没有专属模型：关系模型（SQL Azure、阿里云 RDS）、键值模型（Amazon Dynamo）都能做成云服务'],
+        ['后端实现','多数厂商后端直接使用现有的关系数据库或 NoSQL 产品，外面再包一层管理与调度'],
+        ['怎么选','大型企业多自建；预算有限、需求波动大的中小企业更适合云数据库'],
+        ['个性化需求','大企业的海量存储、中小企业的低成本、企业动态变化的需求，云数据库都能覆盖']
       ]},
-      { h:'三种部署形态与存算分离', kv:[
+      { h:'二、七个特性（教材 6.1.3）',
+        table:{head:['特性','含义','靠什么做到'],rows:[
+        ['动态可扩展','容量随业务增减，不用提前买机器','资源池 + 虚拟化，按实例分配'],
+        ['高可用性','节点故障不影响服务','主从热备、故障自动切换'],
+        ['较低的使用代价','前期零投入，按用量付费','多租户共享，摊薄单实例成本'],
+        ['易用性','开箱即用，不用装软件调参数','平台提供申请入口与统一访问入口'],
+        ['高性能','底层资源池按负载调度','资源池选负载轻的服务器建实例'],
+        ['免维护','备份、监控、升级由平台负责','自动备份、日志分析、信息统计'],
+        ['安全','连接、访问、操作都可管控','SSL、IP 白名单、操作日志、SQL 拦截']
+      ]}},
+      { h:'三、三种部署形态、多租户与存算分离',
+        kv:[
         ['公有云','多租户共享、按需付费'],
         ['私有云','单一组织独享，强调可控与合规'],
         ['混合云','核心留私有、弹性放公有，专线打通'],
-        ['存算分离','计算无状态 + 共享分布式存储，可独立扩缩容、一份数据多节点共享']
+        ['多租户','一套系统服务很多客户，关键是资源、数据、故障三重隔离'],
+        ['存算分离','计算无状态 + 共享分布式存储，可独立扩缩容、一份数据多节点共享'],
+        ['Serverless','按请求与存储计费，无请求可缩容到接近零，代价是冷启动']
       ]},
-      { h:'优势与挑战', table:{head:['维度','内容'],rows:[
-        ['优势','免运维、弹性伸缩、按量付费'],
-        ['挑战-安全','加密、访问审计、数据出境合规'],
-        ['挑战-迁移','停机窗口、一致性校验、回滚方案'],
-        ['挑战-锁定','专有接口与生态绑定，迁移成本高'],
-        ['新形态','Serverless：按请求计费、空闲缩容至近零，代价是冷启动']
+      { h:'四、UMP 概述：四条设计原则与三类用户（教材 6.3.1）',
+        p:'UMP（Unified MySQL Platform）是<b>低成本、高性能的 MySQL 云数据库方案</b>，关键模块用 <b>Erlang</b> 实现。开发者从平台申请 MySQL 实例，通过平台提供的单一入口访问数据。',
+        ul:[
+        '<b>单一入口、单一资源池</b>：对外只有一个入口，对内只有一池资源',
+        '<b>消除单点故障</b>：多台 Controller，用 ZooKeeper 的分布式锁选出「总管」',
+        '<b>可伸缩</b>：能动态增加、删减计算与存储节点',
+        '<b>资源弹性且相互隔离</b>：分配给用户的资源可伸缩，彼此隔离，保证应用与数据安全'
+      ],
+        tip:'三类用户是「资源调度」的根据：数据量与流量小的用户<b>共享一个实例</b>；中等规模用户<b>独占一个实例</b>；需要分库分表的用户<b>占多个实例</b>（可共享同一台物理机）。这套共享正是 UMP 能便宜的原因。'
+      },
+      { h:'五、UMP 架构：七个自有角色（教材 6.3.2）',
+        table:{head:['角色','职责（教材要点）'],rows:[
+        ['Controller 服务器','集群成员管理、元数据存储、MySQL 实例管理、故障恢复、备份、迁移、扩容；内部跑一组 Mnesia'],
+        ['Proxy 服务器','完整实现 MySQL 协议，客户端可直连；按用户名取认证、配额（QPS / IOPS / 最大连接数）与后端地址并转发 SQL'],
+        ['Agent 服务器','部署在跑 MySQL 的机器上，管理本机实例：主从切换、创建、删除、备份、迁移；收集统计信息、慢查询日志、bin-log'],
+        ['Web 控制台','面向用户的系统管理界面：用户与集群配置、查看集群状态'],
+        ['日志分析服务器','存储并分析 Proxy 传来的访问日志，支持实时查询慢日志与统计报表'],
+        ['信息统计服务器','定期采集连接数、QPS、实例进程状态，用 RRDtool 统计并可视化，作为弹性分配与自动迁移的依据'],
+        ['愚公系统','全量复制 + bin-log 增量复制的迁移工具，支持<b>不停机</b>扩容、缩容、迁移']
+      ]},
+        tip:'Controller 里存的核心东西叫<b>路由表</b>——用户名到后端 MySQL 实例地址的映射关系。主从切换之所以对用户透明，就是因为改的是这张表。'
+      },
+      { h:'六、UMP 架构：四个开源组件（教材 6.3.2）',
+        table:{head:['组件','在 UMP 里干什么'],rows:[
+        ['Mnesia','分布式数据库管理系统：支持事务、支持透明数据分片、用两阶段锁实现分布式事务，可线性扩展到至少 50 个节点，schema 能在运行时重配置'],
+        ['LVS','Linux 虚拟服务器：用 IP 负载均衡与基于内容的请求分发做集群内部负载均衡，调度器是唯一入口，自动屏蔽故障节点'],
+        ['RabbitMQ','工业级消息队列：节点之间不建专门连接，靠读写队列异步通信，负责把变更通知到各组件'],
+        ['ZooKeeper','三个作用：<b>全局配置服务器</b>、<b>分布式锁（选出 Controller 总管）</b>、<b>监控所有 MySQL 实例</b>']
+      ]},
+        tip:'别把 Mnesia 当成业务数据库：业务数据仍在 MySQL 里，Mnesia 只托管元数据、配置与路由表。'
+      },
+      { h:'七、UMP 的七项功能（教材 6.3.3）',
+        table:{head:['功能','做法','一句话记住'],rows:[
+        ['容灾','每个用户创建主、从两个实例，状态由 ZooKeeper 维护，故障自动切换','先有从库，才谈切换'],
+        ['读写分离','Proxy 解析 SQL：写操作发主库，读操作在主库与从库间均衡','解析在代理层，应用不用改'],
+        ['分库分表','Proxy 解析 → 重写为多个子语句 → 分发到各实例 → 合并结果','拆分与合并都在 Proxy'],
+        ['资源管理','资源池统一管理 CPU、内存、磁盘；按机型与机房划分资源池','资源池是分配的基本单位'],
+        ['资源调度','三类用户分别共享、独占、多实例','靠共享把成本摊薄'],
+        ['资源隔离','多实例共享物理机用 Cgroup 限 CPU/内存/IOPS；多用户共享实例在 Proxy 端限 QPS（加延迟）','两种场合，两套办法'],
+        ['数据安全','SSL 连接、IP 白名单、操作日志、SQL 拦截（如全表扫描）','四道防线']
+      ]}},
+      { h:'八、主从切换：一次宕机的完整过程（教材 6.3.3）',
+        p:'这是本章最容易被做大题的一段，按顺序记牢：',
+        ul:[
+        '① ZooKeeper 探测到主库故障，通知 Controller 服务器',
+        '② Controller 启动主从切换，<b>修改路由表</b>，把主库标记为不可用',
+        '③ 借助 RabbitMQ 通知<b>所有 Proxy 服务器</b>更新「用户名 → 后端实例地址」的映射',
+        '④ 写操作改投新主库，全部过程对用户透明',
+        '<b>恢复上线</b>：主库修复后先把从库的更新复制回自己；快追平时 Controller 命令从库停止更新、进入不可写状态；完全一致后再切换、把主库标记为可用，通知 Proxy 把写操作切回主库'
+      ]},
+      { h:'九、上云要面对的四个挑战',
+        table:{head:['维度','内容'],rows:[
+        ['安全合规','加密、访问审计、数据出境合规'],
+        ['迁移','停机窗口、一致性校验、回滚方案'],
+        ['成本','长期使用可能比自建更贵，要算总账'],
+        ['锁定','专有接口与生态绑定，迁移成本高']
       ]}}
     ],
     traps:[
-      '认为上云后不必自己做容灾与备份',
-      '认为云数据库能消除跨地域网络延迟',
-      '把「多租户」理解成租户之间可以互查数据'
+      '把 UMP 当成 Hadoop 生态的组件——它是阿里的 MySQL 云数据库方案，与 HDFS / YARN 无关',
+      '以为 UMP 自己写了存储引擎——业务数据仍在 MySQL，Mnesia 只存元数据与路由表',
+      '以为主库挂了要重启 Proxy——Controller 改完路由表，由 RabbitMQ 通知 Proxy 热更新',
+      '把「Cgroup 限进程」和「Proxy 限 QPS」混用——前者用于多实例共享物理机，后者用于多用户共享实例',
+      '以为分库分表由 MySQL 自己完成——解析、重写、分发、合并都在 Proxy 层',
+      '认为上云后不必自己做容灾与备份，或认为云数据库能消除跨地域网络延迟'
     ],
-    mnemo:'云数据库三形态、存算分离、多租户隔离；优势省事弹性省钱，风险安全迁移锁定。'
+    mnemo:'一入口一资源池；七角色（控代管台日统愚）四组件（Mnesia、LVS、RabbitMQ、ZooKeeper）；七功能：容灾、读写分离、分库分表、资源管理、资源调度、资源隔离、数据安全。'
   },
   hc7: {
     name:'MapReduce',
@@ -18207,17 +18878,19 @@ function viewKp(){
   };
 
   let body;
-  if (CUR_SUB === 'ds') {
-    /* 数据结构 171 题对应 160+ 个知识点，平铺太长 —— 按教材 8 章分段显示 */
+  if (CUR_SUB === 'ds' || CUR_SUB === 'hadoop') {
+    /* 数据结构 171 题、Hadoop 291 题各有 160+/288 个知识点，平铺太长 —— 按章节分段显示 */
     const groups = chs().map((c, i) => ({
       c, no: i + 1,
       items: list.filter(g => g.chapter === c.id)
     })).filter(gr => gr.items.length);
     body = groups.map(gr => {
       const qn = gr.items.reduce((a, g) => a + g.qs.length, 0);
+      /* 章节名本身已含「第 N 章」时不再重复标号 */
+      const noTxt = /^第\s*\d+\s*章/.test(gr.c.name) ? '' : ('第 ' + gr.no + ' 章');
       return `<div class="kp-group">
         <div class="kp-group-head">
-          <span class="kg-no">第 ${gr.no} 章</span>
+          ${noTxt ? `<span class="kg-no">${noTxt}</span>` : ''}
           <span class="kg-name">${esc(gr.c.name)}</span>
           <span class="kg-meta">${gr.items.length} 个知识点 · ${qn} 题</span>
         </div>
@@ -18546,7 +19219,7 @@ function detailPanel(q, opts){
       let cls = '';
       if (i === q.answer) cls = 'hit';
       else if (opts.sel != null && i === opts.sel) cls = 'miss';
-      return `<li class="${cls}"><span class="why-k">${'ABCD'[i]}</span><span>${w}</span></li>`;
+      return `<li class="${cls}"><span class="why-k">${OPT_KEYS[i]}</span><span>${w}</span></li>`;
     }).join('');
     rows.push(`<div class="dt-row"><span class="dt-k">逐项</span><span class="dt-v"><ul class="why-list">${lis}</ul></span></div>`);
   }
@@ -18557,6 +19230,9 @@ function detailPanel(q, opts){
   return `<div class="dt">${rows.join('')}</div>${link}`;
 }
 
+/* 选项字母：允许 5~6 个选项的题（'ABCD'[4] 会变成 undefined） */
+const OPT_KEYS = 'ABCDEF';
+
 function renderChoiceBody(q, r){
   const opts = q.options.map((o, i) => {
     let cls = 'opt';
@@ -18565,7 +19241,7 @@ function renderChoiceBody(q, r){
       else if (i === r.sel) cls += ' wrong';
       cls += ' locked';
     } else if (r.sel === i) cls += ' selected';
-    const keyTxt = q.type === 'judge' ? (i === 0 ? '√' : '×') : 'ABCD'[i];
+    const keyTxt = q.type === 'judge' ? (i === 0 ? '√' : '×') : OPT_KEYS[i];
     return `<div class="${cls}" data-act="pick" data-i="${i}">
       <span class="opt-key">${keyTxt}</span><span class="opt-txt">${rich(o)}</span>
     </div>`;
@@ -18576,10 +19252,10 @@ function renderChoiceBody(q, r){
     <div class="feedback ${ok ? 'fb-ok' : 'fb-bad'}">
       <div class="fb-title">${ok ? '✓ 回答正确' : '✗ 回答错误'}</div>
       <div class="fb-ans">
-        正确答案 <b class="ok">${q.type === 'judge' ? (q.answer === 0 ? '√ 正确' : '× 错误') : 'ABCD'[q.answer]}</b>
-        ${r.sel != null && r.sel !== q.answer ? `　·　你的选择 <b class="no">${q.type === 'judge' ? (r.sel === 0 ? '√ 正确' : '× 错误') : 'ABCD'[r.sel]}</b>` : ''}
+        正确答案 <b class="ok">${q.type === 'judge' ? (q.answer === 0 ? '√ 正确' : '× 错误') : OPT_KEYS[q.answer]}</b>
+        ${r.sel != null && r.sel !== q.answer ? `　·　你的选择 <b class="no">${q.type === 'judge' ? (r.sel === 0 ? '√ 正确' : '× 错误') : OPT_KEYS[r.sel]}</b>` : ''}
       </div>
-      ${detailPanel(q, { sel: r.sel, answerLine: `${'ABCD'[q.answer]}. ${esc(q.options[q.answer])}` })}
+      ${detailPanel(q, { sel: r.sel, answerLine: `${OPT_KEYS[q.answer]}. ${esc(q.options[q.answer])}` })}
     </div>` : '';
 
   return `<div class="stem">${zhTerms(q.stem)}</div>
