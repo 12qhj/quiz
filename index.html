@@ -6330,7 +6330,7 @@ const TYPE_NAME = {
   choice:'选择题', term:'术语填空', fill:'填空题', essay:'大题',
   multi:'多选题', cmd:'命令填空', code:'代码填空', sql:'HiveQL',
   match:'组件匹配', order:'流程排序', fix:'纠错题', text:'简答题',
-  seq:'序列填空', judge:'判断题'
+  seq:'序列填空', judge:'判断题', prog:'编程题'
 };
 /* 术语三连固定顺序：缩写 → 全称 → 中文 */
 const TERM_ROWS = [
@@ -13979,6 +13979,1383 @@ const D_CHAPTERS = [
    每题字段：id type chapter knowledgePoint tags difficulty stem
              explanation source referenceUrl  + 该题型的答案字段
    ================================================================ */
+/* ================================================================
+   数据结构 · 判断题（j1/j2/j3/j4）—— 按老师给的卷面：选择、判断、填空、编程
+   每题都是「一个容易记混的点」，题干尽量长一点，逼着读完再判断
+   ================================================================ */
+const D_JUDGE_A = [
+
+/* ---------------- 第 1 章 绪论 ---------------- */
+{
+    id: 'j1-01', type: 'judge', chapter: 'c1',
+    knowledgePoint: '逻辑结构与存储结构的区分',
+    tags: ['绪论', '基本概念', '判断'],
+    difficulty: '易',
+    stem: '判断：顺序存储结构只能表示线性结构，链式存储结构只能表示非线性结构。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误。存储结构与逻辑结构之间没有这种绑定关系。\n线性表既可以顺序存储（数组），也可以链式存储（链表）；反过来，完全二叉树这种非线性结构同样可以顺序存储（用一维数组按层序编号，第 i 个结点的孩子是 2i 和 2i+1），这也是堆排序能用数组实现的原因。\n正确的说法是：同一逻辑结构可以有多种存储结构，选哪种看运算的特点（查得多还是插删多）。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 1 章 1.2 数据结构的基本概念和术语',
+    referenceUrl: 'https://oi-wiki.org/ds/binary-heap/'
+},
+{
+    id: 'j1-02', type: 'judge', chapter: 'c1',
+    knowledgePoint: '算法的时间复杂度分析',
+    tags: ['绪论', '复杂度', '判断'],
+    difficulty: '中',
+    stem: '判断：算法的时间复杂度是问题规模 n 的函数，与运行它的计算机硬件无关，因此同一算法在任何机器上的执行时间之比是固定的。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '前半句对，后半句错，所以整句判错。\n时间复杂度确实是「语句频度 T(n) 的数量级」，是 n 的函数，与机器无关——这是它的优点。但「执行时间之比固定」不成立：不同机器的指令系统、缓存、并行能力不同，常数因子的差异可能很大；而且渐进分析忽略了低次项，两个同为 O(n²) 的算法实际速度可能相差数倍。\n记住分工：复杂度用来比较增长趋势，具体快多少要靠实测。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 1 章 1.4 算法和算法分析',
+    referenceUrl: 'https://oi-wiki.org/basic/complexity/'
+},
+{
+    id: 'j1-03', type: 'judge', chapter: 'c1',
+    knowledgePoint: '抽象数据类型的定义',
+    tags: ['绪论', 'ADT', '判断'],
+    difficulty: '易',
+    stem: '判断：抽象数据类型（ADT）只描述数据的逻辑结构和在这组数据上允许的操作，不涉及具体实现，因此同一个 ADT 可以有多种实现方式。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。ADT 的定义包含三部分：数据对象、数据关系（即逻辑结构）、基本操作集，而刻意<b>不写</b>存储方式与算法。\n例如「栈」这个 ADT 只规定「后进先出 + push/pop/top/empty」，用顺序栈还是链栈都可以；「集合」这个 ADT 可以用哈希表、红黑树或位图实现，效率各不相同。\n这就是「抽象」的含义：对外只承诺能做什么，不承诺怎么做。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 1 章 1.3 抽象数据类型的表示与实现',
+    referenceUrl: 'https://oi-wiki.org/lang/class/'
+},
+{
+    id: 'j1-04', type: 'judge', chapter: 'c1',
+    knowledgePoint: '常见复杂度的大小比较',
+    tags: ['绪论', '复杂度', '拔高', '判断'],
+    difficulty: '难',
+    stem: '判断：因为 O(n²) 比 O(n log n) 高一个数量级，所以一个 O(n²) 的算法在任何输入规模下都比 O(n log n) 的算法运行得慢。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误。大 O 描述的是 n → ∞ 时的增长上界，不是逐点的数值大小。\n例如算法 A 的执行次数是 1000n²，算法 B 是 n log n × 10⁶，当 n < 10⁴ 左右时 A 反而更快。只有当 n 足够大之后，低阶项和常数才被主导，O(n log n) 才必然胜出。\n这也解释了为什么小数组排序时插入排序常被用作「阈值优化」：n ≤ 16 时它比快排更快，尽管渐进复杂度更差。\n考试口径：比较复杂度只比「增长趋势」，不比较具体时间。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 1 章 1.4.2 算法时间复杂度',
+    referenceUrl: 'https://oi-wiki.org/basic/complexity/'
+},
+{
+    id: 'j1-05', type: 'judge', chapter: 'c1',
+    knowledgePoint: '空间复杂度',
+    tags: ['绪论', '复杂度', '判断'],
+    difficulty: '中',
+    stem: '判断：若一个算法的空间复杂度为 O(1)，说明该算法执行时不需要任何额外的存储空间。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误。O(1) 指的是「辅助空间是常量级，不随问题规模 n 增长」，不是「零空间」。\n例如就地逆置顺序表要借助一个临时变量 t（3 个辅助单元），冒泡排序要一个 swap 变量，这些都是 O(1)。它们仍然用了空间，只是用量与 n 无关。\n对照记忆：归并排序要 O(n) 的辅助数组，快速排序递归栈平均 O(log n)、最坏 O(n)，堆排序 O(1)。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 1 章 1.4.3 算法的存储空间需求',
+    referenceUrl: 'https://oi-wiki.org/basic/complexity/'
+},
+
+/* ---------------- 第 2 章 线性表 ---------------- */
+{
+    id: 'j2-01', type: 'judge', chapter: 'c2',
+    knowledgePoint: '单链表删除结点的步骤',
+    tags: ['线性表', '单链表', '拔高', '判断'],
+    difficulty: '难',
+    stem: '判断：在单链表中，若已知指向某个结点的指针 p，则删除该结点只需执行 p->next = p->next->next，时间复杂度为 O(1)。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误，这是单链表最经典的陷阱题。\n单链表只能「顺着 next 往后走」，要删除 p 结点必须修改<b>它的前驱</b>的 next，而从前驱到 p 只能从头遍历，所以常规删除是 O(n)。已知 p 不等于已知 p 的前驱。\n如果题目给的是「指向被删结点前驱的指针」，那才是 O(1)。\n真正能做到 O(1) 删除的是<b>双向链表</b>（有 prior 指针）或「已知 p 且允许偷梁换柱」的技巧：把 p->next 的数据复制到 p，再删 p->next——但那要求 p 不是尾结点。\n所以题干这句话对双向链表成立，对单链表不成立。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 2 章 2.5 线性表的链式表示和实现',
+    referenceUrl: 'https://oi-wiki.org/ds/linked-list/'
+},
+{
+    id: 'j2-02', type: 'judge', chapter: 'c2',
+    knowledgePoint: '顺序表插入的平均移动次数',
+    tags: ['线性表', '顺序表', '判断'],
+    difficulty: '中',
+    stem: '判断：在长度为 n 的顺序表中，等概率地在第 i 个位置（1 ≤ i ≤ n+1）插入一个元素，平均需要移动 n/2 个元素。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。在第 i 个位置插入要把它及后面的元素整体后移，移动次数为 n − i + 1，i 有 n+1 种取值且等概率，于是\n平均值 = [Σ(n−i+1)] / (n+1) = [n + (n−1) + … + 0] / (n+1) = n(n+1)/2 / (n+1) = n/2。\n对照记忆：删除第 i 个元素移动 n − i 个，平均 (n−1)/2，比插入略少——因为删除没有「在表尾之后插入」这个位置。\n这两个数常考填空白，注意插入是 n/2、删除是 (n−1)/2，不要记反。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 2 章 2.4 线性表的顺序表示和实现',
+    referenceUrl: 'https://oi-wiki.org/ds/array/'
+},
+{
+    id: 'j2-03', type: 'judge', chapter: 'c2',
+    knowledgePoint: '循环链表的判空条件',
+    tags: ['线性表', '循环链表', '判断'],
+    difficulty: '中',
+    stem: '判断：带头结点的循环单链表，判空条件是 head == NULL；不带头结点的循环单链表，判空条件是 head->next == head。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误，两个条件都写反了。\n带头结点的循环单链表：头结点一定存在，空表的标志是「头结点的 next 指回自己」，即 head->next == head。\n不带头结点的循环单链表：空表时 head 根本没有任何结点可指，所以是 head == NULL（有的教材用 head->next == head 但要求存在哨兵，口径不同）。\n顺带记住：不带头结点的循环链表判断「走到表尾」是 p->next == head，而不是 p->next == NULL——后者是普通单链表的写法。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 2 章 2.5.3 循环链表',
+    referenceUrl: 'https://oi-wiki.org/ds/linked-list/'
+},
+{
+    id: 'j2-04', type: 'judge', chapter: 'c2',
+    knowledgePoint: '静态链表',
+    tags: ['线性表', '静态链表', '判断'],
+    difficulty: '中',
+    stem: '判断：静态链表用一维数组模拟链表，结点之间的先后关系靠数组下标（游标）表示，因此插入和删除时不需要移动元素，只需修改游标。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。静态链表把「指针」换成「下一个结点在数组中的下标」，称为游标（cursor）。\n每个分量存 data 和 cur 两个域，cur = 0 表示链尾（或按教材约定用 -1、0 表示空）。插入时从备用链表取一个空闲分量，改两个游标即可；删除时把分量归还备用链表。整个过程不移动数据，具备链式存储「插删 O(1)」的优点。\n它的现实意义：在没有指针类型的语言（如早期的 BASIC、FORTRAN）里也能实现链表，所以叫「静态链表」。缺点是和顺序表一样要预先分配固定大小的数组，长度受限。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 2 章 2.5.5 静态链表',
+    referenceUrl: 'https://oi-wiki.org/ds/linked-list/'
+},
+{
+    id: 'j2-05', type: 'judge', chapter: 'c2',
+    knowledgePoint: '双向链表插入',
+    tags: ['线性表', '双向链表', '判断'],
+    difficulty: '中',
+    stem: '判断：在双向链表中，把新结点 s 插入到指针 p 所指结点之前，需要修改 4 个指针域，且这 4 条语句的书写顺序不能任意调换。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。设 p 的前驱为 q（q = p->prior），插入步骤为：\n① s->prior = q;　② s->next = p;　③ q->next = s;　④ p->prior = s;\n4 个指针域都要改。顺序不能乱的原因：一旦先执行 ③（q->next = s），原来 p 的前驱信息就只能从 p->prior 取；如果先执行 ④（p->prior = s），q 就再也找不到了，后面的 s->prior = q 会写错。\n安全写法：<b>先给新结点 s 的两个域赋值</b>（① ②），再动原链表的两个域（③ ④）。这样即使中途出错，原链表结构仍然完整。\n口诀：先接管自己，再接管别人。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 2 章 2.5.4 双向链表',
+    referenceUrl: 'https://oi-wiki.org/ds/linked-list/'
+},
+
+/* ---------------- 第 3 章 栈和队列 ---------------- */
+{
+    id: 'j3-01', type: 'judge', chapter: 'c3',
+    knowledgePoint: '栈的典型应用',
+    tags: ['栈', '队列', '判断'],
+    difficulty: '易',
+    stem: '判断：栈和队列都是操作受限的线性表，栈只能在表的一端插入和删除，队列只能在一端插入、另一端删除。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。两者都是线性表的特例，元素之间仍是「一对一」的线性关系，只是把「任意位置插删」限制成了端点的操作。\n栈：插入（入栈）和删除（出栈）都在栈顶，所以是后进先出 LIFO；\n队列：入队在队尾、出队在队头，所以是先进先出 FIFO。\n正因为限制了操作位置，才能用「栈顶指针」或「队头队尾指针」两个变量完成全部操作，实现极简、代价极低。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 3 章 3.1 栈、3.2 队列',
+    referenceUrl: 'https://oi-wiki.org/ds/stack/'
+},
+{
+    id: 'j3-02', type: 'judge', chapter: 'c3',
+    knowledgePoint: '循环队列的元素个数',
+    tags: ['队列', '循环队列', '判断'],
+    difficulty: '中',
+    stem: '判断：在循环队列中，队头指针 front 的值一定不大于队尾指针 rear 的值。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误。循环队列的指针是「模 MAXQSIZE 的环」，会绕回 0，所以 rear 完全可能小于 front。\n例如 MAXQSIZE = 10，先出队 5 个再入队 3 个，front = 5、rear = 3，rear < front 成立。\n这正是不能用 rear − front 直接算元素个数的原因。正确公式是：\n元素个数 = (rear − front + MAXQSIZE) % MAXQSIZE；\n判满 = (rear + 1) % MAXQSIZE == front（牺牲一个单元）；\n判空 = front == rear。\n如果想不牺牲单元，就要再加一个 size 变量或一个 tag 标志来区分空与满。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 3 章 3.2.3 循环队列',
+    referenceUrl: 'https://oi-wiki.org/ds/queue/'
+},
+{
+    id: 'j3-03', type: 'judge', chapter: 'c3',
+    knowledgePoint: '出栈序列的合法性',
+    tags: ['栈', '出栈序列', '判断'],
+    difficulty: '中',
+    stem: '判断：若入栈序列为 1、2、3，且每个元素入栈后可以立即出栈，则可能的出栈序列共有 5 种，其中 3、1、2 是合法的。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误，前半句对、后半句错。\nn 个元素依次入栈，可能的出栈序列数是卡特兰数 C(2n,n)/(n+1)：n=3 时为 5 种，分别是 123、132、213、231、321。\n3、1、2 不合法：3 第一个出栈，说明 1、2 都已入栈且压在 3 下面，栈内从底到顶是 1、2，3 出栈后栈顶是 2，下一个只能是 2，不可能是 1。\n判定口诀：如果某个较大数先出栈，则比它小的数必须<b>逆序</b>出栈（因为它们被压在同一段栈里）。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 3 章 3.3 栈与递归的实现（出栈序列）',
+    referenceUrl: 'https://oi-wiki.org/ds/stack/'
+},
+{
+    id: 'j3-04', type: 'judge', chapter: 'c3',
+    knowledgePoint: '递归与栈的关系',
+    tags: ['栈', '递归', '判断'],
+    difficulty: '易',
+    stem: '判断：程序中的递归调用之所以能正确返回，是因为系统用一个栈保存了每一层的返回地址和局部变量。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。递归的执行靠「函数调用栈」：每次调用都把返回地址、实参、局部变量、保存的寄存器压入栈帧；返回时弹栈，恢复到上一层的位置继续执行。\n这也解释了两个现象：① 递归深度过大会「栈溢出」，因为栈空间有限；② 递归的效率损失主要在压栈/弹栈与现场保护上。\n反过来，任何递归都能用「显式栈」改写成非递归：把「待处理的状态」自己压栈，本质是把系统栈搬到堆上，从而突破深度限制。\n典型例子：二叉树遍历的递归写法 ↔ 用 stack 的迭代写法；快速排序的递归 ↔ 手动压区间。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 3 章 3.3 栈与递归的实现',
+    referenceUrl: 'https://oi-wiki.org/basic/recursive/'
+},
+{
+    id: 'j3-05', type: 'judge', chapter: 'c3',
+    knowledgePoint: '循环队列判空判满的三种方法',
+    tags: ['队列', '循环队列', '判断'],
+    difficulty: '中',
+    stem: '判断：循环队列若采用「牺牲一个存储单元」的方式区分队空与队满，那么容量为 MAXQSIZE 的数组最多只能存放 MAXQSIZE − 1 个元素。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。判空用 front == rear，判满用 (rear + 1) % MAXQSIZE == front。当 rear 走到 front 的前一个位置时就认定队满，此时实际只装了 MAXQSIZE − 1 个。\n为什么要牺牲：如果允许装 MAXQSIZE 个，队满时也会出现 front == rear，与队空的条件撞车，无法区分。\n另外两种常见解法：① 增设 size 计数变量，size == 0 为空、size == MAXQSIZE 为满；② 增设 tag 标志，记录最近一次操作是入队还是出队。这两种都能用满全部空间。\n队列的三种判空判满写法是本章最高频的填空/判断考点。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 3 章 3.2.3 循环队列——队列的顺序表示和实现',
+    referenceUrl: 'https://oi-wiki.org/ds/queue/'
+},
+
+/* ---------------- 第 4 章 串、数组和广义表 ---------------- */
+{
+    id: 'j4-01', type: 'judge', chapter: 'c4',
+    knowledgePoint: '空串与空格串',
+    tags: ['串', '基本概念', '判断'],
+    difficulty: '易',
+    stem: '判断：空串是长度为 0 的串，空格串是含有一个或多个空格的串，两者长度不同但都不含有效字符，因此可以认为它们相同。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误，前半句对、结论错。\n空串 "" 的长度为 0，一个字符都没有；空格串 " " 的长度为 1（空格也是字符），"   " 长度为 3。两者长度不同，相等判定必然为假，绝不「相同」。\n相关易混点：\n· 空串是任意串的子串（包括它自己）；\n· 空格串不是空串的子串；\n· 子串个数公式 n(n+1)/2 + 1 里的「+1」就是空串。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 4 章 4.1 串的定义',
+    referenceUrl: 'https://oi-wiki.org/string/'
+},
+{
+    id: 'j4-02', type: 'judge', chapter: 'c4',
+    knowledgePoint: 'next 数组的计算',
+    tags: ['串', 'KMP', '判断'],
+    difficulty: '中',
+    stem: '判断：KMP 算法中的 next 数组只与模式串本身有关，与主串无关，因此同一个模式串在不同主串上匹配时可以复用同一份 next 数组。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。next[j] 的含义是「模式串前 j−1 个字符组成的子串中，最长的相等前后缀长度」，只由模式串自己决定，所以可以先预处理一次，全程复用。\n这正是 KMP 比 BF 快的根本原因：BF 每次失配都把主串指针回溯到 i−j+2，做无用功；KMP 让主串指针<b>只进不退</b>，失配时只把模式串右滑到 next[j] 的位置继续比。\n时间复杂度：求 next 为 O(m)，匹配为 O(n)，合计 O(n+m)；BF 最坏 O(n·m)。\n练习题：模式串 "abaabc" 的 next 为 0 1 1 2 2 3（下标从 1 开始）。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 4 章 4.3.2 模式匹配的一种改进算法',
+    referenceUrl: 'https://oi-wiki.org/string/kmp/'
+},
+{
+    id: 'j4-03', type: 'judge', chapter: 'c4',
+    knowledgePoint: '稀疏矩阵的三元组表示',
+    tags: ['数组', '稀疏矩阵', '判断'],
+    difficulty: '中',
+    stem: '判断：稀疏矩阵采用三元组表存储后，压缩了空间，并且仍然可以像二维数组一样随机存取任意元素。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误。三元组表只存非零元素 (行, 列, 值)，按行序排列，省空间但<b>失去了随机存取</b>。\n要取 a[i][j]，最坏要把整张表扫一遍（O(t)，t 为非零元素个数），而二维数组是 O(1)。这就是典型的「时间换空间」。\n若既要省空间又要能较快定位，可以用十字链表（每行每列各成一条链），或者再加一个「行起始位置」的索引表（行逻辑链接的顺序表）。\n顺带对比：对称矩阵、三角矩阵的压缩存储仍是<b>随机存取</b>的，因为下标能直接算出来（如对称矩阵 k = i(i−1)/2 + j）。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 4 章 4.4.2 稀疏矩阵',
+    referenceUrl: 'https://oi-wiki.org/ds/sparse-matrix/'
+},
+{
+    id: 'j4-04', type: 'judge', chapter: 'c4',
+    knowledgePoint: '对称矩阵的压缩存储',
+    tags: ['数组', '压缩存储', '判断'],
+    difficulty: '中',
+    stem: '判断：n 阶对称矩阵采用「只存下三角（含主对角线）」的压缩存储，需要 n(n+1)/2 个存储单元，且任意元素 a[i][j] 都能由下标直接算出存储位置。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。对称矩阵满足 a[i][j] = a[j][i]，上下三角重复，只存一半即可。\n下三角（含对角线）的元素个数 = 1 + 2 + … + n = n(n+1)/2。\n按行优先存入一维数组 sa（下标从 1 开始）时：\n· 当 i ≥ j（下三角）：k = i(i−1)/2 + j；\n· 当 i < j（上三角）：先转成对称位置，k = j(j−1)/2 + i。\n所以是 O(1) 随机存取，这是它和三元组表的关键区别。\n对照：三对角矩阵只有 3n−2 个非零元，k = 2i + j − 2（1 ≤ i,j ≤ n）。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 4 章 4.4.1 数组的顺序存储（特殊矩阵的压缩）',
+    referenceUrl: 'https://oi-wiki.org/ds/array/'
+},
+{
+    id: 'j4-05', type: 'judge', chapter: 'c4',
+    knowledgePoint: '广义表的长度与深度',
+    tags: ['广义表', '判断'],
+    difficulty: '难',
+    stem: '判断：广义表 L = ((a, b), c, (d)) 的长度为 3，深度为 2。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确，这是广义表两个概念的标准区分。\n<b>长度</b>数的是「最外层有几个元素」，不看括号：L 的最外层是 (a,b)、c、(d) 三个元素，所以长度为 3。\n<b>深度</b>数的是「括号最多嵌套几层」：最外层算 1 层，(a,b) 和 (d) 里还有一层，所以深度为 2。\n再看两个例子巩固：\n· E = ()　长度为 0，深度为 1（空表也是一层）；\n· D = (a, (b, (c)))　长度为 2，深度为 3。\nhead 取表头（第一个元素，可能是子表），tail 取表尾（去掉表头后剩下的表，一定加括号）。所以 head(L) = (a,b)，tail(L) = (c,(d))。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 4 章 4.5 广义表',
+    referenceUrl: 'https://oi-wiki.org/ds/'
+}
+
+];
+
+/* ================================================================
+   数据结构 · 判断题（j5/j6/j7/j8）
+   ================================================================ */
+const D_JUDGE_B = [
+
+/* ---------------- 第 5 章 树和二叉树 ---------------- */
+{
+    id: 'j5-01', type: 'judge', chapter: 'c5',
+    knowledgePoint: '树的基本术语',
+    tags: ['树', '基本概念', '判断'],
+    difficulty: '易',
+    stem: '判断：二叉树中每个结点至多有两棵子树，并且左右子树有严格次序，交换后是另一棵不同的二叉树。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。二叉树不是「度不超过 2 的树」，它的定义里就带着左右之分：即使某个结点只有一棵子树，也要说明它是左孩子还是右孩子。\n所以「只有左孩子的二叉树」和「只有右孩子的二叉树」是两棵不同的树，而它们在「度为 2 的树」的视角下是同一棵。\n这也带来一个考试常考点：n 个结点的二叉树形态数为卡特兰数 C(2n,n)/(n+1)，n=3 时有 5 种；而 n 个结点的「树」（无序）形态数要少得多。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 5 章 5.2 二叉树',
+    referenceUrl: 'https://oi-wiki.org/ds/binary-tree/'
+},
+{
+    id: 'j5-02', type: 'judge', chapter: 'c5',
+    knowledgePoint: '二叉树的遍历：由两种序列确定树',
+    tags: ['树', '遍历', '拔高', '判断'],
+    difficulty: '难',
+    stem: '判断：已知一棵二叉树的先序遍历序列和后序遍历序列，就可以唯一确定这棵二叉树。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误。三种组合里只有「先序 + 中序」和「后序 + 中序」能唯一确定二叉树。\n先序 + 后序不行：先序的第一个和后序的最后一个都是根，能定根，但接下来的序列无法区分「左子树为空、右子树非空」与「左子树非空、右子树为空」这两种情况。\n反例：A 为根、B 为唯一孩子的两棵二叉树——A 的左孩子是 B，与 A 的右孩子是 B，它们的先序都是 AB，后序都是 BA，但结构不同。\n根本原因：中序序列能给出「根把左右子树分成两段」的分界线，而先序/后序只给根的位置，缺这条分界线。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 5 章 5.7 遍历二叉树',
+    referenceUrl: 'https://oi-wiki.org/ds/binary-tree/'
+},
+{
+    id: 'j5-03', type: 'judge', chapter: 'c5',
+    knowledgePoint: '哈夫曼树的构造与性质',
+    tags: ['树', '哈夫曼树', '判断'],
+    difficulty: '中',
+    stem: '判断：哈夫曼树中不存在度为 1 的结点，因此若叶子结点有 n 个，则哈夫曼树的结点总数为 2n − 1。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。哈夫曼树的构造过程是「每次合并两个权值最小的结点」，每次合并产生一个新的双亲，所以<b>每个非叶结点都恰好有两个孩子</b>，度为 1 的结点不可能出现。\n由二叉树性质 n0 = n2 + 1：叶子 n0 = n，则 n2 = n − 1，结点总数 = n0 + n2 = 2n − 1。\n附带两个常考结论：\n· 哈夫曼树的 WPL（带权路径长度）最小，是最优二叉树；\n· 哈夫曼编码是前缀码，因为每个字符都在叶子上，没有一个编码是另一个的前缀。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 5 章 5.8 哈夫曼树及其应用',
+    referenceUrl: 'https://oi-wiki.org/ds/huffman-tree/'
+},
+{
+    id: 'j5-04', type: 'judge', chapter: 'c5',
+    knowledgePoint: '完全二叉树的深度',
+    tags: ['树', '完全二叉树', '拔高', '判断'],
+    difficulty: '难',
+    stem: '判断：一棵完全二叉树若有偶数个结点，则它恰好有一个度为 1 的结点。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确，这是完全二叉树最重要的计数结论。\n完全二叉树只可能有一个度为 1 的结点（即「只有左孩子」的那个），且只在最后一层出现。设度为 1 的结点数为 n1，则 n1 只能是 0 或 1。\n由 n = n0 + n1 + n2 且 n0 = n2 + 1，得 n = 2n2 + n1 + 1。\n· 若 n 为偶数：2n2 + 1 是奇数，要凑成偶数必须 n1 = 1；\n· 若 n 为奇数：n1 = 0，此时 n0 = (n+1)/2。\n所以 100 个结点的完全二叉树，n1 = 1、n2 = 49、叶子 n0 = 50。这个结论直接用于「叶子结点数」的计算题。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 5 章 5.2.3 二叉树的存储结构',
+    referenceUrl: 'https://oi-wiki.org/ds/binary-tree/'
+},
+{
+    id: 'j5-05', type: 'judge', chapter: 'c5',
+    knowledgePoint: '树转换为二叉树',
+    tags: ['树', '树与二叉树', '判断'],
+    difficulty: '中',
+    stem: '判断：按「左孩子右兄弟」的方法把一棵普通树转换成二叉树后，得到的二叉树其根结点一定没有右子树。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。「左孩子右兄弟」的规则是：每个结点的第一个孩子变成它的左孩子，其余兄弟依次挂在左孩子的右链上。\n树根没有兄弟，所以转换后的根结点必然没有右子树。这也是判断「一棵二叉树能否还原成普通树」的方法：根有右子树就说明它原本是森林（多棵树的集合），不是单棵树。\n由此还得到两条遍历对应关系，常考填空：\n· 树的先根遍历 = 转换后二叉树的<b>先序</b>遍历；\n· 树的后根遍历 = 转换后二叉树的<b>中序</b>遍历。\n森林的转换同理：森林转二叉树后根有右子树，根的右链串起其余各棵树的根。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 5 章 5.6 树和森林',
+    referenceUrl: 'https://oi-wiki.org/ds/binary-tree/'
+},
+
+/* ---------------- 第 6 章 图 ---------------- */
+{
+    id: 'j6-01', type: 'judge', chapter: 'c6',
+    knowledgePoint: '图的边数范围',
+    tags: ['图', '基本概念', '判断'],
+    difficulty: '易',
+    stem: '判断：n 个顶点的无向完全图有 n(n−1)/2 条边，n 个顶点的有向完全图有 n(n−1) 条边。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。无向完全图任意两个顶点之间都有一条边，边数是从 n 个顶点中任取 2 个的组合数 C(n,2) = n(n−1)/2。\n有向完全图任意两个顶点之间都有两条方向相反的弧，所以是 n(n−1)。\n由此得出常用范围（常考填空）：\n· 无向连通图边数范围：n−1 ≤ e ≤ n(n−1)/2；\n· 有向强连通图弧数范围：n ≤ e ≤ n(n−1)。\n度与边的关系也对偶：无向图中 Σdeg(v) = 2e，有向图中 Σ入度 = Σ出度 = e。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 6 章 6.1 图的定义和术语',
+    referenceUrl: 'https://oi-wiki.org/graph/concept/'
+},
+{
+    id: 'j6-02', type: 'judge', chapter: 'c6',
+    knowledgePoint: '拓扑排序与 AOV 网',
+    tags: ['图', '拓扑排序', '判断'],
+    difficulty: '中',
+    stem: '判断：一个有向图的拓扑排序序列若存在，则一定唯一。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误。拓扑序列存在不唯一。\n只要同一时刻有多个入度为 0 的顶点，选谁都合法，就会产生不同的序列。例如 A→C、B→C：先输出 A 还是先输出 B 都对，得到 A B C 或 B A C 两个序列。\n真正唯一的情形很苛刻：任何时刻入度为 0 的顶点都不超过 1 个（即图是一条链）。\n要分清两个结论：\n· 拓扑序列<b>存在</b>的充要条件是有向图无环（DAG）；\n· 拓扑序列<b>唯一</b>是另一个更强的条件，考试若问「一定唯一」就是错的。\n另外，若拓扑排序输出的顶点数少于 n，说明图中有环。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 6 章 6.5 拓扑排序',
+    referenceUrl: 'https://oi-wiki.org/graph/topo/'
+},
+{
+    id: 'j6-03', type: 'judge', chapter: 'c6',
+    knowledgePoint: 'Prim 与 Kruskal 的适用场景',
+    tags: ['图', '最小生成树', '判断'],
+    difficulty: '中',
+    stem: '判断：求最小生成树时，Prim 算法的时间复杂度为 O(n²)，适合稠密图；Kruskal 算法的时间复杂度为 O(e log e)，适合稀疏图。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确，这是两者最实用的区分。\nPrim 从一个顶点出发不断「吸收最近的顶点」，用邻接矩阵实现时每轮扫描 n 个顶点共 n 轮，复杂度 O(n²)，只与顶点数有关，所以稠密图（e 接近 n²）划算。\nKruskal 把所有边排序后逐条尝试（用并查集判环），复杂度 O(e log e)，只与边数有关，所以稀疏图（e 远小于 n²）划算。\n两者的正确性都基于 MST 性质（贪心选择安全边），结果的最小权值总和相同，但选出的树可能不唯一——当存在等权边时。\n注意别记反：稠密用 Prim、稀疏用 Kruskal。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 6 章 6.4 最小生成树',
+    referenceUrl: 'https://oi-wiki.org/graph/mst/'
+},
+{
+    id: 'j6-04', type: 'judge', chapter: 'c6',
+    knowledgePoint: 'Dijkstra 算法的限制',
+    tags: ['图', '最短路径', '判断'],
+    difficulty: '中',
+    stem: '判断：Dijkstra 算法可以正确处理带负权边的图，只要图中不存在负权回路。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误。Dijkstra 要求<b>所有边的权非负</b>，有负权边时可能给出错误结果。\n原因在于它的贪心前提：算法每次把「当前距离最小的未确定顶点」永久定型，依据是「以后绕路只会更长」。一旦存在负权边，绕远路反而可能变短，这个前提就不成立了。\n反例：A→B 权 1，A→C 权 5，C→B 权 −4。Dijkstra 先定型 B 的距离 1，之后不会再更新，但真实最短是 A→C→B = 1……把权改成 A→C = 2、C→B = −4，则真实最短是 −2，而 Dijkstra 给出 1。\n要处理负权边，用 Bellman-Ford（O(n·e)）或 SPFA，它们还能检测负权回路。\nFloyd 可以处理负权边（三重循环，O(n³)），但同样不能有负权回路。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 6 章 6.6 最短路径',
+    referenceUrl: 'https://oi-wiki.org/graph/shortest-path/'
+},
+{
+    id: 'j6-05', type: 'judge', chapter: 'c6',
+    knowledgePoint: '关键路径与 AOE 网',
+    tags: ['图', '关键路径', '判断'],
+    difficulty: '中',
+    stem: '判断：AOE 网中，关键路径是从源点到汇点的最长路径，其长度等于完成整个工程所需的最短时间。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确，注意「最长路径」与「最短工期」并不矛盾。\nAOE 网中边表示活动、权表示活动持续时间，顶点表示事件。工程要全部完成，必须等所有并行活动都结束，所以总工期由<b>最长</b>的那条路径决定——这条最长路径就是关键路径，其长度即最短工期。\n关键活动（关键路径上的活动）的时间余量为 0：早开始时间 = 迟开始时间。由此得到最重要的工程结论：\n· 缩短关键活动才可能缩短工期；\n· 缩短非关键活动对工期毫无影响（只会增加它的时间余量）；\n· 关键活动被缩短到一定程度后，关键路径可能转移，原来的非关键活动变成新的瓶颈。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 6 章 6.5.2 关键路径',
+    referenceUrl: 'https://oi-wiki.org/graph/topo/'
+},
+
+/* ---------------- 第 7 章 查找 ---------------- */
+{
+    id: 'j7-01', type: 'judge', chapter: 'c7',
+    knowledgePoint: '折半查找的适用条件',
+    tags: ['查找', '折半查找', '判断'],
+    difficulty: '易',
+    stem: '判断：折半查找要求线性表必须采用顺序存储且元素按关键字有序排列，两个条件缺一不可。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确，两个条件都要满足。\n<b>必须有序</b>：折半的依据是「中间元素与目标的大小关系能排除一半区间」，无序就无从判断。\n<b>必须顺序存储</b>：算法要能 O(1) 跳到 mid = (low+high)/2 这个位置，只有数组能做到；链表找第 mid 个结点要 O(n)，折半反而变成 O(n log n)，不如顺序查找。\n因此链表上的「有序表」只能用顺序查找（或跳表这类改造结构）。\n折半查找的判定树是一棵平衡二叉树，查找成功的平均查找长度约为 log₂(n+1) − 1，最大比较次数为 ⌊log₂n⌋ + 1。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 7 章 7.2 折半查找',
+    referenceUrl: 'https://oi-wiki.org/basic/binary/'
+},
+{
+    id: 'j7-02', type: 'judge', chapter: 'c7',
+    knowledgePoint: '二叉排序树的查找效率',
+    tags: ['查找', '二叉排序树', '判断'],
+    difficulty: '中',
+    stem: '判断：二叉排序树的查找时间复杂度总是 O(log₂n)，与树的形态无关。（　）',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误。二叉排序树的查找效率<b>取决于树的形态</b>。\n最好情况是平衡的，树高 ⌈log₂(n+1)⌉，查找 O(log n)；最坏情况是退化成单支树（链），树高 n，查找 O(n)，此时还不如折半查找。\n典型的退化场景：按 1,2,3,…,n 的递增顺序插入，每个新结点都挂在右链上，构造出一条「斜树」。\n这正是 AVL 树与红黑树存在的理由——通过旋转把树高控制在 O(log n)，保证最坏情况也是 O(log n)。\n所以正确说法是「平均 O(log n)，最坏 O(n)」。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 7 章 7.3 树表的查找',
+    referenceUrl: 'https://oi-wiki.org/ds/bst/'
+},
+{
+    id: 'j7-03', type: 'judge', chapter: 'c7',
+    knowledgePoint: '装填因子的作用',
+    tags: ['查找', '哈希表', '判断'],
+    difficulty: '中',
+    stem: '判断：哈希表的装填因子 α 越大，发生冲突的可能性越大，平均查找长度也越大；α 与表中已存记录数和表长都有关。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。装填因子 α = 表中记录数 n / 哈希表长度 m，它衡量「表装得多满」。\nα 越大，空闲槽越少，冲突概率越高，探测链越长，平均查找长度 ASL 随之上升；α 越小查找越快，但空间浪费越多。\n这正是哈希表「空间换时间」的量化表达：ASL 是 α 的函数，与 n 和 m 的绝对值无关。例如 α = 0.75 时线性探测的平均查找长度约 8.5（成功），而 α = 0.5 时约 2.5。\n工程实践常把 α 控制在 0.75 左右，超过就扩容 rehash。Java HashMap 的默认负载因子就是 0.75。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 7 章 7.4 散列表的查找',
+    referenceUrl: 'https://oi-wiki.org/ds/hash/'
+},
+{
+    id: 'j7-04', type: 'judge', chapter: 'c7',
+    knowledgePoint: 'B 树的定义',
+    tags: ['查找', 'B树', '判断'],
+    difficulty: '中',
+    stem: '判断：m 阶 B 树中，所有叶子结点都出现在同一层，且每个非根结点的关键字个数在 ⌈m/2⌉−1 到 m−1 之间。（　）',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。m 阶 B 树的定义包含这几条硬约束：\n① 每个结点最多 m 棵子树、m−1 个关键字；\n② 除根之外的非叶结点至少 ⌈m/2⌉ 棵子树，即至少 ⌈m/2⌉−1 个关键字（根至少 1 个关键字、2 棵子树）；\n③ 所有叶子结点在同一层，因此 B 树是「绝对平衡」的，查找路径长度恒等于树高；\n④ 结点内的关键字有序，且子树的关键字落在相邻两个关键字之间。\n「所有叶子同层」是 B 树与二叉排序树最大的区别，也是它能稳定保证 O(log n) 次磁盘 I/O 的原因。\n对照：B+ 树把数据全放在叶子层并用链表串联，非叶结点只做索引，所以更适合范围查询。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 7 章 7.3.2 B−树',
+    referenceUrl: 'https://oi-wiki.org/ds/b-tree/'
+},
+{
+    id: 'j7-05', type: 'judge', chapter: 'c7',
+    knowledgePoint: '红黑树的定义与五条性质',
+    tags: ['查找', '红黑树', '拔高', '判断'],
+    difficulty: '难',
+    stem: '判断：红黑树是一种近似平衡的二叉排序树，从根到叶子的最长路径长度不超过最短路径长度的 2 倍，因此树高为 O(log n)。',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确，这是红黑树「近似平衡」的准确表述。\n由五条性质（结点非红即黑、根为黑、叶子 NIL 为黑、红结点的孩子必为黑、任一结点到其所有叶子的路径上黑结点数相同）可推出：最长路径上红黑交替，最短路径全黑，而两者的黑结点数相同，所以最长 ≤ 2 × 最短。\n又因为最短路径至少有 log₂(n+1) 个黑结点量级，故树高 h ≤ 2log₂(n+1)，查找、插入、删除都是 O(log n)。\n与 AVL 的区别（常考选择）：AVL 更严格平衡（左右子树高度差 ≤ 1），查找略快但插入删除的旋转次数多；红黑树放宽了平衡条件，插入删除最多 3 次旋转，综合性能更好，所以 C++ STL 的 map/set、Java 的 TreeMap 都用红黑树。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 7 章 7.3.3 红黑树',
+    referenceUrl: 'https://oi-wiki.org/ds/rbtree/'
+},
+
+/* ---------------- 第 8 章 排序 ---------------- */
+{
+    id: 'j8-01', type: 'judge', chapter: 'c8',
+    knowledgePoint: '快速排序的最坏情况',
+    tags: ['排序', '快速排序', '判断'],
+    difficulty: '中',
+    stem: '判断：快速排序在待排序列已经基本有序时会退化为 O(n²)，因此实际实现中常用「三数取中」或随机选取枢轴来避免这种退化。',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确。快排的性能取决于划分是否均衡，而划分是否均衡取决于枢轴选得好不好。\n当序列已经有序（或逆序）且固定取第一个元素为枢轴时，每次划分都把区间分成「1 个 + n−1 个」，递归深度 n，总比较次数 n(n−1)/2，退化为 O(n²)，递归栈也涨到 O(n)，可能栈溢出。\n三个改进方向：\n① 选枢轴：三数取中、随机化；\n② 小区间优化：n 小于阈值（如 16）时改用插入排序；\n③ 三路划分：把等于枢轴的元素集中，处理大量重复键时避免退化。\n对照：堆排序与归并排序的最坏情况都是 O(n log n)，不受输入分布影响，这也是它们存在的价值。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 8 章 8.3 交换排序',
+    referenceUrl: 'https://oi-wiki.org/basic/quick-sort/'
+},
+{
+    id: 'j8-02', type: 'judge', chapter: 'c8',
+    knowledgePoint: '排序方法的稳定性',
+    tags: ['排序', '堆排序', '判断'],
+    difficulty: '易',
+    stem: '判断：堆排序是不稳定排序，辅助空间为 O(1)，最坏时间复杂度为 O(n log n)。',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确，这三条正好概括了堆排序的优缺点。\n<b>空间 O(1)</b>：完全就地，只借一个 temp 变量，这是它相对归并排序的最大优势（归并要 O(n) 辅助数组）。\n<b>不稳定</b>：建堆与筛选时会把远处的元素直接交换过来，相同关键字的相对次序会被打乱。例如 (5a, 5b, 3) 建大顶堆后 5a、5b 的次序可能颠倒。\n<b>最坏 O(n log n)</b>：建初始堆 O(n)，之后 n−1 次筛选各 O(log n)。\n常考对比：三者都 O(n log n) 的排序是快速、堆、归并；其中不稳定的是快排与堆排，稳定的是归并；空间上堆排 O(1)、快排 O(log n)、归并 O(n)。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 8 章 8.4 选择排序',
+    referenceUrl: 'https://oi-wiki.org/basic/heap-sort/'
+},
+{
+    id: 'j8-03', type: 'judge', chapter: 'c8',
+    knowledgePoint: '比较排序的时间下界',
+    tags: ['排序', '基数排序', '拔高', '判断'],
+    difficulty: '难',
+    stem: '判断：任何基于比较的排序算法最坏情况下至少需要 Ω(n log n) 次比较，而基数排序的时间复杂度为 O(d(n+r))，可以低于这个下界，两者并不矛盾。',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确，关键在「基于比较」这个前提。\n决策树下界证明：n 个元素有 n! 种排列，每次比较只有两个结果，所以决策树必须有至少 n! 个叶子，树高 ≥ log₂(n!) = Ω(n log n)。这个下界只约束「靠两两比较确定次序」的算法。\n基数排序不靠比较，它按关键字每一位「分配—收集」，d 趟、每趟遍历 n 个元素和 r 个桶，复杂度 O(d(n+r))。当关键字位数 d 很小而 n 很大时，确实快于 n log n。\n代价是：需要 r 个桶的额外空间（非原地），且只适用于可分解成「位」的关键字（整数、定长字符串）。\n同类还有计数排序 O(n+k)、桶排序。它们的共同点是用空间与关键字结构换取比较下界的突破。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 8 章 8.6 基数排序',
+    referenceUrl: 'https://oi-wiki.org/basic/radix-sort/'
+},
+{
+    id: 'j8-04', type: 'judge', chapter: 'c8',
+    knowledgePoint: '希尔排序的一趟结果',
+    tags: ['排序', '希尔排序', '判断'],
+    difficulty: '中',
+    stem: '判断：希尔排序是稳定排序，因为它在每一趟内部使用的都是稳定的直接插入排序。',
+    options: ['正确', '错误'],
+    answer: 1,
+    explanation: '错误。这个推理的漏洞在于：<b>分组本身会破坏稳定性</b>。\n希尔排序把相隔增量 d 的元素分到同一组，相同关键字的两个记录可能被分到不同组，从而在组间被交换到相对次序颠倒的位置；即使后面每趟插入排序都稳定，也无法把已经错位的次序恢复回来。\n结论：希尔排序是<b>不稳定</b>排序。教材把稳定的排序列为：直接插入、冒泡、归并、基数（还有折半插入）。\n顺带记：希尔排序的时间复杂度与增量序列的选取有关，Hibbard 增量约 O(n^1.5)，Sedgewick 增量可到 O(n^1.3)，最坏仍有 O(n²) 的构造。它突破了简单插入排序 O(n²) 的限制，是第一批「按增量分组」的算法。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 8 章 8.2 插入排序',
+    referenceUrl: 'https://oi-wiki.org/basic/insertion-sort/'
+},
+{
+    id: 'j8-05', type: 'judge', chapter: 'c8',
+    knowledgePoint: '一趟排序后确定位置的元素',
+    tags: ['排序', '排序方法的性质', '拔高', '判断'],
+    difficulty: '难',
+    stem: '判断：对待排序列做一趟排序后，能够确定至少一个元素最终位置的排序方法有冒泡排序、快速排序、简单选择排序和堆排序；而直接插入排序与归并排序不能保证这一点。',
+    options: ['正确', '错误'],
+    answer: 0,
+    explanation: '正确，这是判断「哪种排序的一趟结果」的通用依据。\n· 冒泡：每趟把最大的送到末尾，末尾那个位置就定型了；\n· 快排：每趟把枢轴放到它的最终位置，左边全小、右边全大；\n· 简单选择：每趟选出最小者放到前面，该位置定型；\n· 堆排序：每趟把堆顶（最大）与末尾交换，末尾定型。\n而直接插入排序是把当前元素插入到前面已排好的序列中，后面元素还没看，谁也不能定型；归并排序是把相邻的有序段合并成更大的有序段，只有整段全部归并完才有序。\n所以「一趟后序列中某个元素已在最终位置」这类题，先想这四种，再用排除法。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 8 章 8.1 概述（排序方法比较）',
+    referenceUrl: 'https://oi-wiki.org/basic/sort-intro/'
+}
+
+];
+
+/* ================================================================
+   数据结构 · 编程题（prog）—— 参照严蔚敏课后算法设计题
+   判分口径：按关键步骤给分（normProg 只去注释与空白），
+   写法不同但包含这些关键语句即算命中；≥60% 记为答对
+   ================================================================ */
+const D_PROG_A = [
+
+/* ---------------- 第 2 章 线性表 ---------------- */
+{
+    id: 'pg2-01', type: 'prog', chapter: 'c2',
+    knowledgePoint: '单链表就地逆置',
+    tags: ['线性表', '单链表', '编程', '课后习题'],
+    difficulty: '中',
+    hint: '就地逆置 = 把原表结点逐个「头插」到一个新表上，辅助空间 O(1)。关键是先存后继再改指针。',
+    stem: '【算法设计题】设有一个带头结点的单链表 L，试编写算法将其<b>就地逆置</b>（不新建结点、不额外申请 O(n) 空间），并说明时间复杂度。\n<b>函数原型</b>：<code>void Reverse(LinkList L);</code>\n<b>要求</b>：直接修改指针，逆置后仍带头结点，例如 (a1,a2,a3) → (a3,a2,a1)。',
+    keys: [
+        { label: '头结点摘下，新表先置空（L->next = NULL）', any: ['l->next=null'] },
+        { label: '进入循环前暂存后继：q = p->next（防止断链）', any: ['q=p->next'] },
+        { label: '头插：p->next = L->next', any: ['p->next=l->next'] },
+        { label: '更新新表表头：L->next = p', any: ['l->next=p'] },
+        { label: '指针后移：p = q，继续处理原表下一个结点', any: ['p=q'] }
+    ],
+    answer: `void Reverse(LinkList L)
+{
+    LinkNode *p = L->next, *q;
+    L->next = NULL;              /* 头结点摘下，新表初始为空 */
+    while (p != NULL) {
+        q = p->next;             /* ① 先存后继，否则改完指针就找不到了 */
+        p->next = L->next;       /* ② 头插到新表表头 */
+        L->next = p;             /* ③ 新表表头前移 */
+        p = q;                   /* ④ 处理原表的下一个结点 */
+    }
+}`,
+    explanation: '思路：把原链表看成「待处理的输入」，逐个摘下结点，用<b>头插法</b>接到一个新表上。头插法天然逆序，所以一趟下来正好逆置。\n四步的顺序不能乱：必须先 q = p->next 存下后继，否则 p->next 一改，后面的结点就全丢了。\n时间复杂度 O(n)（每个结点访问一次），空间复杂度 O(1)（只用 p、q 两个指针）。\n常见错误：\n① 忘记先把 L->next 置空，导致新表尾部还挂着原表的残余，形成环；\n② 用「交换 data」的方式逆置——那要求结点可随机存取，单链表做不到，且违背「就地改指针」的题意；\n③ 循环条件写成 while (p->next != NULL)，会漏掉最后一个结点。\n其他写法：也可以把结点依次「摘下再插到原头结点之后」，本质相同。',
+    points: ['先存后继再改指针', '头插法建新表', 'L->next 先置空', 'O(n) 时间、O(1) 空间'],
+    source: '教材第 2 章 习题（算法设计题：单链表就地逆置）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/reverse-linked-list/'
+},
+{
+    id: 'pg2-02', type: 'prog', chapter: 'c2',
+    knowledgePoint: '有序表合并的复杂度',
+    tags: ['线性表', '单链表', '归并', '编程', '课后习题'],
+    difficulty: '难',
+    hint: '两个表都是递增的，要得到「递减」结果，只需每次取较小者，然后<b>头插</b>到结果表上。利用原结点，不 new。',
+    stem: '【算法设计题】设 A 和 B 是两个带头结点的单链表，元素均按值<b>递增</b>有序。试编写算法将它们归并成一个按值<b>递减</b>有序的单链表，并要求<b>利用原表的结点空间</b>（不申请新结点）。\n<b>函数原型</b>：<code>void MergeDesc(LinkList A, LinkList B);</code>\n<b>要求</b>：结果链表用 A 的头结点，函数结束后释放 B 的头结点。',
+    keys: [
+        { label: '结果表先置空：A->next = NULL（A 复用为结果表头）', any: ['a->next=null'] },
+        { label: '比较两表当前结点，取关键字较小者', any: ['pa->data<=pb->data', 'pa->data<pb->data', 'pb->data<pa->data'] },
+        { label: '摘下较小结点（q 指向它，并推进对应表）', any: ['q=pa', 'q=pb'] },
+        { label: '头插：q->next = A->next', any: ['q->next=a->next'] },
+        { label: '更新结果表表头：A->next = q', any: ['a->next=q'] }
+    ],
+    answer: `void MergeDesc(LinkList A, LinkList B)
+{
+    LinkNode *pa = A->next, *pb = B->next, *q;
+    A->next = NULL;                          /* A 的头结点复用为结果表头 */
+    while (pa != NULL && pb != NULL) {
+        if (pa->data <= pb->data) { q = pa; pa = pa->next; }   /* 取较小者 */
+        else                      { q = pb; pb = pb->next; }
+        q->next = A->next;                   /* 头插 → 结果递减 */
+        A->next = q;
+    }
+    while (pa != NULL) { q = pa; pa = pa->next; q->next = A->next; A->next = q; }
+    while (pb != NULL) { q = pb; pb = pb->next; q->next = A->next; A->next = q; }
+    free(B);                                 /* B 的头结点不再需要 */
+}`,
+    explanation: '思路：归并排序的「取较小者」+ 头插法。因为原表递增，每次从两表头取较小的那个，得到的序列是递增的；再把它头插到结果表上，顺序就被反转成递减。\n为什么能利用原结点：只改 next 指针，不复制 data，所以空间是 O(1)。\n时间复杂度 O(m+n)：每个结点恰好被摘下并插入一次。\n易错点：\n① 想在原表上「就地反转」再合并——不行，反转后两表变递减，无法再从头取最小值；\n② 结果用尾插得到递增，与题目要求的递减相反；\n③ 忘记处理某表剩余段，导致丢数据；\n④ 忘记 free(B)，虽然不影响结果，但会泄漏一个头结点。\n如果题目改为「合并成递增」，把两处头插换成尾插（维护尾指针）即可。',
+    points: ['两表同步扫描取较小者', '头插得到递减', '剩余段单独处理', 'O(m+n)、O(1)', 'free(B)'],
+    source: '教材第 2 章 习题（算法设计题：两有序表归并成递减表）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/merge-two-sorted-lists/'
+},
+{
+    id: 'pg2-03', type: 'prog', chapter: 'c2',
+    knowledgePoint: '单链表删除结点的步骤',
+    tags: ['线性表', '单链表', '删除', '编程', '课后习题'],
+    difficulty: '中',
+    hint: '表是递增有序的，所以「大于 mink」和「不小于 maxk」的位置都能提前确定，不必遍历到尾。',
+    stem: '【算法设计题】已知一个带头结点的单链表 L 中元素<b>按值递增</b>有序。试编写高效算法，删除表中所有值<b>大于 mink 且小于 maxk</b> 的元素（严格不等）。\n<b>函数原型</b>：<code>void DeleteRange(LinkList L, ElemType mink, ElemType maxk);</code>\n<b>要求</b>：利用「有序」这个条件，找到区间起点后一旦越界立即结束，不要遍历整个表。',
+    keys: [
+        { label: '从表头出发，用前驱指针 p 扫描', any: ['p=l'] },
+        { label: '先跳过所有 ≤ mink 的结点（有序，可一路前进）', any: ['p->next->data<=mink'] },
+        { label: '删除条件是 < maxk，越界即停止', any: ['p->next->data<maxk'] },
+        { label: '摘链：p->next = q->next', any: ['p->next=q->next'] },
+        { label: '释放被删结点：free(q)', any: ['free(q)'] }
+    ],
+    answer: `void DeleteRange(LinkList L, ElemType mink, ElemType maxk)
+{
+    LinkNode *p = L, *q;
+    /* ① 有序 → 先一路跳过 <= mink 的结点，p 停在第一个可能被删结点的前驱 */
+    while (p->next != NULL && p->next->data <= mink)
+        p = p->next;
+    /* ② 从 p 之后开始删，一旦 >= maxk 就停（后面的都更大） */
+    while (p->next != NULL && p->next->data < maxk) {
+        q = p->next;
+        p->next = q->next;
+        free(q);
+    }
+}`,
+    explanation: '思路：题目给了「递增有序」这个条件，就是让你不要从头扫到尾。\n第一个 while 把 p 推到「最后一个 ≤ mink 的结点」上，此时 p->next 就是第一个 > mink 的结点，即待删区间的第一个。\n第二个 while 逐个摘除，条件是 p->next->data < maxk；一旦遇到 ≥ maxk 的结点，后面的全都更大，可以直接结束。\n时间复杂度：删除本身是 O(k)（k 为被删个数），加上定位的 O(s)，总体 O(n) 但常数远小于全表扫描；若区间很小且靠近表尾，实际代价接近 O(n)。空间 O(1)。\n易错点：\n① 写成 p = p->next 之后又用 p->data 判断，把边界结点误删（要求严格不等，等于 mink 或等于 maxk 的都不能删）；\n② 用 p 直接指向被删结点，导致无法修改前驱的 next；\n③ 忘记 free，内存泄漏；\n④ 没利用有序性，写成遍历整表 + 逐个判断——虽然结果对，但拿不到「高效」这部分的思路分。',
+    points: ['利用有序性提前定位', '严格不等的边界处理（mink、maxk 本身不删）', '前驱指针摘链', 'free 释放', '越界即结束'],
+    source: '教材第 2 章 习题（算法设计题：删除区间内的元素）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/remove-linked-list-elements/'
+},
+{
+    id: 'pg2-04', type: 'prog', chapter: 'c2',
+    knowledgePoint: '单链表求倒数第 k 个结点',
+    tags: ['线性表', '单链表', '双指针', '编程', '拔高'],
+    difficulty: '难',
+    hint: '只能扫一趟 → 快慢指针。让 fast 先走 k−1 步，再一起走；fast 到尾时 slow 正好在倒数第 k 个。',
+    stem: '【算法设计题·拔高】设有一个带头结点的单链表 L，试编写算法查找表中<b>倒数第 k 个</b>结点并返回其指针。\n<b>函数原型</b>：<code>LinkNode *FindKthFromEnd(LinkList L, int k);</code>\n<b>要求</b>：<b>只允许扫描一趟</b>（不得先求表长再走第二趟）；表长不足 k 或 k ≤ 0 时返回 NULL。',
+    keys: [
+        { label: '设置快慢两个指针，同时指向第一个元素结点', any: ['fast=l->next', 'slow=l->next'] },
+        { label: '快指针先走 k−1 步', any: ['i<k'] },
+        { label: '快指针走空说明表长不足 k，返回 NULL', any: ['return null'] },
+        { label: '快慢指针同步后移', any: ['fast=fast->next'] },
+        { label: '返回慢指针所指结点', any: ['return slow'] }
+    ],
+    answer: `LinkNode *FindKthFromEnd(LinkList L, int k)
+{
+    LinkNode *fast = L->next, *slow = L->next;
+    int i;
+    if (k <= 0) return NULL;
+    for (i = 1; i < k && fast != NULL; i++)   /* fast 先走 k-1 步 */
+        fast = fast->next;
+    if (fast == NULL) return NULL;            /* 表长不足 k */
+    while (fast->next != NULL) {              /* 同步后移，直到 fast 到尾 */
+        fast = fast->next;
+        slow = slow->next;
+    }
+    return slow;                              /* 此时 slow 距尾 k-1 步 */
+}`,
+    explanation: '思路：倒数第 k 个 = 正数第 n−k+1 个。一趟扫描的关键是让两个指针保持 k−1 的「固定间距」：\n① fast 先走 k−1 步，此时 fast 在第 k 个位置，slow 在第 1 个，二者相距 k−1；\n② 两人同步前进，fast 走到尾结点时，slow 恰好停在倒数第 k 个。\n时间复杂度 O(n)（每个结点最多访问两次：fast 一次、slow 一次），空间 O(1)。\n边界处理是本题的采分重点：\n· k ≤ 0：非法输入，返回 NULL；\n· 表长不足 k：fast 先走时就走空了，必须判空后返回 NULL；\n· k 等于表长：返回第一个结点（slow 不动）；\n· 空表：直接返回 NULL。\n反例：若只写 while(fast) { fast=fast->next; slow=slow->next; }，slow 会多走一步跑到 NULL 之后，这是最常见的错法。',
+    points: ['快慢指针保持固定间距', 'fast 先走 k−1 步', '表长不足与 k≤0 的边界', '一趟 O(n)、O(1)', '返回慢指针'],
+    source: '教材第 2 章 习题（算法设计题：一趟扫描求倒数第 k 个结点）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/kth-node-from-end-of-list-lcci/'
+},
+{
+    id: 'pg2-05', type: 'prog', chapter: 'c2',
+    knowledgePoint: '单链表删除结点的步骤',
+    tags: ['线性表', '单链表', '去重', '编程', '课后习题'],
+    difficulty: '中',
+    hint: '递增表里相同元素一定相邻，所以只需比较 p 和 p->next。注意：删了结点之后 <b>p 不能后移</b>，否则三个连续相同会漏删。',
+    stem: '【算法设计题】设有一个带头结点的单链表 L，元素按值<b>递增</b>有序。试编写算法删除表中所有<b>值相同</b>的多余结点，使每个值只保留一个。\n<b>函数原型</b>：<code>void DelDuplicates(LinkList L);</code>\n<b>测试例</b>：(1,1,2,2,2,5) → (1,2,5)。',
+    keys: [
+        { label: 'p 指向第一个元素结点', any: ['p=l->next'] },
+        { label: '比较相邻两结点是否同值', any: ['p->data==p->next->data'] },
+        { label: '摘掉重复的后继：p->next = q->next', any: ['p->next=q->next'] },
+        { label: '释放被删结点', any: ['free(q)'] },
+        { label: '只有不重复时才推进 p（删除后 p 不能后移）', any: ['p=p->next'] }
+    ],
+    answer: `void DelDuplicates(LinkList L)
+{
+    LinkNode *p = L->next, *q;
+    if (p == NULL) return;
+    while (p->next != NULL) {
+        if (p->data == p->next->data) {   /* 相同 → 删掉后继 */
+            q = p->next;
+            p->next = q->next;
+            free(q);
+            /* 注意：这里 p 不后移，继续和新的后继比较 */
+        } else {
+            p = p->next;                  /* 不同才前进 */
+        }
+    }
+}`,
+    explanation: '思路：因为表是递增有序的，相同元素必然相邻，所以只需一遍扫描比较 p 与 p->next。\n关键在于「删完之后 p 不动」：例如 (2,2,2)，第一次删掉第二个 2 后 p 仍指第一个 2，此时新的 p->next 还是 2，继续删，直到 p->next 变成 5。如果删完就 p = p->next，三个连续相同只会删掉一个。\n时间复杂度 O(n)，空间 O(1)。\n对照：若表<b>无序</b>，相邻比较就失效了，需要双重循环 O(n²)，或先排序（O(n log n)），或用哈希表记录出现过的值（O(n) 时间、O(n) 空间）。\n这也是「有序」条件在算法题里的典型作用：把 O(n²) 降成 O(n)。',
+    points: ['递增 → 相同元素相邻', '删除后 p 不前移', 'free 释放', 'O(n)、O(1)', '无序时的替代思路'],
+    source: '教材第 2 章 习题（算法设计题：有序表去重）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/remove-duplicates-from-sorted-list/'
+},
+
+/* ---------------- 第 3 章 栈和队列 ---------------- */
+{
+    id: 'pg3-01', type: 'prog', chapter: 'c3',
+    knowledgePoint: '栈的典型应用',
+    tags: ['栈', '回文', '编程', '课后习题'],
+    difficulty: '易',
+    hint: '把整个串压栈，再依次弹出——栈把「正序」变成了「逆序」，逐位比较即可。',
+    stem: '【算法设计题】利用栈判断一个长度为 n 的字符序列 s 是否为<b>回文</b>（正读反读相同，如 "abcdcba"）。\n<b>函数原型</b>：<code>int IsPalindrome(char s[], int n);</code>\n<b>返回值</b>：是回文返回 1，否则返回 0。',
+    keys: [
+        { label: '初始化栈，把 n 个字符依次入栈', any: ['push(s,s[i])'] },
+        { label: '依次出栈（得到逆序）', any: ['pop(s,c)'] },
+        { label: '与正序字符逐位比较，不等立即返回 0', any: ['c!=s[i]'] },
+        { label: '全部相等返回 1', any: ['return 1'] }
+    ],
+    answer: `int IsPalindrome(char s[], int n)
+{
+    SqStack S;
+    int i;
+    char c;
+    InitStack(S);
+    for (i = 0; i < n; i++)          /* 全部入栈 */
+        Push(S, s[i]);
+    for (i = 0; i < n; i++) {        /* 出栈顺序 = 原串的逆序 */
+        Pop(S, c);
+        if (c != s[i]) return 0;     /* 有一位不同就不是回文 */
+    }
+    return 1;
+}`,
+    explanation: '思路：栈的后进先出恰好把序列反转。把 s 全部压栈后，出栈顺序就是 s 的逆序，与 s 的正序逐位比对即可。\n时间复杂度 O(n)，空间复杂度 O(n)（n 个字符全部入栈）。\n优化思路（可作为加分点）：其实只需把<b>前一半</b>入栈，再与后一半比较，空间减半；或者用「首尾双指针」直接比较，空间 O(1) 且不需要栈。但本题要求「利用栈」，所以必须写出栈的解法。\n易错点：把 n 写成 strlen(s) 却没算对长度；或者 pop 之后忘记判断直接继续，导致后面的字符错位。\n延伸：判断回文链表也可以用栈（把前半段压栈），这是链表题的常见套路。',
+    points: ['全部入栈', '出栈得逆序', '逐位比较提前退出', 'O(n)'],
+    source: '教材第 3 章 习题（算法设计题：用栈判断回文）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/valid-palindrome/'
+},
+{
+    id: 'pg3-02', type: 'prog', chapter: 'c3',
+    knowledgePoint: '栈在表达式求值中的应用',
+    tags: ['栈', '括号匹配', '编程', '课后习题'],
+    difficulty: '中',
+    hint: '三种括号一起处理：左括号一律入栈，右括号必须与栈顶配对；扫描结束后栈必须为空。',
+    stem: '【算法设计题】试编写算法检验一个表达式中的括号是否配对，表达式含 <code>()</code>、<code>[]</code>、<code>{}</code> 三种括号。\n<b>函数原型</b>：<code>int Match(char s[]);</code>\n<b>返回值</b>：配对正确返回 1，否则返回 0（含右括号多余、左括号多余、类型不匹配三种错误）。',
+    keys: [
+        { label: '遇到左括号一律入栈', any: ['push(s,s[i])'] },
+        { label: '遇到右括号先判栈空（否则右括号多余）', any: ['stackempty(s)'] },
+        { label: '弹出栈顶与当前右括号配对', any: ['pop(s,c)'] },
+        { label: '类型不匹配立即返回 0', any: ['c!='] },
+        { label: '扫描结束后栈空才算配对成功', any: ['return stackempty(s)'] }
+    ],
+    answer: `int Match(char s[])
+{
+    SqStack S;
+    int i = 0;
+    char c;
+    InitStack(S);
+    while (s[i] != 0) {
+        if (s[i] == '(' || s[i] == '[' || s[i] == '{') {
+            Push(S, s[i]);                       /* 左括号入栈 */
+        } else if (s[i] == ')' || s[i] == ']' || s[i] == '}') {
+            if (StackEmpty(S)) return 0;         /* 右括号多余 */
+            Pop(S, c);
+            if ((s[i] == ')' && c != '(') ||
+                (s[i] == ']' && c != '[') ||
+                (s[i] == '}' && c != '{')) return 0;   /* 类型不匹配 */
+        }
+        i++;
+    }
+    return StackEmpty(S);                        /* 左括号多余则栈不空 */
+}`,
+    explanation: '思路：括号配对天然满足「后开的先闭」，正是栈的 LIFO。\n三条规则覆盖了全部错误情形：\n① 左括号入栈；\n② 遇到右括号时若栈空 → 右括号多余，返回 0；否则弹栈比较类型，不匹配 → 返回 0；\n③ 扫描完毕若栈不空 → 左括号多余，返回 0。\n时间复杂度 O(n)，空间 O(n)（最坏情况全是左括号）。\n易错点：只判断「数量相等」而不判断<b>嵌套次序</b>——"([)]" 数量相等但非法，必须靠栈顶配对才能发现；另外很多人只写一种括号，忘了三种都要覆盖。\n延伸：这个算法是「表达式求值」的第一步；完整求值还要两个栈（运算符栈 + 操作数栈），并按优先级决定是入栈还是弹出计算。',
+    points: ['左括号入栈', '右括号判栈空', '弹栈校验类型', '结束后栈必须为空', 'O(n)'],
+    source: '教材第 3 章 习题（算法设计题：括号匹配）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/valid-parentheses/'
+},
+{
+    id: 'pg3-03', type: 'prog', chapter: 'c3',
+    knowledgePoint: '循环队列的判空与判满',
+    tags: ['队列', '循环队列', '编程', '课后习题'],
+    difficulty: '中',
+    hint: '三件事：初始化把 front、rear 置 0；判满用 (rear+1)%MAXQSIZE == front（牺牲一个单元）；进出队后指针都要取模。',
+    stem: '【算法设计题】设循环队列的存储结构为 <code>{ QElemType *base; int front, rear; }</code>，容量为 MAXQSIZE。试写出<b>初始化、入队、出队</b>三个算法。\n<b>要求</b>：采用「牺牲一个存储单元」的方式区分队空与队满，入队/出队失败时返回 ERROR。',
+    keys: [
+        { label: '初始化：申请空间并把 front、rear 置 0', any: ['q.front=q.rear=0'] },
+        { label: '判满：(rear+1)%MAXQSIZE == front', any: ['(q.rear+1)%maxqsize==q.front'] },
+        { label: '入队：存入 rear 位置后 rear 循环后移', any: ['q.rear=(q.rear+1)%maxqsize'] },
+        { label: '判空：front == rear', any: ['q.front==q.rear'] },
+        { label: '出队：取出 front 位置元素后 front 循环后移', any: ['q.front=(q.front+1)%maxqsize'] }
+    ],
+    answer: `#define MAXQSIZE 100
+typedef struct {
+    QElemType *base;
+    int front, rear;
+} SqQueue;
+
+Status InitQueue(SqQueue &Q)
+{
+    Q.base = (QElemType *)malloc(MAXQSIZE * sizeof(QElemType));
+    if (Q.base == NULL) return ERROR;
+    Q.front = Q.rear = 0;
+    return OK;
+}
+
+Status EnQueue(SqQueue &Q, QElemType e)
+{
+    if ((Q.rear + 1) % MAXQSIZE == Q.front) return ERROR;   /* 队满 */
+    Q.base[Q.rear] = e;
+    Q.rear = (Q.rear + 1) % MAXQSIZE;                       /* 循环后移 */
+    return OK;
+}
+
+Status DeQueue(SqQueue &Q, QElemType &e)
+{
+    if (Q.front == Q.rear) return ERROR;                    /* 队空 */
+    e = Q.base[Q.front];
+    Q.front = (Q.front + 1) % MAXQSIZE;                     /* 循环后移 */
+    return OK;
+}`,
+    explanation: '思路：循环队列的全部难点在「怎么区分空和满」，因为两者都表现为 front == rear。\n牺牲一个单元的做法：让 rear 永远指向「下一个可写位置」，当 (rear+1)%MAXQSIZE == front 时就认为满了——此时实际只装了 MAXQSIZE−1 个元素，空出一个位置作为标志。\n另外两条公式必须背：\n· 元素个数 = (rear − front + MAXQSIZE) % MAXQSIZE；\n· 判空 = front == rear。\n不用牺牲单元的两替代方案：① 增设 size 变量计数；② 增设 tag 标志记录最近一次是入队还是出队。\n易错点：\n① 判满写成 rear == MAXQSIZE−1——那只是「假溢出」，循环队列的意义就是要绕回去；\n② 更新指针时忘记取模，越界；\n③ 出队忘记把元素带回 e（参数要用引用 &e）。',
+    points: ['初始化置 0', '牺牲一个单元判满', '取模实现循环', '判空 front == rear', '参数用引用带回元素'],
+    source: '教材第 3 章 习题（算法设计题：循环队列的基本操作）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://oi-wiki.org/ds/queue/'
+}
+
+];
+
+/* ================================================================
+   数据结构 · 编程题（prog）第 4~8 章
+   ================================================================ */
+const D_PROG_B = [
+
+/* ---------------- 第 4 章 串 ---------------- */
+{
+    id: 'pg4-01', type: 'prog', chapter: 'c4',
+    knowledgePoint: 'BF 算法核心比较逻辑',
+    tags: ['串', '模式匹配', '编程', '课后习题'],
+    difficulty: '中',
+    hint: '教材用 0 号单元存串长。失配时主串指针要退回「本趟起点的下一位」，这个下标自己推一遍比背公式可靠：i − j + 2。',
+    stem: '【算法设计题】设串采用定长顺序存储，<code>S[0]</code> 存放串长，字符从下标 1 开始。试编写<b>朴素模式匹配（BF）</b>算法，返回模式串 T 在主串 S 中从第 pos 个字符起<b>首次出现的位置</b>，找不到返回 0。\n<b>函数原型</b>：<code>int Index(SString S, SString T, int pos);</code>',
+    keys: [
+        { label: 'i 从 pos 开始、j 从 1 开始', any: ['i=pos'] },
+        { label: '当前字符相等：i、j 同时后移', any: ['s[i]==t[j]'] },
+        { label: '失配：主串回溯到本趟起点的下一位（i − j + 2），j 复位为 1', any: ['i=i-j+2'] },
+        { label: '匹配成功返回起始位置 i − T[0]', any: ['return i-t[0]'] },
+        { label: '匹配失败返回 0', any: ['return 0'] }
+    ],
+    answer: `int Index(SString S, SString T, int pos)
+{
+    int i = pos, j = 1;
+    while (i <= S[0] && j <= T[0]) {
+        if (S[i] == T[j]) {          /* 继续比较后继字符 */
+            i++;
+            j++;
+        } else {                     /* 失配：主串回溯，模式串复位 */
+            i = i - j + 2;
+            j = 1;
+        }
+    }
+    if (j > T[0]) return i - T[0];   /* 模式串全部匹配完 */
+    return 0;
+}`,
+    explanation: '思路：双指针暴力。i 指向主串当前位置，j 指向模式串当前位置，逐位比较。\n失配时的回溯是本题唯一需要推导的地方：本趟比较从主串的 i − j + 1 开始（因为已经成功比了 j − 1 个），下一趟要从它的<b>下一位</b>重新开始，即 i − j + 2；同时 j 复位到 1。\n时间复杂度：最好 O(m)（第一趟就匹配），最坏 O(n·m)（如 S = "aaaaab"、T = "aab"），平均 O(n+m)。空间 O(1)。\n易错点：\n① 回溯写成 i = i − j + 1，会原地踏步甚至死循环；\n② 返回位置写成 i（那是主串末尾下标），正确是 i − T[0]；\n③ 循环条件漏掉 i <= S[0]，导致越界读。\n改进版 KMP 把 O(n·m) 降到 O(n+m)：失配时不回溯 i，只让 j = next[j]，代价是先花 O(m) 求 next 数组。',
+    points: ['双指针初值', '失配回溯 i−j+2、j 复位', '返回 i−T[0]', '失败返回 0', '最坏 O(n·m)'],
+    source: '教材第 4 章 习题（算法设计题：BF 模式匹配）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://oi-wiki.org/string/kmp/'
+},
+
+/* ---------------- 第 5 章 树和二叉树 ---------------- */
+{
+    id: 'pg5-01', type: 'prog', chapter: 'c5',
+    knowledgePoint: '二叉树结点数的计算',
+    tags: ['树', '二叉树', '递归', '编程', '课后习题'],
+    difficulty: '易',
+    hint: '递归三问：空树返回几？左子树算什么？右子树算什么？答案是 0、结点数、结点数，最后把根自己加上。',
+    stem: '【算法设计题】设二叉树采用二叉链表存储，试编写算法统计二叉树中<b>结点的总数</b>。\n<b>函数原型</b>：<code>int CountNode(BiTree T);</code>',
+    keys: [
+        { label: '递归出口：空树返回 0', any: ['t==null'] },
+        { label: '递归统计左子树结点数', any: ['countnode(t->lchild)'] },
+        { label: '递归统计右子树结点数', any: ['countnode(t->rchild)'] },
+        { label: '加上根结点自身（+1）', any: ['+1'] }
+    ],
+    answer: `int CountNode(BiTree T)
+{
+    if (T == NULL) return 0;                    /* 空树没有结点 */
+    return CountNode(T->lchild)
+         + CountNode(T->rchild)
+         + 1;                                   /* 左 + 右 + 根自己 */
+}`,
+    explanation: '思路：二叉树的定义本身就是递归的（根 + 左子树 + 右子树），所以「结点总数 = 左子树结点数 + 右子树结点数 + 1」。\n递归出口：空树返回 0，这是防止无限递归的关键。\n时间复杂度 O(n)：每个结点恰好被访问一次。空间复杂度 O(h)：递归栈深度等于树高，最好 O(log n)、最坏 O(n)（单支树）。\n同一套模板可以解一串题，只改「合并方式」：\n· 叶子数：if (!T->lchild && !T->rchild) return 1;\n· 度为 1 的结点数：只有一侧孩子时 +1；\n· 树高：return max(Depth(l), Depth(r)) + 1。\n易错点：只写 return CountNode(l) + CountNode(r)，漏掉 +1，结果永远少一个根。',
+    points: ['空树返回 0', '左右递归', '加 1 计根', 'O(n) 时间、O(h) 空间'],
+    source: '教材第 5 章 习题（算法设计题：统计二叉树结点数）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://oi-wiki.org/ds/binary-tree/'
+},
+{
+    id: 'pg5-02', type: 'prog', chapter: 'c5',
+    knowledgePoint: '二叉树的遍历',
+    tags: ['树', '二叉树', '递归', '编程', '课后习题'],
+    difficulty: '易',
+    hint: '树高 = max(左子树高, 右子树高) + 1；空树高为 0（按教材口径，只有根结点的树高为 1）。',
+    stem: '【算法设计题】设二叉树采用二叉链表存储，试编写算法求二叉树的<b>深度（高度）</b>。\n<b>函数原型</b>：<code>int Depth(BiTree T);</code>\n<b>约定</b>：空树深度为 0，只有根结点的树深度为 1。',
+    keys: [
+        { label: '递归出口：空树深度为 0', any: ['t==null'] },
+        { label: '递归求左子树深度', any: ['depth(t->lchild)'] },
+        { label: '递归求右子树深度', any: ['depth(t->rchild)'] },
+        { label: '取左右较大者', any: ['m>n', 'n>m', 'max'] },
+        { label: '加 1 计入根结点这一层', any: ['+1'] }
+    ],
+    answer: `int Depth(BiTree T)
+{
+    int m, n;
+    if (T == NULL) return 0;
+    m = Depth(T->lchild);            /* 左子树深度 */
+    n = Depth(T->rchild);            /* 右子树深度 */
+    return (m > n ? m : n) + 1;      /* 取较大者再加根这一层 */
+}`,
+    explanation: '思路：后序遍历的思想——先算出左右子树的深度，再在根处合并。\n为什么是「较大者 + 1」：树的深度由最深的那个分支决定，所以取 max 而不是求和。这一点和第 5 章「结点数」那题（求和）正好形成对照，是考试最爱设的坑。\n时间复杂度 O(n)（每个结点访问一次），空间 O(h)。\n易错点：\n① 写成 m + n + 1（那是结点数的公式）；\n② 空树返回 1，导致所有结果偏大 1；\n③ 只递归一侧，得到的是某条路径长度而不是树高。\n延伸：求「最小深度」时把 max 改成 min，但要额外处理「单侧孩子」的情况（否则空的一侧会返回 0）。',
+    points: ['空树返回 0', '左右递归', '取 max 而非求和', '加 1', 'O(n)'],
+    source: '教材第 5 章 习题（算法设计题：求二叉树深度）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/maximum-depth-of-binary-tree/'
+},
+{
+    id: 'pg5-03', type: 'prog', chapter: 'c5',
+    knowledgePoint: '二叉树的遍历',
+    tags: ['树', '二叉树', '递归', '编程', '课后习题'],
+    difficulty: '中',
+    hint: '先交换根的左右孩子，再递归处理两棵子树——先序和后序都能做，但中序会把同一棵子树交换两次。',
+    stem: '【算法设计题】试编写算法将二叉树中<b>所有结点的左右子树相互交换</b>（镜像翻转）。\n<b>函数原型</b>：<code>void SwapTree(BiTree T);</code>\n<b>要求</b>：就地修改指针，不新建结点。',
+    keys: [
+        { label: '递归出口：空树直接返回', any: ['t==null'] },
+        { label: '交换根结点的左右孩子', any: ['t->lchild=t->rchild'] },
+        { label: '借助临时变量完成交换', any: ['t->rchild=t'] },
+        { label: '递归处理左子树', any: ['swaptree(t->lchild)'] },
+        { label: '递归处理右子树', any: ['swaptree(t->rchild)'] }
+    ],
+    answer: `void SwapTree(BiTree T)
+{
+    BiTree t;
+    if (T == NULL) return;
+    t = T->lchild;               /* 交换根的左右孩子 */
+    T->lchild = T->rchild;
+    T->rchild = t;
+    SwapTree(T->lchild);         /* 递归翻转左子树 */
+    SwapTree(T->rchild);         /* 递归翻转右子树 */
+}`,
+    explanation: '思路：先序（或后序）遍历的框架——访问根时做「交换孩子」这件事，再递归处理两棵子树。\n为什么中序不行：中序遍历的顺序是「左 → 根 → 右」，在执行「访问根」时交换了左右孩子，接下来要遍历的「左子树」实际上已经变成原来的右子树，导致同一棵子树被处理两次、另一棵一次都没处理。所以必须用<b>先序</b>或<b>后序</b>。\n时间复杂度 O(n)，空间 O(h)。\n易错点：\n① 交换写反成 T->lchild = T->rchild 却没保存原值，两棵子树指向同一处；\n② 用中序递归；\n③ 忘记递归出口。\n应用：这题就是「二叉树的镜像」，也是判断两棵树是否互为镜像的基础。',
+    points: ['空树出口', '三变量交换', '先序或后序递归（不能中序）', 'O(n)'],
+    source: '教材第 5 章 习题（算法设计题：交换左右子树）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/invert-binary-tree/'
+},
+{
+    id: 'pg5-04', type: 'prog', chapter: 'c5',
+    knowledgePoint: '二叉树的遍历',
+    tags: ['树', '二叉树', 'LCA', '编程', '拔高'],
+    difficulty: '难',
+    hint: '递归到 p 或 q 就返回；如果左右子树各返回一个非空，说明 p、q 分居两侧，当前结点就是最近公共祖先。',
+    stem: '【算法设计题·拔高】设二叉树采用二叉链表存储，p、q 是树中两个结点（保证存在）。试编写算法求它们的<b>最近公共祖先（LCA）</b>。\n<b>函数原型</b>：<code>BiTree LCA(BiTree T, BiTree p, BiTree q);</code>\n<b>定义</b>：最近公共祖先是「既是 p 的祖先又是 q 的祖先」且深度最大的那个结点（一个结点也可以是自己的祖先）。',
+    keys: [
+        { label: '递归出口：空树，或命中 p / q 本身则返回当前结点', any: ['t==null', 't==p', 't==q'] },
+        { label: '递归到左子树中找', any: ['lca(t->lchild'] },
+        { label: '递归到右子树中找', any: ['lca(t->rchild'] },
+        { label: '左右都找到 → 当前结点即 LCA', any: ['l&&r', 'l!=null&&r!=null'] },
+        { label: '只有一侧找到则返回那一侧', any: ['?l:r', 'return l', 'return r'] }
+    ],
+    answer: `BiTree LCA(BiTree T, BiTree p, BiTree q)
+{
+    BiTree L, R;
+    if (T == NULL || T == p || T == q) return T;   /* 到底了，或命中目标 */
+    L = LCA(T->lchild, p, q);
+    R = LCA(T->rchild, p, q);
+    if (L != NULL && R != NULL) return T;          /* p、q 分居两侧 → T 即 LCA */
+    return (L != NULL) ? L : R;                    /* 都在同一侧 → 返回那一侧的结果 */
+}`,
+    explanation: '思路：后序遍历的自底向上。对每个结点 T，先问左右子树「你们里面找到 p 或 q 了吗」，再根据返回值决定：\n· 左右都非空：说明 p、q 分别在两棵子树里，T 就是分叉点，即 LCA；\n· 只有一侧非空：p、q 都在那一侧（或只找到了一个），把那一侧的结果往上抛；\n· 都为空：返回 NULL。\n时间复杂度 O(n)（最坏遍历整棵树），空间 O(h)。\n为什么「命中 p 或 q 就返回」是对的：即使 q 在 p 的子树里，p 本身也就是答案（一个结点可以是自己的祖先），所以一旦命中就直接返回，不必继续往下找。\n易错点：\n① 返回 NULL 时不加判断，把 NULL 当成「找到」；\n② 用「求两条根到结点的路径再比对最后一个公共前缀」的做法也能做，但需要额外 O(n) 空间存路径，不满足拔高题的最优要求；\n③ 若题目允许 p、q 不在树中，需要在最后校验两个结点是否都真的存在。',
+    points: ['递归出口（空 / 命中）', '左右分别递归', '两侧都非空则当前为 LCA', '单侧则上抛', 'O(n)'],
+    source: '教材第 5 章 习题（算法设计题：二叉树的最近公共祖先）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/'
+},
+
+/* ---------------- 第 6 章 图 ---------------- */
+{
+    id: 'pg6-01', type: 'prog', chapter: 'c6',
+    knowledgePoint: '邻接矩阵的 DFS',
+    tags: ['图', 'DFS', '编程', '课后习题'],
+    difficulty: '中',
+    hint: '进入就标记；然后扫描这一行，找到未访问的邻接点就递归下去。visited 一定要在进入时置 1，不能等递归回来再置。',
+    stem: '【算法设计题】设无向图采用<b>邻接矩阵</b>存储（0 号顶点开始编号），试编写<b>深度优先遍历</b>算法，从顶点 v 出发输出遍历序列。\n<b>函数原型</b>：<code>void DFS(MGraph G, int v, int visited[]);</code>\n<b>约定</b>：<code>G.arcs[i][j] != 0</code> 表示有边，<code>visited[i] == 1</code> 表示已访问。',
+    keys: [
+        { label: '进入时立即标记 v 已访问', any: ['visited[v]=1'] },
+        { label: '访问（输出）该顶点', any: ['printf'] },
+        { label: '扫描 v 的所有邻接点', any: ['g.arcs[v]'] },
+        { label: '邻接点未访问则递归深入', any: ['dfs(g,w,visited)', 'dfs(g,j,visited)'] },
+        { label: '判断邻接点是否已访问', any: ['visited[w]==0', '!visited[w]'] }
+    ],
+    answer: `void DFS(MGraph G, int v, int visited[])
+{
+    int w;
+    visited[v] = 1;                        /* ① 进入就标记，防止重复访问 */
+    printf("%d ", v);                      /* ② 访问该顶点 */
+    for (w = 0; w < G.vexnum; w++)         /* ③ 扫描这一行，找邻接点 */
+        if (G.arcs[v][w] != 0 && visited[w] == 0)
+            DFS(G, w, visited);            /* ④ 未访问就深入 */
+}`,
+    explanation: '思路：递归 + 标记。DFS 的本质是「一条路走到黑，走不通再回头」。\n为什么必须「进入时」标记：如果等递归返回后再标记，A→B→A 会在 A、B 之间反复横跳，直接栈溢出。\n时间复杂度：邻接矩阵要扫描每个顶点的整行，O(n²)；若是邻接表则是 O(n+e)。空间 O(n)（visited 数组 + 递归栈最坏 n 层）。\n易错点：\n① 忘记标记或标记位置错误；\n② 循环里只看 arcs[v][w] 不判 visited，重复输出；\n③ 邻接矩阵的遍历序列<b>不唯一</b>（因为扫描顺序可以不同），考试若给固定邻接矩阵，就按顶点编号从小到大扫，结果才唯一。\n对照 BFS：把递归换成队列，先访问所有邻居再逐层深入，需要额外的队列。',
+    points: ['进入即标记', '输出顶点', '扫描邻接点', '未访问则递归', 'O(n²)（矩阵）/ O(n+e)（表）'],
+    source: '教材第 6 章 习题（算法设计题：邻接矩阵的 DFS）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://oi-wiki.org/graph/dfs/'
+},
+{
+    id: 'pg6-02', type: 'prog', chapter: 'c6',
+    knowledgePoint: '连通图与连通分量',
+    tags: ['图', '连通分量', '编程', '课后习题'],
+    difficulty: '中',
+    hint: '外层循环遍历每个顶点：遇到未访问的就说明发现了一个新的连通分量，DFS 一次把整块染完，计数加一。',
+    stem: '【算法设计题】设无向图采用邻接矩阵存储，试编写算法统计该图的<b>连通分量个数</b>。\n<b>函数原型</b>：<code>int CountConnected(MGraph G);</code>\n<b>提示</b>：可直接调用上面的 DFS。',
+    keys: [
+        { label: 'visited 数组初始化为 0', any: ['visited[maxv]={0}', 'visited[maxv]={ 0 }'] },
+        { label: '外层循环遍历每一个顶点', any: ['i<g.vexnum'] },
+        { label: '未访问则从该点开始一次 DFS', any: ['dfs(g,i,visited)'] },
+        { label: '每完成一次 DFS，连通分量计数加一', any: ['cnt++', 'count++'] },
+        { label: '返回计数结果', any: ['return cnt', 'return count'] }
+    ],
+    answer: `int CountConnected(MGraph G)
+{
+    int visited[MAXV] = {0};
+    int i, cnt = 0;
+    for (i = 0; i < G.vexnum; i++) {
+        if (visited[i] == 0) {         /* 发现一个新的连通分量 */
+            DFS(G, i, visited);        /* 一次 DFS 把整块染完 */
+            cnt++;                      /* 计数加一 */
+        }
+    }
+    return cnt;
+}`,
+    explanation: '思路：DFS 一次能从起点走到「同一个连通块里的所有顶点」。所以只要外层把所有顶点扫一遍，每遇到一个还没被染色的顶点，就说明进入了一个新的连通分量——DFS 染完它，计数 +1。\n时间复杂度 O(n²)（邻接矩阵，n 次 DFS 合计仍是 O(n²)），空间 O(n)。\n为什么合计还是 O(n²)：每个顶点只会被访问一次，DFS 的总代价是各顶点扫描邻接行的和，正好是 O(n²)。\n同等结论：\n· 无向图连通分量数 = 1 → 图连通；\n· 有向图对应的是「强连通分量」，需要 Kosaraju 或 Tarjan 算法，不能直接套这个模板；\n· 若用并查集，把每条边 union 起来，最后统计不同集合的个数，也能得到连通分量数（O(e·α(n))），稀疏图更快。\n易错点：把 cnt++ 写在 if 外面（变成恒等于 n）；或者忘记初始化 visited。',
+    points: ['初始化 visited', '外层遍历所有顶点', '未访问则 DFS', 'DFS 后计数 +1', 'O(n²)'],
+    source: '教材第 6 章 习题（算法设计题：求连通分量个数）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://oi-wiki.org/graph/connected-component/'
+},
+{
+    id: 'pg6-03', type: 'prog', chapter: 'c6',
+    knowledgePoint: '拓扑排序的步骤',
+    tags: ['图', '拓扑排序', '编程', '拔高'],
+    difficulty: '难',
+    hint: '三步：统计入度 → 入度为 0 的入栈 → 反复「出栈输出 + 邻接点入度减 1，减到 0 就入栈」。最后比一下输出个数与顶点数。',
+    stem: '【算法设计题·拔高】设 AOV 网采用<b>邻接表</b>存储，试编写<b>拓扑排序</b>算法，输出一个拓扑序列；若图中存在环则返回 ERROR。\n<b>函数原型</b>：<code>Status TopoSort(ALGraph G);</code>\n<b>要求</b>：用栈保存入度为 0 的顶点，并用「输出顶点数是否等于 n」判断有无环。',
+    keys: [
+        { label: '统计各顶点入度：邻接点的入度加一', any: ['indegree[p->adjvex]++'] },
+        { label: '入度为 0 的顶点入栈', any: ['indegree[v]==0'] },
+        { label: '出栈输出并计数', any: ['count++'] },
+        { label: '邻接点入度减 1，减到 0 则入栈', any: ['--indegree[p->adjvex]'] },
+        { label: '输出顶点数不足 n 说明有环，返回 ERROR', any: ['count<g.vexnum'] }
+    ],
+    answer: `Status TopoSort(ALGraph G)
+{
+    int indegree[MAXV] = {0};
+    int v, count = 0;
+    EdgeNode *p;
+    SqStack S;
+    InitStack(S);
+    /* ① 统计入度 */
+    for (v = 0; v < G.vexnum; v++)
+        for (p = G.vertices[v].firstarc; p != NULL; p = p->nextarc)
+            indegree[p->adjvex]++;
+    /* ② 入度为 0 的顶点入栈 */
+    for (v = 0; v < G.vexnum; v++)
+        if (indegree[v] == 0) Push(S, v);
+    /* ③ 反复取出、输出、削减邻接点入度 */
+    while (!StackEmpty(S)) {
+        Pop(S, v);
+        printf("%d ", v);
+        count++;
+        for (p = G.vertices[v].firstarc; p != NULL; p = p->nextarc)
+            if (--indegree[p->adjvex] == 0)
+                Push(S, p->adjvex);
+    }
+    if (count < G.vexnum) return ERROR;   /* 有环，无法输出全部顶点 */
+    return OK;
+}`,
+    explanation: '思路：Kahn 算法。入度为 0 意味着「所有前驱都已完成」，可以立刻执行；执行完一个顶点，就把它所有后继的入度减 1，谁先减到 0 谁就变成可执行。\n用栈还是用队列都可以：用栈得到的是「逆序优先」的序列，用队列得到的是广度优先的序列，两者都合法——这也说明拓扑序列一般不唯一。\n时间复杂度：统计入度 O(n+e)，主循环每条边被处理一次 O(e)，总计 O(n+e)；邻接矩阵实现则是 O(n²)。空间 O(n)。\n环的判定：有环时环上的顶点入度永远降不到 0，最终 count < n，这就是「不完整」的信号。\n易错点：\n① 忘记统计入度（直接全push），结果顺序错乱；\n② 减入度时写成 ++；\n③ 出栈后没有把 v 输出就减邻接点；\n④ 用 count 判环却把 count 写在循环外。',
+    points: ['先统计入度', '入度 0 入栈', '出栈输出计数', '邻接点入度减 1、为 0 入栈', 'count < n 判环', 'O(n+e)'],
+    source: '教材第 6 章 习题（算法设计题：拓扑排序）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://oi-wiki.org/graph/topo/'
+},
+
+/* ---------------- 第 7 章 查找 ---------------- */
+{
+    id: 'pg7-01', type: 'prog', chapter: 'c7',
+    knowledgePoint: '折半查找的适用条件',
+    tags: ['查找', '折半查找', '编程', '课后习题'],
+    difficulty: '易',
+    hint: '循环条件是 low <= high（不是 <）；缩小区间时是 mid−1 与 mid+1，不能写成 mid，否则会死循环。',
+    stem: '【算法设计题】设有序顺序表 <code>SSTable ST</code> 的下标从 1 开始（<code>ST.length</code> 为元素个数），试编写<b>非递归</b>的折半查找算法。\n<b>函数原型</b>：<code>int Search_Bin(SSTable ST, KeyType key);</code>\n<b>返回值</b>：找到返回元素下标，找不到返回 0。',
+    keys: [
+        { label: 'low、high 初值分别为 1 和表长', any: ['low=1'] },
+        { label: '循环条件是 low <= high', any: ['low<=high'] },
+        { label: '取中点 mid = (low + high) / 2', any: ['mid=(low+high)/2'] },
+        { label: '相等则返回 mid', any: ['return mid'] },
+        { label: '小于则 high = mid−1，大于则 low = mid+1', any: ['high=mid-1', 'low=mid+1'] }
+    ],
+    answer: `int Search_Bin(SSTable ST, KeyType key)
+{
+    int low = 1, high = ST.length, mid;
+    while (low <= high) {
+        mid = (low + high) / 2;
+        if (ST.elem[mid].key == key) return mid;          /* 找到 */
+        else if (key < ST.elem[mid].key) high = mid - 1;  /* 去左半区 */
+        else low = mid + 1;                               /* 去右半区 */
+    }
+    return 0;                                             /* 查找失败 */
+}`,
+    explanation: '思路：每次取中间元素与 key 比较，相等即中；小于就去左半区，大于就去右半区。区间每轮缩小一半，所以最多比较 ⌊log₂n⌋ + 1 次。\n时间复杂度 O(log n)，空间 O(1)。\n三个必须记准的细节：\n① 循环条件是 low <= high：当 low == high 时区间里还有一个元素，仍要比较，写成 < 会漏掉最后一个；\n② 缩区间用 mid−1 / mid+1：写成 high = mid 会在「区间只剩两个元素且 key 在左边」时死循环；\n③ 返回 0 表示失败，因为 0 号单元在教材里常被用作哨兵，不存有效元素。\n前提：表必须<b>有序且顺序存储</b>。链表做不到 O(1) 定位中点，折半会退化为 O(n log n)。',
+    points: ['low/high 初值', 'low <= high', 'mid 取中', 'mid±1 缩区间', '失败返回 0'],
+    source: '教材第 7 章 习题（算法设计题：折半查找）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://oi-wiki.org/basic/binary/'
+},
+{
+    id: 'pg7-02', type: 'prog', chapter: 'c7',
+    knowledgePoint: '二叉排序树的中序性质',
+    tags: ['查找', '二叉排序树', '编程', '拔高'],
+    difficulty: '难',
+    hint: '别去比较「左孩子 < 根 < 右孩子」——那只保证局部有序。要借助中序遍历：序列必须<b>严格递增</b>。用一个全局前驱指针即可。',
+    stem: '【算法设计题·拔高】试编写算法判断一棵二叉树是否为<b>二叉排序树</b>。\n<b>函数原型</b>：<code>int isBST(BiTree T);</code>\n<b>返回</b>：是返回 1，否返回 0。\n<b>要求</b>：时间复杂度 O(n)，额外空间 O(h)（递归栈）。',
+    keys: [
+        { label: '中序：先递归判断左子树', any: ['isbst(t->lchild)'] },
+        { label: '与中序前驱比较，必须严格递增（前驱 ≥ 当前即失败）', any: ['pre->data>=t->data'] },
+        { label: '更新前驱为当前结点', any: ['pre=t'] },
+        { label: '再递归判断右子树', any: ['isbst(t->rchild)'] },
+        { label: '不满足时返回 0，空树返回 1', any: ['return 0'] }
+    ],
+    answer: `BiTree pre = NULL;            /* 全局：中序遍历中当前结点的前驱 */
+
+int isBST(BiTree T)
+{
+    if (T == NULL) return 1;                       /* 空树是 BST */
+    if (!isBST(T->lchild)) return 0;               /* 左子树必须是 BST */
+    if (pre != NULL && pre->data >= T->data)       /* 中序序列必须严格递增 */
+        return 0;
+    pre = T;                                       /* 更新前驱 */
+    return isBST(T->rchild);                       /* 右子树 */
+}`,
+    explanation: '思路：二叉排序树的定义等价于「<b>中序遍历序列严格递增</b>」。\n所以只需一边中序遍历，一边用一个指针记住「上一个访问的结点」，每次比较 pre->data 与当前 data：只要出现 pre->data >= T->data，就说明不是 BST。\n时间复杂度 O(n)，空间 O(h)。\n最容易踩的坑（也是本题的拔高意义）：只判断「左孩子 < 根 < 右孩子」。这个条件只保证<b>局部</b>有序，不能保证整棵树。反例：根 10，左孩子 5，5 的右孩子 12——局部都满足，但 12 在根的左子树里却大于 10，不是 BST。\n另一种正确解法：中序遍历把序列存进数组，再检查数组是否严格递增。思路更直白，但要 O(n) 额外空间。\n注意「严格」二字：若允许相等关键字，则条件改为 pre->data > T->data。',
+    points: ['利用中序递增性质', '全局前驱指针', '严格递增（≥ 即失败）', '不能只看局部父子关系', 'O(n)'],
+    source: '教材第 7 章 习题（算法设计题：判断二叉排序树）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://leetcode.cn/problems/validate-binary-search-tree/'
+},
+
+/* ---------------- 第 8 章 排序 ---------------- */
+{
+    id: 'pg8-01', type: 'prog', chapter: 'c8',
+    knowledgePoint: '快速排序的一趟划分',
+    tags: ['排序', '快速排序', '编程', '课后习题'],
+    difficulty: '难',
+    hint: '挖坑填数：先把枢轴挖出来存到 0 号单元，右指针找小的填左坑，左指针找大的填右坑，最后把枢轴填回相遇处。',
+    stem: '【算法设计题】设顺序表 <code>L</code> 的 0 号单元空出作为暂存，元素存于 1..n。试编写快速排序的<b>一趟划分</b>算法，使枢轴左边的关键字都不大于它、右边都不小于它，并返回枢轴最终位置。\n<b>函数原型</b>：<code>int Partition(SqList &amp;L, int low, int high);</code>',
+    keys: [
+        { label: '枢轴暂存到 0 号单元：L.elem[0] = L.elem[low]', any: ['l.elem[0]=l.elem[low]'] },
+        { label: '右指针左移，找小于枢轴的元素', any: ['l.elem[high].key>=pivot'] },
+        { label: '把找到的小元素填到左坑：L.elem[low] = L.elem[high]', any: ['l.elem[low]=l.elem[high]'] },
+        { label: '左指针右移，找大于枢轴的元素', any: ['l.elem[low].key<=pivot'] },
+        { label: '枢轴归位 L.elem[low] = L.elem[0] 并返回 low', any: ['l.elem[low]=l.elem[0]'] }
+    ],
+    answer: `int Partition(SqList &L, int low, int high)
+{
+    L.elem[0] = L.elem[low];              /* ① 枢轴暂存到 0 号单元（挖坑） */
+    KeyType pivot = L.elem[low].key;
+    while (low < high) {
+        while (low < high && L.elem[high].key >= pivot) high--;
+        L.elem[low] = L.elem[high];       /* ② 右边小的填到左坑 */
+        while (low < high && L.elem[low].key <= pivot) low++;
+        L.elem[high] = L.elem[low];       /* ③ 左边大的填到右坑 */
+    }
+    L.elem[low] = L.elem[0];              /* ④ 枢轴归位 */
+    return low;                           /* 枢轴的最终位置 */
+}`,
+    explanation: '思路：「挖坑填数」。把枢轴先挖出来（暂存 0 号单元），此时 low 位置就是一个空坑；接着右指针往左找比枢轴小的填进左坑，左坑填好后右指针位置又成了新坑；左右交替，直到 low == high，最后把枢轴填进这个唯一剩下的坑。\n为什么内层也要写 low < high：否则指针会越过相遇点，把已经就位的元素覆盖掉。\n时间复杂度：一趟划分 O(n)；整体快排平均 O(n log n)、最坏 O(n²)。空间 O(log n)（递归栈）。\n易错点：\n① 内层循环漏掉 low < high；\n② 比较符号写反（右边应 >= pivot 才跳过，即找严格小的）；\n③ 忘记把枢轴填回，导致数据丢失；\n④ 用额外的两个数组分别存「小于」和「大于」，虽然结果对，但空间 O(n)，不符合「就地划分」。\n划分的稳定性：不稳定，因为元素被跨越式交换。',
+    points: ['枢轴暂存', '右找小、左找大交替填坑', '内层判 low < high', '枢轴归位返回位置', 'O(n) 一趟、O(1) 辅助'],
+    source: '教材第 8 章 习题（算法设计题：快速排序的一趟划分）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://oi-wiki.org/basic/quick-sort/'
+},
+{
+    id: 'pg8-02', type: 'prog', chapter: 'c8',
+    knowledgePoint: '堆的筛选调整',
+    tags: ['排序', '堆排序', '编程', '课后习题'],
+    difficulty: '难',
+    hint: '先存下待调整的结点 rc，然后沿「较大的孩子」一路下沉，比 rc 大的孩子上移，直到 rc 找到位置。注意 j < m 的边界。',
+    stem: '【算法设计题】设大顶堆存放在数组 <code>a[1..m]</code> 中，且 <code>a[s+1..m]</code> 已是堆。试编写算法把 <code>a[s]</code> 调整到合适位置，使 <code>a[s..m]</code> 重新成为大顶堆。\n<b>函数原型</b>：<code>void HeapAdjust(int a[], int s, int m);</code>',
+    keys: [
+        { label: '暂存待调整结点：rc = a[s]', any: ['rc=a[s]'] },
+        { label: '从 s 的左孩子开始向下筛选：j = 2*s', any: ['j=2*s'] },
+        { label: '在孩子中选择较大的那个（j < m 才能比较兄弟）', any: ['a[j]<a[j+1]'] },
+        { label: '已满足堆序则提前结束（rc >= a[j]）', any: ['rc>=a[j]'] },
+        { label: '较大孩子上移，继续下沉：a[s] = a[j]', any: ['a[s]=a[j]'] }
+    ],
+    answer: `void HeapAdjust(int a[], int s, int m)
+{
+    int rc = a[s], j;
+    for (j = 2 * s; j <= m; j *= 2) {          /* 沿较大孩子一路下沉 */
+        if (j < m && a[j] < a[j + 1]) j++;     /* 取较大的那个孩子 */
+        if (rc >= a[j]) break;                 /* 已满足堆序，落地 */
+        a[s] = a[j];                           /* 孩子上移 */
+        s = j;                                 /* 继续往下比较 */
+    }
+    a[s] = rc;                                 /* 放到最终位置 */
+}`,
+    explanation: '思路：筛选法（sift down）。待调整的 a[s] 太小，需要让它「沉下去」，把比它大的孩子「提上来」。\n三条关键细节：\n① j < m 才能比较 a[j] 与 a[j+1]：否则越界，把不存在的右孩子也拿来比较；\n② 先取较大的孩子再比较：大顶堆要保证父结点不小于两个孩子，所以必须跟<b>较大</b>的那个比，若小于它就交换；若跟较小的比，可能换完仍然小于另一个孩子；\n③ rc >= a[j] 就 break：说明 rc 已经比两个孩子都大，位置就定了，提前退出能省时间。\n时间复杂度：沿一条路径下沉，O(log n)。建初始堆要对 s = n/2 到 1 依次调用，总计 O(n)（不是 O(n log n)，这是常考结论）。整体堆排序 O(n log n)，空间 O(1)，不稳定。\n易错点：把 j *= 2 写成 j++；或者以为要递归。',
+    points: ['暂存 rc', 'j = 2s 起步', '取较大孩子（j < m 边界）', 'rc >= a[j] 提前退出', '孩子上移、继续下沉', 'O(log n)'],
+    source: '教材第 8 章 习题（算法设计题：堆的筛选调整）｜严蔚敏《数据结构（C语言版）》第 3 版',
+    referenceUrl: 'https://oi-wiki.org/ds/binary-heap/'
+}
+
+];
+
+/* ================================================================
+   数据结构 · 拔高选择题（hard）—— 考「自己推一遍」，不是背结论
+   ================================================================ */
+const D_HARD = [
+
+{
+    id: 'hd1-01', type: 'choice', chapter: 'c1',
+    knowledgePoint: '双重循环的语句频度',
+    tags: ['绪论', '复杂度', '拔高'],
+    difficulty: '难',
+    stem: `下面这段程序，语句 <code>x++</code> 的执行次数是（　）。
+<pre class="code">for (i = 1; i <= n; i *= 2)
+    for (j = 1; j <= n; j++)
+        x++;</pre>`,
+    options: ['O(n)', 'O(n log n)', 'O(n²)', 'O(log n)'],
+    answer: 1,
+    explanation: '外层 i 的取值为 1, 2, 4, 8, …, 不超过 n，共 ⌊log₂n⌋ + 1 次；内层固定执行 n 次。\n总次数 = n × (log₂n + 1) = O(n log n)。\n这道题的意义在于破除「两层循环就是 O(n²)」的机械记忆：\n· 判断复杂度看的是<b>基本语句的执行次数</b>，不是循环嵌套的层数；\n· 外层写 i *= 2（或 i /= 2）说明它是按倍数增长/缩减的，是 log 级；\n· 反过来，单层循环也可能是 O(n) 甚至 O(n²)：例如 for (i=1;i<=n;i++) for (j=1;j<=i;j++) 是 O(n²)，虽然它只有两层。\n同类陷阱：for (i=1; i*i<=n; i++) 是 O(√n)；for (i=2; i<=n; i*=i) 是 O(log log n)。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 1 章 1.4.2 算法时间复杂度',
+    referenceUrl: 'https://oi-wiki.org/basic/complexity/'
+},
+{
+    id: 'hd3-01', type: 'choice', chapter: 'c3',
+    knowledgePoint: '出栈序列的合法性',
+    tags: ['栈', '出栈序列', '卡特兰数', '拔高'],
+    difficulty: '难',
+    stem: '若让 1、2、3、4 四个元素依次进栈，每个元素入栈后可立即出栈，也可等待，则总共能得到多少种<b>不同的出栈序列</b>？',
+    options: ['8 种', '10 种', '14 种', '16 种'],
+    answer: 2,
+    explanation: '答案为 14，即第 4 个卡特兰数。\nn 个元素依次入栈能形成的不同出栈序列数 = C(2n, n) / (n+1)：\n· n=1 → 1；n=2 → 2；n=3 → 5；n=4 → 14；n=5 → 42。\n一个便于考试的推导角度：先把「全部入栈再出栈」考虑成 2n 步的序列，其中 n 步是 push、n 步是 pop；任意时刻 pop 的次数不能超过 push（否则没有元素可弹）。这种「前缀合法」的路径数正是卡特兰数。\n排除法验证：总数 4! = 24 种排列中，不合法的有 10 种，24 − 10 = 14。\n不合法序列的特征：若某较大数先出栈，则比它小的元素必须逆序出栈。例如 4,1,2,3 不合法（4 出后栈内是 1,2,3，只能 3 先出）；4,3,1,2 也不合法。\n记住 5 和 14 这两个数：n=3、n=4 是最常考的两个规模。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 3 章 3.1.2 栈的表示和实现（出栈序列计数）',
+    referenceUrl: 'https://oi-wiki.org/math/combinatorics/catalan/'
+},
+{
+    id: 'hd4-01', type: 'choice', chapter: 'c4',
+    knowledgePoint: 'next 数组的计算',
+    tags: ['串', 'KMP', '拔高'],
+    difficulty: '难',
+    stem: '模式串 T = "abaabc"，采用教材口径（下标从 1 开始，next[1] = 0），则 next[6] 的值为（　）。',
+    options: ['1', '2', '3', '4'],
+    answer: 2,
+    explanation: '答案为 3。逐位手算：\n· next[1] = 0（规定）；\n· next[2]：前 1 个字符 "a" 无真前缀，= 1；\n· next[3]：前 2 个 "ab"，无相等前后缀，= 1；\n· next[4]：前 3 个 "aba"，前缀 "a" = 后缀 "a"，长度 1，= 2；\n· next[5]：前 4 个 "abaa"，前缀 "a" = 后缀 "a"，= 2；\n· next[6]：前 5 个 "abaab"，前缀 "ab" = 后缀 "ab"，长度 2，= <b>3</b>。\n规律：next[j] = k 表示「前 j−1 个字符中，最长的相等真前缀与真后缀的长度 + 1」。\n注意口径差异（考试必须看题目说明）：\n· 教材口径 next[1] = 0，序列为 0 1 1 2 2 3；\n· 有的书从 0 开始存，next[0] = −1，序列差一位。\n常见错法：把 next[6] 算成「最长相等前后缀长度」2，忘了教材定义要 +1。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 4 章 4.3.2 模式匹配的一种改进算法',
+    referenceUrl: 'https://oi-wiki.org/string/kmp/'
+},
+{
+    id: 'hd5-01', type: 'choice', chapter: 'c5',
+    knowledgePoint: '满二叉树与完全二叉树',
+    tags: ['树', '二叉树', '卡特兰数', '拔高'],
+    difficulty: '难',
+    stem: '3 个结点的二叉树共有多少种<b>不同的形态</b>（左右子树不同视为不同形态）？',
+    options: ['3 种', '5 种', '6 种', '8 种'],
+    answer: 1,
+    explanation: '答案为 5 种。\n先定根，再分配左右子树的结点数 (i, 2−i)：\n· 左 2 右 0：左子树的 2 个结点有 2 种形态（左斜、右斜）→ 2 种；\n· 左 1 右 1：各 1 种 → 1 种；\n· 左 0 右 2：2 种。\n合计 2 + 1 + 2 = 5，正是卡特兰数 C(2n,n)/(n+1) 在 n=3 时的值（n=1→1，n=2→2，n=3→5，n=4→14）。\n为什么是卡特兰数：设 f(n) 为 n 个结点的形态数，f(n) = Σ f(i)·f(n−1−i)（i 从左子树结点数 0 到 n−1），这正是卡特兰数的递推式。\n最易混的一点：本题问的是<b>二叉树</b>（有序），若是 3 个结点的「树」（无序），只有 2 种形态（链状、星状）。这个差别是选择题的高频陷阱。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 5 章 5.2.2 二叉树的性质',
+    referenceUrl: 'https://oi-wiki.org/math/combinatorics/catalan/'
+},
+{
+    id: 'hd5-02', type: 'choice', chapter: 'c5',
+    knowledgePoint: '完全二叉树父子编号关系',
+    tags: ['树', '完全二叉树', '拔高'],
+    difficulty: '难',
+    stem: '一棵有 100 个结点的完全二叉树，按层序从 1 开始编号，则它的<b>叶子结点</b>个数为（　）。',
+    options: ['49', '50', '51', '52'],
+    answer: 1,
+    explanation: '答案为 50。\n完全二叉树中，度为 1 的结点数 n1 只能是 0 或 1，且由 n = n0 + n1 + n2、n0 = n2 + 1 得 n = 2n2 + n1 + 1。\nn = 100 是偶数，故 n1 = 1，代入得 n2 = 49，于是 n0 = n2 + 1 = 50。\n另一个更快的算法：完全二叉树中编号 i > ⌊n/2⌋ 的结点都是叶子，叶子数 = n − ⌊n/2⌋ = 100 − 50 = 50。\n顺便可以算：最后一个非叶结点编号为 ⌊n/2⌋ = 50，它只有一个左孩子 100（因为 2×50 = 100 ≤ 100，而 101 > 100），这正是那个唯一的度为 1 的结点。\n记两个万能式：n 为奇数时 n1 = 0、叶子 = (n+1)/2；n 为偶数时 n1 = 1、叶子 = n/2。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 5 章 5.2.2 二叉树的性质',
+    referenceUrl: 'https://oi-wiki.org/ds/binary-tree/'
+},
+{
+    id: 'hd6-01', type: 'choice', chapter: 'c6',
+    knowledgePoint: '关键路径与 AOE 网',
+    tags: ['图', '关键路径', '拔高'],
+    difficulty: '难',
+    stem: '关于 AOE 网与工程工期，下列说法<b>正确</b>的是（　）。',
+    options: [
+        '缩短任意一个非关键活动的持续时间，都能缩短整个工程的工期',
+        '必须把关键路径上的所有活动同时缩短，工期才会缩短',
+        '只有缩短关键活动才可能缩短工期；而且当关键活动缩短到一定程度时，关键路径可能发生转移',
+        '一个 AOE 网的关键路径是唯一的，且不随活动时间的变化而改变'
+    ],
+    answer: 2,
+    explanation: 'C 正确，其余三项都错在「绝对化」。\nA 错：非关键活动有时间余量（最迟开始时间 − 最早开始时间 > 0），缩短它只是把余量变大，对总工期毫无影响。\nB 错：不需要「所有」关键活动一起缩短，只缩短其中任意一个（只要它仍是关键活动）就能缩短工期。\nD 错：关键路径可能有多条（当存在等长的最长路径时），而且随着某些关键活动被压缩，原来次长的路径可能变成新的最长路径，关键路径就转移了——这也是「压缩工期要反复重算」的原因。\nC 的两句话都要理解：\n① 工期由最长路径决定，所以只能从关键活动下手；\n② 压缩到临界点后，另一条路径变成瓶颈，关键路径转移，继续压缩原关键活动就无效了。\n计算口径：活动的最早开始时间 ve、最迟开始时间 vl，时间余量 = vl − ve，余量为 0 的活动即关键活动。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 6 章 6.5.2 关键路径',
+    referenceUrl: 'https://oi-wiki.org/graph/topo/'
+},
+{
+    id: 'hd7-01', type: 'choice', chapter: 'c7',
+    knowledgePoint: '折半查找的最大比较次数',
+    tags: ['查找', '折半查找', '拔高'],
+    difficulty: '难',
+    stem: '对长度为 1000 的有序表进行折半查找，无论查找成功还是失败，<b>最多</b>需要比较多少次关键字？',
+    options: ['9 次', '10 次', '11 次', '12 次'],
+    answer: 1,
+    explanation: '答案为 10 次。\n公式：最大比较次数 = ⌊log₂n⌋ + 1。n = 1000 时，2⁹ = 512 < 1000 ≤ 1024 = 2¹⁰，所以 ⌊log₂1000⌋ = 9，加 1 得 10。\n用判定树理解更可靠：折半查找的判定树是一棵平衡二叉树，比较次数就是结点所在的层数。n = 1000 时树高为 10 层，最深结点在第 10 层，故最多 10 次。\n注意「查找失败」也可能达到同样深度：失败结点的位置对应判定树的外部结点（空指针），其层数最多也是 ⌈log₂(n+1)⌉ = 10。\n易错点：\n① 直接写 log₂1000 ≈ 9.97 后取 9——那是「向下取整」，漏了最后那一次比较；\n② 记成 ⌈log₂n⌉：n = 1000 时 ⌈9.97⌉ = 10 恰好也对，但 n = 1024 时会算成 10，实际是 11（⌊10⌋+1）。用 ⌊log₂n⌋+1 永远正确。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 7 章 7.2 折半查找',
+    referenceUrl: 'https://oi-wiki.org/basic/binary/'
+},
+{
+    id: 'hd7-02', type: 'choice', chapter: 'c7',
+    knowledgePoint: '哈希表的线性探测过程',
+    tags: ['查找', '哈希表', '线性探测', '拔高'],
+    difficulty: '难',
+    stem: '散列表长 m = 7，散列函数 H(key) = key mod 7，采用<b>线性探测法</b>处理冲突。依次插入关键字 8、15、22 后，查找 22 需要比较多少次？',
+    options: ['1 次', '2 次', '3 次', '4 次'],
+    answer: 2,
+    explanation: '答案为 3 次。逐个插入：\n· 8：H(8) = 8 mod 7 = 1，槽 1 空 → 存入槽 1。\n· 15：H(15) = 15 mod 7 = 1，槽 1 已被 8 占用 → 线性探测到槽 2，空 → 存入槽 2。\n· 22：H(22) = 22 mod 7 = 1，槽 1 被占 → 槽 2 被占 → 槽 3 空 → 存入槽 3。\n查找 22：先比槽 1（8，不等）、再比槽 2（15，不等）、最后比槽 3（22，相等），共 <b>3</b> 次。\n这道题揭示了线性探测的两个要点：\n① 只要哈希值相同就会「扎堆」，形成很长的探测链，称为<b>堆积（聚集）</b>现象；\n② 查找成功与查找失败的比较次数都随堆积变长而上升。\n对比：若用链地址法，8、15、22 都挂在 1 号桶的链表上，查找 22 要比较 3 次（8、15、22）——本例中恰好相同，但链地址法不会影响其他桶。\n改善：用二次探测、双散列，或增大表长降低装填因子。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 7 章 7.4 散列表的查找',
+    referenceUrl: 'https://oi-wiki.org/ds/hash/'
+},
+{
+    id: 'hd8-01', type: 'choice', chapter: 'c8',
+    knowledgePoint: '快速排序的一趟划分',
+    tags: ['排序', '快速排序', '一趟结果', '拔高'],
+    difficulty: '难',
+    stem: '对关键字序列 (49, 38, 65, 97, 76, 13, 27, 49) 进行<b>一趟快速排序</b>，取第一个元素 49 为枢轴，采用教材的「挖坑填数」划分法，则一趟划分后的结果是（　）。',
+    options: [
+        '(13, 27, 38, 49, 49, 65, 76, 97)',
+        '(27, 38, 13, 49, 76, 97, 65, 49)',
+        '(49, 38, 65, 97, 76, 13, 27, 49)',
+        '(13, 27, 38, 49, 49, 76, 97, 65)'
+    ],
+    answer: 1,
+    explanation: '答案为 (27, 38, 13, 49, 76, 97, 65, 49)。逐步推演：\n枢轴 pivot = 49，low 指向 49，high 指向末尾的 49。\n① high 左移找 < 49：49 不小于 49（相等），继续左移，遇到 27 → 填入 low 位置 → (27, 38, 65, 97, 76, 13, 27, 49)，low 右移。\n② low 右移找 > 49：38 < 49 跳过，遇到 65 → 填入 high 位置 → (27, 38, 65, 97, 76, 13, 65, 49)，high 左移。\n③ high 左移：13 < 49 → 填入 low → (27, 38, 13, 97, 76, 13, 65, 49)，low 右移。\n④ low 右移：97 > 49 → 填入 high → (27, 38, 13, 97, 76, 97, 65, 49)，high 左移。\n⑤ high 左移：76 > 49 跳过，到 76 左侧是 97 的位置……继续直到 low 与 high 在 97 处相遇，把枢轴填入 → (27, 38, 13, 49, 76, 97, 65, 49)。\n结果验证：枢轴 49 左边的 27、38、13 都 ≤ 49，右边的 76、97、65、49 都 ≥ 49，且枢轴落在第 4 个位置（最终位置已确定）。\nA 错：那是完整排序的结果，不是「一趟」；C 错：原样未动；D 错：右侧两个元素次序不对（一趟划分不保证子序列有序）。\n这类题必须手推，选择题常把「一趟」和「全部」混在一起设陷阱。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 8 章 8.3.2 快速排序',
+    referenceUrl: 'https://oi-wiki.org/basic/quick-sort/'
+},
+{
+    id: 'hd8-02', type: 'choice', chapter: 'c8',
+    knowledgePoint: '建初始堆的复杂度',
+    tags: ['排序', '堆排序', '建堆', '拔高'],
+    difficulty: '难',
+    stem: '关键字序列 (46, 79, 56, 38, 40, 84) 按教材算法<b>建大顶堆</b>（从最后一个非叶结点开始依次调整），得到的初始堆是（　）。',
+    options: [
+        '(84, 79, 56, 38, 40, 46)',
+        '(84, 79, 46, 38, 40, 56)',
+        '(84, 56, 79, 38, 40, 46)',
+        '(79, 84, 56, 38, 40, 46)'
+    ],
+    answer: 0,
+    explanation: '答案为 (84, 79, 56, 38, 40, 46)。按 1 号下标存储：a[1..6] = 46, 79, 56, 38, 40, 84。\n最后一个非叶结点 s = ⌊n/2⌋ = 3，从 s = 3 开始向前调整：\n· s = 3（a[3] = 56）：孩子是 a[6] = 84，84 > 56 → 交换 → 46, 79, 84, 38, 40, 56。\n· s = 2（a[2] = 79）：孩子 a[4] = 38、a[5] = 40，都小于 79 → 不动。\n· s = 1（a[1] = 46）：孩子 a[2] = 79、a[3] = 84，取较大者 84 → 交换 → 84, 79, 46, 38, 40, 56；接着 46 落到位置 3，它的孩子是 a[6] = 56，56 > 46 → 再交换 → 84, 79, 56, 38, 40, 46。\n最终 84 为根，a[2] = 79、a[3] = 56，都满足「父 ≥ 子」。\nB 错在漏掉了第二次下沉（46 与 56 的交换）。形如「换了根就完事」是最常见的错误——筛选必须沿路径一直下沉到叶子。\nC 错在 s=1 时取了较小的孩子 56 而不是较大的 84，违反大顶堆「与较大孩子比较」的规则。\nD 错在以为 79 和 84 也要交换一次根——实际调整顺序是从下往上，s=1 时一次就位。\n顺带记：建初始堆的总时间复杂度是 <b>O(n)</b>，不是 O(n log n)。',
+    source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 8 章 8.4.2 堆排序',
+    referenceUrl: 'https://oi-wiki.org/ds/binary-heap/'
+}
+
+];
+
+
+/* ================================================================
+   编程题「结构正则」：每条采分点补一个 re，
+   只认代码结构不认变量名 —— 把 p/q 换成 cur/nx 也能判对
+   ================================================================ */
+const PROG_RE = {
+  'pg2-01': [/(while|for)\s*\(/, /->\s*next\s*=\s*(null|0)\b/, /\w+\s*=\s*\w+\s*->\s*next/, /->\s*next\s*=\s*\w+\s*->\s*next/, /(p|cur)\s*=\s*(q|nx|tmp|next)\b/],
+  'pg2-02': [/a\s*->\s*next\s*=\s*(null|0)/, /->\s*data\s*(<=|<|>=|>)\s*\w+\s*->\s*data/, /\w+\s*=\s*(pa|pb|ra|rb)\s*->\s*next/, /->\s*next\s*=\s*a\s*->\s*next/, /free\s*\(\s*b\s*\)/],
+  'pg2-03': [/p\s*=\s*l\b/, /->\s*data\s*<=\s*mink/, /->\s*data\s*<\s*maxk/, /->\s*next\s*=\s*\w+\s*->\s*next/, /free\s*\(/],
+  'pg2-04': [/=\s*l\s*->\s*next/, /for\s*\(/, /i\s*<\s*k/, /return\s+null/, /fast\s*->\s*next\s*!=\s*(null|0)/],
+  'pg2-05': [/p\s*=\s*l\s*->\s*next/, /->\s*data\s*==\s*\w+\s*->\s*data/, /->\s*next\s*=\s*\w+\s*->\s*next/, /free\s*\(/, /else\s*\{?\s*\w+\s*=\s*\w+\s*->\s*next/],
+
+  'pg3-01': [/push\s*\(/, /pop\s*\(/, /!=\s*\w+\s*\[/, /return\s+1/],
+  'pg3-02': [/push\s*\(/, /(stackempty|isempty|is_empty)\s*\(/, /pop\s*\(/, /c\s*!=\s*'\('/, /return\s+(stackempty|isempty|is_empty)\s*\(/],
+  'pg3-03': [/front\s*=\s*rear\s*=\s*0|front\s*=\s*0/, /\(\s*q\.rear\s*\+\s*1\s*\)\s*%\s*maxqsize\s*==\s*q\.front/, /q\.rear\s*=\s*\(\s*q\.rear\s*\+\s*1\s*\)\s*%\s*maxqsize/, /q\.front\s*==\s*q\.rear/, /q\.front\s*=\s*\(\s*q\.front\s*\+\s*1\s*\)\s*%\s*maxqsize/],
+
+  'pg4-01': [/i\s*=\s*pos/, /s\s*\[i\]\s*==\s*t\s*\[j\]/, /i\s*=\s*i\s*-\s*j\s*\+\s*2/, /return\s+i\s*-\s*t\s*\[0\]/, /return\s+0/],
+
+  'pg5-01': [/t\s*==\s*(null|0)\b|!\s*t\b/, /\(\s*t\s*->\s*lchild\s*\)/, /\(\s*t\s*->\s*rchild\s*\)/, /\+\s*1/],
+  'pg5-02': [/t\s*==\s*(null|0)\b|!\s*t\b/, /\(\s*t\s*->\s*lchild\s*\)/, /\(\s*t\s*->\s*rchild\s*\)/, /\?\s*\w+\s*:\s*\w+|\bmax\s*\(/, /\+\s*1/],
+  'pg5-03': [/t\s*==\s*(null|0)\b|!\s*t\b/, /->\s*lchild\s*=\s*\w+\s*->\s*rchild/, /->\s*rchild\s*=\s*\w+\s*;/, /\(\s*t\s*->\s*lchild\s*\)/, /\(\s*t\s*->\s*rchild\s*\)/],
+  'pg5-04': [/t\s*==\s*(null|0)\b|!\s*t\b/, /t\s*==\s*p/, /\(\s*t\s*->\s*lchild\s*,/, /\(\s*t\s*->\s*rchild\s*,/, /\w+\s*&&\s*\w+/],
+
+  'pg6-01': [/visited\s*\[\s*v\s*\]\s*=\s*1/, /printf|cout|visit\s*\(/, /g\.arcs/, /dfs\s*\(/, /visited\s*\[\s*\w+\s*\]\s*==\s*0|!\s*visited/],
+  'pg6-02': [/visited\s*\[[^\]]*\]\s*=\s*\{\s*0\s*\}/, /for\s*\(/, /dfs\s*\(/, /(cnt|count)\s*\+\+/, /return\s+(cnt|count)/],
+  'pg6-03': [/indegree\s*\[[^\]]*\]\s*\+\+|\+\+\s*indegree/, /indegree\s*\[[^\]]*\]\s*==\s*0/, /(count|cnt)\s*\+\+/, /--\s*indegree|indegree\s*\[[^\]]*\]\s*--/, /(count|cnt)\s*(<|!=)\s*g\.vexnum/],
+
+  'pg7-01': [/low\s*=\s*1/, /low\s*<=\s*high/, /\(\s*low\s*\+\s*high\s*\)\s*\/\s*2/, /return\s+mid/, /high\s*=\s*mid\s*-\s*1|low\s*=\s*mid\s*\+\s*1/],
+  'pg7-02': [/t\s*==\s*(null|0)\b|!\s*t\b/, /\(\s*t\s*->\s*lchild\s*\)/, /pre\s*->\s*data\s*>=/, /pre\s*=\s*t\b/, /\(\s*t\s*->\s*rchild\s*\)/],
+
+  'pg8-01': [/\[0\]\s*=\s*\w+\.elem\s*\[/, /\[high\]\.key\s*>=\s*pivot|\[high\]\s*>=\s*pivot/, /\[low\]\s*=\s*\w+\.elem\s*\[high\]/, /\[low\]\.key\s*<=\s*pivot|\[low\]\s*<=\s*pivot/, /\[low\]\s*=\s*\w+\.elem\s*\[0\]/],
+  'pg8-02': [/rc\s*=\s*a\s*\[/, /j\s*=\s*2\s*\*\s*s/, /a\s*\[j\]\s*<\s*a\s*\[j\s*\+\s*1\]/, /rc\s*>=\s*a\s*\[j\]/, /a\s*\[s\]\s*=\s*a\s*\[j\]/]
+};
+/* 把正则挂到对应采分点上（按顺序一一对应） */
+[D_PROG_A, D_PROG_B].forEach(arr => arr.forEach(q => {
+  const res = PROG_RE[q.id];
+  if (!res) return;
+  res.forEach((re, i) => { if (q.keys[i]) q.keys[i].re = re; });
+}));
+
 const D_BANK = [
 {
     id: 'd1-01',
@@ -16820,6 +18197,7 @@ const D_BANK = [
     source: '严蔚敏《数据结构（C语言版）》第 3 版 · 第 8 章 8.4.2 树形选择排序',
     referenceUrl: 'https://oi-wiki.org/basic/sort-intro/'
   }
+  , ...D_JUDGE_A, ...D_JUDGE_B, ...D_PROG_A, ...D_PROG_B, ...D_HARD
 ];
 const D_BY_ID  = Object.fromEntries(D_BANK.map(q => [q.id, q]));
 const D_CH_MAP = Object.fromEntries(D_CHAPTERS.map(c => [c.id, c]));
@@ -17900,9 +19278,9 @@ const SUBJECTS = {
     byId: D_BY_ID,
     know: D_KNOW,
     knowNav: D_KNOW_NAV,
-    types: ['choice', 'multi', 'fill', 'seq', 'code', 'match', 'order', 'text'],
+    types: ['choice', 'judge', 'fill', 'prog', 'multi', 'seq', 'code', 'match', 'order', 'text'],
     desc: '《数据结构（C语言版）》第 3 版（李冬梅、严蔚敏、吴伟民，人邮 2024）八章：绪论、线性表、栈和队列、串/数组和广义表、树和二叉树、图、查找、排序。',
-    homeDesc: '按<b>《数据结构（C语言版）》第 3 版</b>（李冬梅、严蔚敏、吴伟民，人邮 2024）<b>八章</b>体系组织，共 171 题，偏重<b>基础概念与手算</b>。八章都配<b>知识点讲义</b>（定义、公式表、对比表、代码模板与易错点）；每题标注<b>知识点、难度、教材出处与核对链接</b>，答后给出<b>分步详解</b>。第 3 版新增的<b>红黑树（7.3.3）</b>与<b>并查集（5.8）</b>已单独出题；另有<b>序列填空</b>题型：遍历序列、后缀表达式、next 数组、哈希下标、每趟排序结果都可整串作答，判分按位置逐个比对。',
+    homeDesc: '按<b>《数据结构（C语言版）》第 3 版</b>（李冬梅、严蔚敏、吴伟民，人邮 2024）<b>八章</b>体系组织，共 241 题，按老师给的卷面题型分为<b>选择 / 判断 / 填空 / 编程</b>四类，每章另配<b>拔高题</b>。八章都配<b>知识点讲义</b>（定义、公式表、对比表、代码模板与易错点）；每题标注<b>知识点、难度、教材出处与核对链接</b>，答后给出<b>分步详解</b>。第 3 版新增的<b>红黑树（7.3.3）</b>与<b>并查集（5.8）</b>已单独出题；另有<b>序列填空</b>题型：遍历序列、后缀表达式、next 数组、哈希下标、每趟排序结果都可整串作答，判分按位置逐个比对。',
     refs: [
       { name: '李冬梅、严蔚敏、吴伟民《数据结构（C语言版）》（第 3 版），人民邮电出版社 2024，ISBN 978-7-115-65125-9', note: '章节体系、术语与判分口径的依据（本库按第 3 版 8 章出题）' },
       { name: '《数据结构（C语言版）》第 3 版 各章「LeetCode 算法练习题」与案例小节', note: '算法填空题与手算题的题型参照' },
@@ -18451,13 +19829,13 @@ function startRandom(){
       ...shuffle(ESSAY).slice(0, 2)
     ];
   } else if (CUR_SUB === 'ds') {
-    /* 数据结构：15 题随机卷 —— 选择类 6 + 填空/序列 4 + 代码 2 + 匹配/排序/简答 3 */
+    /* 数据结构：15 题随机卷 —— 按考卷四种题型：选择 6 + 判断 4 + 填空 3 + 编程 2 */
     const pick = (types, n) => pickRandom(allBank().filter(q => types.includes(q.type)), n);
     qs = [
-      ...pick(['choice', 'multi'], 6),
-      ...pick(['fill', 'seq'], 4),
-      ...pick(['code'], 2),
-      ...pick(['match', 'order', 'text'], 3)
+      ...pick(['choice'], 6),
+      ...pick(['judge'], 4),
+      ...pick(['fill', 'seq'], 3),
+      ...pick(['prog', 'code'], 2)
     ];
   } else {
     const pick = (types, n) => pickRandom(allBank().filter(q => types.includes(q.type)), n);
@@ -18480,13 +19858,13 @@ function startExam(){
       ...shuffle(ESSAY).slice(0, 3)
     ];
   } else if (CUR_SUB === 'ds') {
-    /* 数据结构：21 题模拟考 —— 选择类 10 + 填空/序列 6 + 代码 2 + 匹配/排序/简答 3 */
+    /* 数据结构：21 题模拟考 —— 选择 10 + 判断 6 + 填空/序列 3 + 编程 2 */
     const pick = (types, n) => pickRandom(allBank().filter(q => types.includes(q.type)), n);
     qs = [
-      ...pick(['choice', 'multi'], 10),
-      ...pick(['fill', 'seq'], 6),
-      ...pick(['code'], 2),
-      ...pick(['match', 'order', 'text'], 3)
+      ...pick(['choice'], 10),
+      ...pick(['judge'], 6),
+      ...pick(['fill', 'seq'], 3),
+      ...pick(['prog', 'code'], 2)
     ];
   } else {
     const pick = (types, n) => pickRandom(allBank().filter(q => types.includes(q.type)), n);
@@ -18518,6 +19896,18 @@ function startFinal(){
     return;
   }
 
+  /* 数据结构：按老师给的题型 —— 选择 15 + 判断 10 + 填空 8 + 编程 3 = 36 题 */
+  if (CUR_SUB === 'ds') {
+    const qs = [
+      ...pick(['choice'], 15),        /* 一、单项选择题 15 题 */
+      ...pick(['judge'], 10),         /* 二、判断题 10 题 */
+      ...pick(['fill', 'seq'], 8),    /* 三、填空题 8 题 */
+      ...pick(['prog'], 3)            /* 四、算法设计（编程）题 3 题 */
+    ];
+    startSession('exam', '期末模拟卷 · 36 题 · 120 分钟', qs, { seconds: 120 * 60 });
+    return;
+  }
+
   const qs = [
     ...pick(['choice'], 12),          /* 一、单项选择题 12 题 */
     ...pick(['judge'], 8),            /* 二、判断题 8 题 */
@@ -18526,6 +19916,12 @@ function startFinal(){
     ...pick(['text'], 4)              /* 五、简答题 4 题 */
   ];
   startSession('exam', '期末模拟卷 · 30 题 · 90 分钟', qs, { seconds: 90 * 60 });
+}
+/** 拔高题：只练打了「拔高」标签的题（选择题 + 编程题） */
+function startHard(){
+  const qs = allBank().filter(q => (q.tags || []).includes('拔高'));
+  if (!qs.length) { alert('当前科目还没有拔高题～'); return; }
+  startSession('hard', '拔高题 · ' + qs.length + ' 题', shuffle(qs));
 }
 function startWrongBook(){
   const ids = Object.keys(S.wrong);
@@ -18790,7 +20186,7 @@ function viewHome(){
       <span class="m-desc">${isDb
         ? '10 选择 + 10 术语填空 + 8 填空 + 2 大题，共 30 题，快速自测。'
         : (CUR_SUB === 'ds'
-            ? '6 选择类 + 4 填空/序列 + 2 代码 + 3 匹配/排序/简答，共 15 题，覆盖八章。'
+            ? '选择 6 + 判断 4 + 填空 3 + 编程 2，共 15 题，按考卷四种题型组卷。'
             : '6 选择/判断 + 4 命令/代码/填空 + 2 匹配/排序 + 3 简答，共 15 题，覆盖全模块。')}</span>
       <span class="m-meta">开始随机练习 →</span>
     </button>
@@ -18800,13 +20196,21 @@ function viewHome(){
       <span class="m-desc">按老师给的复习大纲拆成 ${DB_SYL.length} 个模块 ${DB_SYL.reduce((a, m) => a + m.points.length, 0)} 个考点，逐条标注配套题量与正确率，附「七大简答必背」标准答案与综合题三件套。</span>
       <span class="m-meta">按考纲过一遍 →</span>
     </button>` : ''}
-    ${(CUR_SUB === 'hadoop' || CUR_SUB === 'db') ? `<button class="mode-card" data-act="start-final" style="border-color:#a5b4fc;background:linear-gradient(135deg,#f5f7ff,#eef2ff)">
+    <button class="mode-card" data-act="start-final" style="border-color:#a5b4fc;background:linear-gradient(135deg,#f5f7ff,#eef2ff)">
       <span class="m-ico">${ICON.award}</span>
       <span class="m-title">期末模拟卷</span>
       <span class="m-desc">${CUR_SUB === 'db'
         ? '按考纲卷面出卷：选择 12 + 名词解释 6 + 填空 3 + 综合设计 2 + 简答 2，共 25 题，120 分钟。做完就知道能不能上考场。'
-        : '按大学期末常见卷面出卷：单选 12 + 判断 8 + 填空 4 + 配对 2 + 简答 4，共 30 题，90 分钟。做完就知道自己能不能上考场。'}</span>
+        : (CUR_SUB === 'ds'
+            ? '按老师给的题型出卷：<b>选择 15 + 判断 10 + 填空 8 + 编程 3</b>，共 36 题，120 分钟。四种题型全覆盖，编程题按关键步骤判分。'
+            : '按大学期末常见卷面出卷：单选 12 + 判断 8 + 填空 4 + 配对 2 + 简答 4，共 30 题，90 分钟。做完就知道自己能不能上考场。')}</span>
       <span class="m-meta">开始期末卷 →</span>
+    </button>
+    ${CUR_SUB === 'ds' ? `<button class="mode-card" data-act="start-hard" style="border-color:#fcd34d;background:linear-gradient(135deg,#fffbeb,#fef3c7)">
+      <span class="m-ico">${ICON.award}</span>
+      <span class="m-title">拔高题专项</span>
+      <span class="m-desc">不背结论、要自己推一遍的题：卡特兰数计数、建堆的全过程、一趟快排的结果、KMP 的 next、关键路径转移、二叉树的 LCA。先自己做，再对答案。</span>
+      <span class="m-meta">共 ${allBank().filter(q => (q.tags || []).includes('拔高')).length} 题 →</span>
     </button>` : ''}
     <button class="mode-card" data-act="start-exam">
       <span class="m-ico">${ICON.clock}</span>
@@ -18814,7 +20218,7 @@ function viewHome(){
       <span class="m-desc">${isDb
         ? '10 选择 + 10 术语填空 + 6 填空 + 3 大题，60 分钟倒计时，交卷后统一看结果。'
         : (CUR_SUB === 'ds'
-            ? '10 选择类 + 6 填空/序列 + 2 代码 + 3 匹配/排序/简答，共 21 题，60 分钟倒计时。'
+            ? '选择 10 + 判断 6 + 填空 3 + 编程 2，共 21 题，60 分钟倒计时。'
             : '10 选择/判断 + 6 命令/代码/填空 + 2 匹配/排序 + 3 简答，60 分钟倒计时。')}</span>
       <span class="m-meta">进入模拟考 →</span>
     </button>
@@ -19736,7 +21140,7 @@ function viewHelp(){
   return `
   <div class="card doc">
     <h2 class="card-title">使用说明</h2>
-    <p><b>阅读提示</b>：第 1~10 节讲的是<b>数据库原理</b>科目的用法与判分；<b>Hadoop 生态</b>的题型判分、题库来源、Secondary NameNode 废弃说明、iOS 兼容与「加题/加科目」做法在第 <b>11~16</b> 节。两科共用同一套交互与判分引擎，只有题库、章节、知识点与存储键不同。</p>
+    <p><b>阅读提示</b>：第 1~10 节讲的是<b>数据库原理</b>科目的用法与判分；<b>Hadoop 生态</b>在第 <b>11~13</b> 节，<b>数据结构</b>（含新增的判断、编程题型与卷面结构）在第 <b>14~15</b> 节，iOS 兼容、兼容性测试与「加题 / 加科目」在第 <b>16~18</b> 节。两科共用同一套交互与判分引擎，只有题库、章节、知识点与存储键不同。</p>
     <div class="k-intro" style="margin:14px 0 6px">
       <div class="ki-t">Hadoop 科目的「白话模式」（怕看不懂就先看这段）</div>
       <div class="ki-b" style="line-height:1.95">
@@ -19849,8 +21253,12 @@ function viewHelp(){
     <p>题目与默认参数以 <b>Apache 官方文档</b> 为准：HDFS Architecture / HDFS Users Guide / FileSystem Shell / MapReduce Tutorial / mapred-default.xml / YARN / Capacity Scheduler / Hive Language Manual / HBase Reference Guide / ZooKeeper Programmer's Guide / Flume User Guide / Kafka Documentation / Spark RDD Programming Guide；个别结论参考 O'Reilly《Hadoop: The Definitive Guide》。</p>
     <p><b>关于 Secondary NameNode：</b>官方已明确标注其废弃（deprecated），由 Checkpoint Node / Backup Node 接替。本库把它单独放在「过时考点（了解即可）」分类，只考查「它是什么、为什么被废弃、现行方案是什么」，不把它当作现行正确机制。HA 集群中 Standby NameNode 本身会做检查点，不需要也不应该再部署 SNN / Checkpoint / Backup。</p>
     <h3>14. 数据结构题库的题型与判分</h3>
+    <p><b>卷面口径</b>：按老师给的信息，期末只考<b>选择、判断、填空、编程</b>四种题型，其中含一部分<b>拔高题</b>（要自己推导，不能靠背）。本库数据结构科目按这四类为主组织，题量分布：<b>选择 122 · 判断 40 · 填空 27（填空 14 + 序列填空 13）· 编程 27（算法设计 20 + 代码填空 7）</b>，另有少量多选、配对、排序、简答作为补充训练。<br>
+    <b>期末模拟卷</b>：选择 15 + 判断 10 + 填空 8 + 编程 3，共 36 题、120 分钟，按这个卷面结构出题；<b>拔高题专项</b>把打了「拔高」标签的 21 题单独抽出来练。</p>
     <ul>
       <li><b>choice 单选</b>：精确匹配，提交即判分，详解里给出该选项为什么对、其余为什么错。</li>
+      <li><b>judge 判断</b>：两个选项「正确 / 错误」，判分与单选相同。题目全部取自教材里最容易记混的一句话（如「单链表已知 p 就能 O(1) 删除」），答完在详解里给出为什么错。</li>
+      <li><b>prog 编程（算法设计）</b>：写完整函数，按<b>关键步骤</b>给分，≥60% 记为答对。判分先按采分点的关键语句匹配，再按<b>结构正则</b>兜底——把 <code>p/q</code> 换成 <code>cur/nx</code> 这类等价写法也能识别，不会因为变量名不同被误判。交卷后展示<b>参考答案代码</b>、逐条采分点命中情况、时间复杂度与常见错法。若你的写法确实与参考不同但思路正确，以采分点与参考代码为准自行核对。</li>
       <li><b>multi 多选</b>：全部选对才满分，反馈指出<b>漏选</b>与<b>错选</b>。</li>
       <li><b>fill 填空</b>：忽略大小写、空格与中英文标点，支持多个等价写法（如「头结点 / 头节点」）。</li>
       <li><b>seq 序列填空（本库新增）</b>：答案本身是一串有序记号时使用，例如遍历序列、后缀表达式、next 数组、哈希下标、每一趟排序结果。用空格或逗号分隔每个记号，判分时<b>逐位置比对</b>——
@@ -19866,6 +21274,7 @@ function viewHelp(){
     <p><b>与旧版（清华 1997 年 12 章版）的对照</b>：旧版把「串」与「数组和广义表」分作第 4、5 章、「内部排序」与「外部排序」分作第 10、11 章，另有第 8 章「动态存储管理」与第 12 章「文件」。本库合并后——<b>旧第 9 章（查找）= 第 3 版第 7 章</b>，<b>旧第 10、11 章（内/外部排序）= 第 3 版第 8 章</b>，旧第 6 章（树）= 第 3 版第 5 章，旧第 7 章（图）= 第 3 版第 6 章。手上有旧版教材时按这张表换算即可。</p>
     <p><b>第 3 版新增考点</b>：5.8 并查集（双亲表示、按秩合并 + 路径压缩、O(α(n))）、7.3.3 红黑树（五条性质、与 AVL 的取舍）、7.3.5 B+ 树（叶子链表与范围查询）、8.4.2 树形选择排序。这四块均已单独出题，旧版教材里没有，需要额外补充。</p>
     <p>每题的「出处」都写明第 3 版的章与节（如「第 5 章 5.7 哈夫曼树及其应用」「第 8 章 8.7.2 多路平衡归并的实现」），并附一个可点开的核对链接（OI Wiki），用于确认定义与公式；教材本身没有网页版，因此书名条目不带链接。</p>
+    <p><b>编程题的题源</b>：全部参照严蔚敏课后<b>算法设计题</b>的经典题型（单链表就地逆置、两有序表归并为递减表、删除区间内的元素、倒数第 k 个结点、有序表去重、栈判回文、括号匹配、循环队列、BF 匹配、二叉树计数/深度/交换/最近公共祖先、DFS、连通分量、拓扑排序、折半查找、判定 BST、快排划分、堆筛选），并逐题给出可运行的 C 代码与复杂度分析。这些题在 LeetCode 上都有对应题号，详解里的链接可直接打开在线判题。</p>
     <p><b>关于默认口径：</b>教材的 <code>next[1] = 0</code>、栈顶指针 <code>top</code> 指向栈顶元素、循环队列牺牲一个单元、大根堆升序、AOE 网 ve/vl 的计算方向等约定，全部按教材原文出题；题目里若存在另一种常见约定（如 <code>next[0] = -1</code>），会在详解中一并说明。</p>
     <h3>16. iPhone / Safari 兼容说明</h3>
     <ul>
@@ -20124,7 +21533,7 @@ function viewChapter(id){
      · fix    : 同 code，按采分点给分，并展示改正后的完整代码
      · text   : 按采分点关键词命中比例给分，展示评分要点与参考答案
    ================================================================ */
-const H_TEXT_TYPES = ['cmd', 'code', 'sql', 'fix', 'text'];
+const H_TEXT_TYPES = ['cmd', 'code', 'sql', 'fix', 'text', 'prog'];
 
 /** 命令归一化：去结尾分号、压缩空格、等号两侧不敏感 */
 function normCmd(raw){
@@ -20149,6 +21558,23 @@ function normCode(raw){
   return t;
 }
 
+/** 给正则用的文本：去注释、压空白，保留运算符与括号 */
+function reText(raw){
+  let t = toHalf(raw || '').toLowerCase();
+  t = t.replace(/\/\*[\s\S]*?\*\//g, ' ');
+  t = t.replace(/\/\/[^\n]*/g, ' ');
+  return t.replace(/\s+/g, ' ');
+}
+
+/** 编程题归一化：只去注释与空白，保留 -> < > 等符号
+ *  不能用 normCode：它会把 <a && b> 这类片段当成 HTML 标签吃掉 */
+function normProg(raw){
+  let t = toHalf(raw || '').toLowerCase();
+  t = t.replace(/\/\*[\s\S]*?\*\//g, ' ');
+  t = t.replace(/\/\/[^\n]*/g, ' ');
+  return t.replace(/\s+/g, '');
+}
+
 /** 通用「采分点」判分：q.keys = [{label, any:[写法...]}] */
 function gradeKeys(q, raw, normFn){
   const groups = q.keys || [];
@@ -20159,9 +21585,15 @@ function gradeKeys(q, raw, normFn){
   }
   /* 与标准答案完全一致（归一化后）直接满分，避免个别写法没写进 keys 被误杀 */
   const exact = (q.accept || []).some(a => normFn(a) === text);
+  /* 编程题的 key 可以带 re（正则）：只认「结构」不认变量名，
+     这样把 p/q 换成 cur/nx 的等价写法也能判对 */
+  const rt = (typeof reText === 'function') ? reText(raw) : '';
   let hit = 0;
   const detail = groups.map(g => {
-    const ok = exact || g.any.some(k => text.includes(normFn(k)));
+    let ok = exact || g.any.some(k => text.includes(normFn(k)));
+    if (!ok && g.re) {
+      try { ok = new RegExp(g.re).test(rt); } catch (e) { ok = false; }
+    }
     if (ok) hit++;
     return { label:g.label, w:1, ok };
   });
@@ -20417,8 +21849,11 @@ function renderOrderBody(q, r){
 
 function renderHTextFeedback(q, r){
   const g = r.grade || { detail:[], got:0, full:0 };
-  const isCode = (q.type === 'code' || q.type === 'sql' || q.type === 'fix');
-  const ansTitle = q.type === 'fix' ? '改正后的完整代码' : (q.type === 'sql' ? '参考 HiveQL' : (q.type === 'code' ? '参考答案代码' : '参考答案'));
+  const isCode = (q.type === 'code' || q.type === 'sql' || q.type === 'fix' || q.type === 'prog');
+  const ansTitle = q.type === 'fix' ? '改正后的完整代码'
+    : (q.type === 'sql' ? '参考 HiveQL'
+    : (q.type === 'prog' ? '参考答案代码（写法不同但关键步骤一致即可得分）'
+    : (q.type === 'code' ? '参考答案代码' : '参考答案')));
   const ansBlock = isCode
     ? `<div class="answer-box"><div class="ab-title">${ansTitle}</div><pre class="k-code" style="margin:0">${esc(q.answer)}</pre></div>`
     : `<div class="answer-box"><div class="ab-title">${ansTitle}</div>${rich(q.answer)}</div>`;
@@ -20451,7 +21886,8 @@ function renderHTextBody(q, r){
     code: '写出完整代码片段（忽略空格、分号、new/var 与泛型写法差异）',
     sql: '写出 HiveQL 语句（末尾分号可省略，忽略大小写与表别名）',
     fix: '写出改正后的代码，或说明错在哪里',
-    text: '分点作答，按采分点关键词命中给分'
+    text: '分点作答，按采分点关键词命中给分',
+    prog: '写出完整函数（C 语言），按关键步骤给分：写法不同但包含这些关键语句即可'
   }[q.type] || '在此作答';
   const bad = q.badCode ? `<pre class="k-code">${esc(q.badCode)}</pre>` : '';
   const input = isCmd
@@ -20613,6 +22049,7 @@ function submitHQ(){
   else if (q.type === 'sql')    g = gradeRubricQ(q, r.draft || '');
   else if (q.type === 'cmd')    g = gradeKeys(q, r.draft || '', normCmd);
   else if (q.type === 'text')   g = gradeKeys(q, r.draft || '', normText);
+  else if (q.type === 'prog')   g = gradeKeys(q, r.draft || '', normProg);
   else if (q.type === 'seq')    g = gradeSeq(q, r.draft || '');
   else                          g = gradeKeys(q, r.draft || '', normCode); // code / fix
   r.done = true;
@@ -20830,6 +22267,7 @@ document.addEventListener('click', e => {
       break;
     case 'start-chapter': startChapter(t.dataset.ch); break;
     case 'start-final': startFinal(); break;
+    case 'start-hard': startHard(); break;
     /* 章节准备页：先给「看知识点 / 直接练」的选择 */
     case 'open-chapter':
       if (view === 'quiz' && session) syncDraft();
