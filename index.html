@@ -15322,32 +15322,151 @@ const D_HARD = [
    只认代码结构不认变量名 —— 把 p/q 换成 cur/nx 也能判对
    ================================================================ */
 const PROG_RE = {
-  'pg2-01': [/(while|for)\s*\(/, /->\s*next\s*=\s*(null|0)\b/, /\w+\s*=\s*\w+\s*->\s*next/, /->\s*next\s*=\s*\w+\s*->\s*next/, /(p|cur)\s*=\s*(q|nx|tmp|next)\b/],
-  'pg2-02': [/a\s*->\s*next\s*=\s*(null|0)/, /->\s*data\s*(<=|<|>=|>)\s*\w+\s*->\s*data/, /\w+\s*=\s*(pa|pb|ra|rb)\s*->\s*next/, /->\s*next\s*=\s*a\s*->\s*next/, /free\s*\(\s*b\s*\)/],
-  'pg2-03': [/p\s*=\s*l\b/, /->\s*data\s*<=\s*mink/, /->\s*data\s*<\s*maxk/, /->\s*next\s*=\s*\w+\s*->\s*next/, /free\s*\(/],
-  'pg2-04': [/=\s*l\s*->\s*next/, /for\s*\(/, /i\s*<\s*k/, /return\s+null/, /fast\s*->\s*next\s*!=\s*(null|0)/],
-  'pg2-05': [/p\s*=\s*l\s*->\s*next/, /->\s*data\s*==\s*\w+\s*->\s*data/, /->\s*next\s*=\s*\w+\s*->\s*next/, /free\s*\(/, /else\s*\{?\s*\w+\s*=\s*\w+\s*->\s*next/],
+  /* 命名约定：I = 任意标识符（用户自己起的名字），只锁结构、锁字段名与题面给定的参数名 */
+  'pg2-01': [
+    /->\s*next\s*=\s*(null|0)\b/i,                                  // 头结点摘下，新表置空
+    /\w+\s*=\s*\w+\s*->\s*next\s*;/i,                               // 暂存后继
+    /->\s*next\s*=\s*\w+\s*->\s*next\s*;/i,                         // 头插到新表
+    /\w+\s*->\s*next\s*=\s*\w+\s*;/i,                               // 新表表头前移
+    /->\s*next\s*=[\s\S]{0,120}?\w+\s*=\s*\w+\s*;/i                 // 改完指针后指针后移
+  ],
+  'pg2-02': [
+    /->\s*next\s*=\s*(null|0)\b/i,
+    /->\s*data\s*(<=|<|>=|>)\s*\w+\s*->\s*data/i,
+    /\w+\s*=\s*\w+\s*->\s*next\s*;/i,
+    /->\s*next\s*=\s*\w+\s*->\s*next\s*;/i,
+    /\w+\s*->\s*next\s*=\s*\w+\s*;|free\s*\(/i
+  ],
+  'pg2-03': [
+    /\w+\s*=\s*l\s*[,;]/i,
+    /->\s*data\s*<=\s*mink/i,
+    /->\s*data\s*<\s*maxk/i,
+    /->\s*next\s*=\s*\w+\s*->\s*next\s*;/i,
+    /free\s*\(/i
+  ],
+  'pg2-04': [
+    /L\s*->\s*next[\s\S]*L\s*->\s*next/i,
+    /<\s*k\b|k\s*-\s*1/i,
+    /return\s+(null|0)\s*;/i,
+    /\w+\s*=\s*\w+\s*->\s*next\s*;[\s\S]*\w+\s*=\s*\w+\s*->\s*next\s*;/i,
+    /return\s+[A-Za-z_]\w*\s*;/i
+  ],
+  'pg2-05': [
+    /\w+\s*=\s*L\s*->\s*next\b/i,
+    /->\s*data\s*==[^;=]{0,48}->\s*data/i,
+    /->\s*next\s*=\s*\w+\s*->\s*next\s*;/i,
+    /free\s*\(/i,
+    /else[\s\S]{0,80}->\s*next/i
+  ],
 
-  'pg3-01': [/push\s*\(/, /pop\s*\(/, /!=\s*\w+\s*\[/, /return\s+1/],
-  'pg3-02': [/push\s*\(/, /(stackempty|isempty|is_empty)\s*\(/, /pop\s*\(/, /c\s*!=\s*'\('/, /return\s+(stackempty|isempty|is_empty)\s*\(/],
-  'pg3-03': [/front\s*=\s*rear\s*=\s*0|front\s*=\s*0/, /\(\s*q\.rear\s*\+\s*1\s*\)\s*%\s*maxqsize\s*==\s*q\.front/, /q\.rear\s*=\s*\(\s*q\.rear\s*\+\s*1\s*\)\s*%\s*maxqsize/, /q\.front\s*==\s*q\.rear/, /q\.front\s*=\s*\(\s*q\.front\s*\+\s*1\s*\)\s*%\s*maxqsize/],
+  'pg3-01': [
+    /for\s*\([\s\S]{0,160}?push\s*\(/i,
+    /pop\s*\(/i,
+    /!=\s*\w+\s*\[/,
+    /return\s+1\s*;/i
+  ],
+  'pg3-02': [
+    /push\s*\(/i,
+    /(stackempty|isempty|is_empty)\s*\(|!\s*\w+\s*\.\s*top/i,
+    /pop\s*\(/i,
+    /!=\s*'\('/,
+    /return\s+[A-Za-z_]*empty|return\s+!\s*\w+/i
+  ],
+  'pg3-03': [
+    /(?:\.|->)\s*front\s*=\s*(?:\w+\s*(?:\.|->)\s*)?rear\s*=\s*0|front\s*=\s*0/i,
+    /\(\s*\w+\s*(?:\.|->)\s*rear\s*\+\s*1\s*\)\s*%[\s\S]{0,40}==\s*\w+\s*(?:\.|->)\s*front/i,
+    /\w+\s*(?:\.|->)\s*rear\s*=\s*\(\s*\w+\s*(?:\.|->)\s*rear\s*\+\s*1\s*\)\s*%/i,
+    /\w+\s*(?:\.|->)\s*front\s*==\s*\w+\s*(?:\.|->)\s*rear/i,
+    /\w+\s*(?:\.|->)\s*front\s*=\s*\(\s*\w+\s*(?:\.|->)\s*front\s*\+\s*1\s*\)\s*%/i
+  ],
 
-  'pg4-01': [/i\s*=\s*pos/, /s\s*\[i\]\s*==\s*t\s*\[j\]/, /i\s*=\s*i\s*-\s*j\s*\+\s*2/, /return\s+i\s*-\s*t\s*\[0\]/, /return\s+0/],
+  'pg4-01': [
+    /\w+\s*=\s*pos\b/i,
+    /\w+\s*\[[^\]]*\]\s*==\s*\w+\s*\[/,
+    /\w+\s*=\s*\w+\s*-\s*\w+\s*\+\s*2/,
+    /return\s+\w+\s*-\s*\w+\s*\[\s*0\s*\]/i,
+    /return\s+0\s*;/i
+  ],
 
-  'pg5-01': [/t\s*==\s*(null|0)\b|!\s*t\b/, /\(\s*t\s*->\s*lchild\s*\)/, /\(\s*t\s*->\s*rchild\s*\)/, /\+\s*1/],
-  'pg5-02': [/t\s*==\s*(null|0)\b|!\s*t\b/, /\(\s*t\s*->\s*lchild\s*\)/, /\(\s*t\s*->\s*rchild\s*\)/, /\?\s*\w+\s*:\s*\w+|\bmax\s*\(/, /\+\s*1/],
-  'pg5-03': [/t\s*==\s*(null|0)\b|!\s*t\b/, /->\s*lchild\s*=\s*\w+\s*->\s*rchild/, /->\s*rchild\s*=\s*\w+\s*;/, /\(\s*t\s*->\s*lchild\s*\)/, /\(\s*t\s*->\s*rchild\s*\)/],
-  'pg5-04': [/t\s*==\s*(null|0)\b|!\s*t\b/, /t\s*==\s*p/, /\(\s*t\s*->\s*lchild\s*,/, /\(\s*t\s*->\s*rchild\s*,/, /\w+\s*&&\s*\w+/],
+  'pg5-01': [
+    /(==\s*(null|0)\b|!\s*\w+)[\s\S]{0,24}return\s+0/i,
+    /\(\s*\w+\s*->\s*lchild\s*\)/i,
+    /\(\s*\w+\s*->\s*rchild\s*\)/i,
+    /\+\s*1/
+  ],
+  'pg5-02': [
+    /(==\s*(null|0)\b|!\s*\w+)[\s\S]{0,24}return\s+0/i,
+    /\(\s*\w+\s*->\s*lchild\s*\)/i,
+    /\(\s*\w+\s*->\s*rchild\s*\)/i,
+    /\?\s*[^:;]+\s*:\s*[^;]+;|max\s*\(/i,
+    /\+\s*1/
+  ],
+  'pg5-03': [
+    /(==\s*(null|0)\b|!\s*\w+)[\s\S]{0,24}return/i,
+    /->\s*lchild\s*=\s*\w+\s*->\s*rchild/i,
+    /->\s*rchild\s*=\s*[A-Za-z_]\w*\s*;/i,
+    /\(\s*\w+\s*->\s*lchild\s*\)/i,
+    /\(\s*\w+\s*->\s*rchild\s*\)/i
+  ],
+  'pg5-04': [
+    /==\s*(null|0)\b|!\s*[A-Za-z_]\w+\s*[)|]/i,
+    /lca\s*\(\s*\w+\s*->\s*lchild/i,
+    /lca\s*\(\s*\w+\s*->\s*rchild/i,
+    /!=\s*(null|0)[\s\S]{0,40}&&/i,
+    /\?\s*[^:;]+\s*:\s*[^;]+;/i
+  ],
 
-  'pg6-01': [/visited\s*\[\s*v\s*\]\s*=\s*1/, /printf|cout|visit\s*\(/, /g\.arcs/, /dfs\s*\(/, /visited\s*\[\s*\w+\s*\]\s*==\s*0|!\s*visited/],
-  'pg6-02': [/visited\s*\[[^\]]*\]\s*=\s*\{\s*0\s*\}/, /for\s*\(/, /dfs\s*\(/, /(cnt|count)\s*\+\+/, /return\s+(cnt|count)/],
-  'pg6-03': [/indegree\s*\[[^\]]*\]\s*\+\+|\+\+\s*indegree/, /indegree\s*\[[^\]]*\]\s*==\s*0/, /(count|cnt)\s*\+\+/, /--\s*indegree|indegree\s*\[[^\]]*\]\s*--/, /(count|cnt)\s*(<|!=)\s*g\.vexnum/],
+  'pg6-01': [
+    /visited\s*\[\s*\w+\s*\]\s*=\s*1/i,
+    /printf|cout|visit\s*\(/i,
+    /arcs/i,
+    /dfs\s*\(/i,
+    /visited\s*\[[^\]]*\]\s*==\s*0|!\s*visited/i
+  ],
+  'pg6-02': [
+    /visited\s*\[[^\]]*\]\s*=\s*\{\s*0\s*\}|memset\s*\(\s*visited/i,
+    /for\s*\([^)]*<\s*\w+\s*(?:\.|->)\s*vexnum/i,
+    /(visited\s*\[[^\]]*\]\s*==\s*0|!\s*visited)[\s\S]{0,80}dfs/i,
+    /[A-Za-z_]\w*\s*\+\+|\+=\s*1/,
+    /return\s+[A-Za-z_]\w*\s*;/i
+  ],
+  'pg6-03': [
+    /indegree\s*\[[^\]]*\]\s*\+\+|\+\+\s*indegree|indegree\s*\[[^\]]*\]\s*\+=/i,
+    /indegree\s*\[[^\]]*\]\s*==\s*0[\s\S]{0,40}push/i,
+    /pop\s*\([^)]*\)[\s\S]{0,80}\+\+/i,
+    /--\s*indegree|indegree\s*\[[^\]]*\]\s*--|indegree\s*\[[^\]]*\]\s*-=\s*1/i,
+    /(<\s*|!=\s*)\w+\s*(?:\.|->)\s*vexnum|return\s+error/i
+  ],
 
-  'pg7-01': [/low\s*=\s*1/, /low\s*<=\s*high/, /\(\s*low\s*\+\s*high\s*\)\s*\/\s*2/, /return\s+mid/, /high\s*=\s*mid\s*-\s*1|low\s*=\s*mid\s*\+\s*1/],
-  'pg7-02': [/t\s*==\s*(null|0)\b|!\s*t\b/, /\(\s*t\s*->\s*lchild\s*\)/, /pre\s*->\s*data\s*>=/, /pre\s*=\s*t\b/, /\(\s*t\s*->\s*rchild\s*\)/],
+  'pg7-01': [
+    /\w+\s*=\s*1\s*,[\s\S]{0,60}?\w+\s*=\s*\w+\s*(?:\.|->)\s*length/i,
+    /\w+\s*<=\s*\w+\s*\)/,
+    /\(\s*\w+\s*\+\s*\w+\s*\)\s*\/\s*2/,
+    /\.\s*key\s*==\s*key[\s\S]{0,40}return\s+\w+/i,
+    /\w+\s*=\s*\w+\s*[-+]\s*1\b/i
+  ],
+  'pg7-02': [
+    /bst\s*\(\s*\w+\s*->\s*lchild/i,
+    /->\s*data\s*(>=|>)\s*\w+\s*->\s*data/i,
+    /(pre|prev|last|p)\s*=\s*[A-Za-z_]\w*\s*;/i,
+    /bst\s*\(\s*\w+\s*->\s*rchild/i,
+    /return\s+0\s*;/i
+  ],
 
-  'pg8-01': [/\[0\]\s*=\s*\w+\.elem\s*\[/, /\[high\]\.key\s*>=\s*pivot|\[high\]\s*>=\s*pivot/, /\[low\]\s*=\s*\w+\.elem\s*\[high\]/, /\[low\]\.key\s*<=\s*pivot|\[low\]\s*<=\s*pivot/, /\[low\]\s*=\s*\w+\.elem\s*\[0\]/],
-  'pg8-02': [/rc\s*=\s*a\s*\[/, /j\s*=\s*2\s*\*\s*s/, /a\s*\[j\]\s*<\s*a\s*\[j\s*\+\s*1\]/, /rc\s*>=\s*a\s*\[j\]/, /a\s*\[s\]\s*=\s*a\s*\[j\]/]
+  'pg8-01': [
+    /\[\s*0\s*\]\s*=\s*\w+\s*(?:\.|->)\s*elem\s*\[/i,
+    /elem\s*\[[^\]]*\]\s*(?:\.|->)\s*key\s*>=\s*\w+[\s\S]{0,40}?--/i,
+    /\w+\s*(?:\.|->)\s*elem\s*\[[^\]]*\]\s*=\s*\w+\s*(?:\.|->)\s*elem\s*\[[^\]]*\]/i,
+    /elem\s*\[[^\]]*\]\s*(?:\.|->)\s*key\s*<=\s*\w+[\s\S]{0,40}?\+\+/i,
+    /elem\s*\[[^\]]*\]\s*=\s*\w+\s*(?:\.|->)\s*elem\s*\[\s*0\s*\]/i
+  ],
+  'pg8-02': [
+    /\w+\s*=\s*a\s*\[\s*\w+\s*\]\s*[,;]/i,
+    /\w+\s*=\s*2\s*\*\s*\w+/,
+    /a\s*\[[^\]]*\]\s*<\s*a\s*\[[^\]]*\]/,
+    /break\s*;/i,
+    /a\s*\[[^\]]*\]\s*=\s*a\s*\[[^\]]*\]/
+  ]
 };
 /* 把正则挂到对应采分点上（按顺序一一对应） */
 [D_PROG_A, D_PROG_B].forEach(arr => arr.forEach(q => {
